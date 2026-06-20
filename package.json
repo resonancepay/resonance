@@ -1,0 +1,26 @@
+{
+  "name": "resonance",
+  "version": "1.0.0",
+  "main": "index.js",
+  "keywords": [],
+  "author": "Jogbodo oluwaferanmi Mark",
+  "license": "ISC",
+  "description": "This is the monorepo set up for this project",
+  "private": true,
+  "scripts": {
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "lint": "turbo lint"
+  },
+  "devDependencies": {
+    "turbo": "latest",
+    "typescript": "^5"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "sharp",
+      "unrs-resolver"
+    ]
+  },
+  "packageManager": "pnpm@9.0.0"
+}
