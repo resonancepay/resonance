@@ -11,7 +11,7 @@ export const JobStatus = ({ status }: { status: JobType }) => {
   return (
     <Container
       as="span"
-      className={`rounded-2xl px-2 py-1 flex items-center gap-1.5 shrink-0 whitespace-nowrap ${
+      className={`rounded-lg px-2 py-1 flex items-center gap-1.5 shrink-0 whitespace-nowrap ${
         status === "pending"
           ? "bg-warning-bg-light"
           : status === "in-progress"
