@@ -3,7 +3,7 @@ import React from "react";
 import { OnboardingReferenceWrapper } from "./onboarding-reference";
 import { BackIcon, DangerIcon } from "@resonance/ui/icons";
 
-export const OnboardingDeclined = () => {
+export const OnboardingDeclined = ({ referenceCode }: { referenceCode: string }) => {
   return (
     <Container>
       <Container className="flex flex-col items-center justify-center">
@@ -19,7 +19,7 @@ export const OnboardingDeclined = () => {
           needed to work with Resonance Clean.
         </Text>
       </Container>
-      <OnboardingReferenceWrapper />
+      <OnboardingReferenceWrapper referenceCode={referenceCode} />
     </Container>
   );
 };

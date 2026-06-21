@@ -13,18 +13,18 @@ import { OnboardingApproved } from "../components/onboarding-approved";
 import { OnboardingDeclined } from "../components/onboarding-declined";
 import { OnboardingAttention } from "../components/onboarding-attention";
 import { OnboardingSubmitted } from "../components/onboarding-submitted";
+import { useOnboardingScreen } from "../hooks/useOnboarding";
 
 export const OnboardingScreen = () => {
-  const [activeStep, setActiveStep] = useState(1);
-  const [status, setStatus] = useState<
-    "approved" | "declined" | "pending" | "submitted" | null
-  >(null);
-  const [referenceCode, setReferenceCode] = useState("");
-  const scrollRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    scrollRef.current?.scrollTo({ top: 0, behavior: "smooth" });
-  }, [activeStep]);
+  const {
+    activeStep,
+    setActiveStep,
+    scrollRef,
+    referenceCode,
+    status,
+    setReferenceCode,
+    setStatus,
+  } = useOnboardingScreen();
 
   return (
     <PortalWrapper className="h-full">
@@ -38,9 +38,11 @@ export const OnboardingScreen = () => {
               {status ? (
                 <>
                   {status === "approved" && <OnboardingApproved />}
-                  {status === "declined" && <OnboardingDeclined />}
+                  {status === "declined" && <OnboardingDeclined referenceCode={referenceCode} />}
                   {status === "pending" && <OnboardingAttention />}
-                  {status === "submitted" && <OnboardingSubmitted referenceCode={referenceCode} />}
+                  {status === "submitted" && (
+                    <OnboardingSubmitted referenceCode={referenceCode} />
+                  )}
                 </>
               ) : (
                 <>
@@ -49,9 +51,20 @@ export const OnboardingScreen = () => {
                     {activeStep === 1 && (
                       <StepOne onSuccess={() => setActiveStep(2)} />
                     )}
-                    {activeStep === 2 && <StepTwo onSuccess={() => setActiveStep(3)} />}
-                    {activeStep === 3 && <StepThree onSuccess={() => setActiveStep(4)} />}
-                    {activeStep === 4 && <StepFour onSuccess={(code) => { setReferenceCode(code); setStatus("submitted"); }} />}
+                    {activeStep === 2 && (
+                      <StepTwo onSuccess={() => setActiveStep(3)} />
+                    )}
+                    {activeStep === 3 && (
+                      <StepThree onSuccess={() => setActiveStep(4)} />
+                    )}
+                    {activeStep === 4 && (
+                      <StepFour
+                        onSuccess={(code) => {
+                          setReferenceCode(code);
+                          setStatus("submitted");
+                        }}
+                      />
+                    )}
                   </Container>
                 </>
               )}

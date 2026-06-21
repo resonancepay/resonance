@@ -1,6 +1,8 @@
 import { Container } from "@resonance/ui";
 import React from "react";
 
-export const Dashboard = () => {
+function Dashboard() {
   return <Container>Dashboard</Container>;
-};
+}
+
+export default Dashboard;

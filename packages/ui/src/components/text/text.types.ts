@@ -13,7 +13,22 @@ export type TextVariant =
   | "button"
   | "buttonXS";
 
+export type TextTone =
+  | "primary"
+  | "secondary"
+  | "tertiary"
+  | "inverted"
+  | "brand"
+  | "brand-secondary"
+  | "brand-tertiary"
+  | "danger"
+  | "danger-bold"
+  | "success"
+  | "warning"
+  | "info";
+
 export type TextProps<T extends ElementType> = {
   variant?: TextVariant;
+  tone?: TextTone;
   as?: T;
 } & ComponentPropsWithoutRef<T>;

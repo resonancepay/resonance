@@ -8,7 +8,7 @@ import {
   useResendOtp,
   useResetPassword,
   useVerifyOtp,
-} from "./useServiceAuth";
+} from "./auth.hooks";
 import { LoginPayload, Profile, RegisterUser } from "../types/auth.type";
 import {
   emailSchema,

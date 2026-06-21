@@ -1,6 +1,6 @@
 import { ElementType } from "react";
 import { Container } from "../container";
-import { TextProps, TextVariant } from "./text.types";
+import { TextProps, TextTone, TextVariant } from "./text.types";
 
 const defaultElement: Record<TextVariant, ElementType> = {
   h1: "h1",
@@ -14,6 +14,21 @@ const defaultElement: Record<TextVariant, ElementType> = {
   bodyXSmall: "p",
   button: "span",
   buttonXS: "span",
+};
+
+const toneStyles: Record<TextTone, string> = {
+  primary: "text-primary",
+  secondary: "text-secondary",
+  tertiary: "text-tertiary",
+  inverted: "text-inverted",
+  brand: "text-brand-text-icons",
+  "brand-secondary": "text-brand-secondary-text-icons",
+  "brand-tertiary": "text-brand-tertiary-text-icons",
+  danger: "text-danger-text-icons",
+  "danger-bold": "text-danger-bg-bold",
+  success: "text-success-text-icons",
+  warning: "text-warning-text-icons",
+  info: "text-info-text-icons",
 };
 
 const variantStyles: Record<TextVariant, string> = {
@@ -34,6 +49,7 @@ const variantStyles: Record<TextVariant, string> = {
 
 export function Text<T extends ElementType = "p">({
   variant = "bodyRegular",
+  tone,
   as,
   children,
   className,
@@ -45,7 +61,7 @@ export function Text<T extends ElementType = "p">({
     <Container
       as={Tag}
       {...props}
-      className={[variantStyles[variant], className].filter(Boolean).join(" ")}
+      className={[variantStyles[variant], tone ? toneStyles[tone] : undefined, className].filter(Boolean).join(" ")}
     >
       {children}
     </Container>

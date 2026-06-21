@@ -2,8 +2,14 @@ import { Container, Text } from "@resonance/ui";
 import Image from "next/image";
 import React from "react";
 import { OnboardingReferenceWrapper } from "./onboarding-reference";
+import { useAuthStore } from "@/shared/store/auth.store";
 
-export const OnboardingSubmitted = ({ referenceCode }: { referenceCode: string }) => {
+export const OnboardingSubmitted = ({
+  referenceCode,
+}: {
+  referenceCode: string;
+}) => {
+  const { user } = useAuthStore();
   return (
     <Container>
       <Text variant="h4" className="text-primary text-center mb-2">
@@ -19,7 +25,7 @@ export const OnboardingSubmitted = ({ referenceCode }: { referenceCode: string }
       </Container>
       <Container className="mb-9">
         <Text className="text-primary mb-3 text-center" variant="bodyXSmall">
-          Hi, Sarah,
+          Hi, {user?.userInfo?.first_name},
         </Text>
         <Text className="text-primary text-center" variant="bodyXSmall">
           Your application has been received successfully. We will be in touch

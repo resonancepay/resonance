@@ -1,5 +1,6 @@
 import { Container } from "@resonance/ui";
 import { Metadata } from "next";
+import { GuestGuard } from "@/shared/providers/guest-guard";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -11,5 +12,9 @@ export default function AuthRootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <Container className="bg-background">{children}</Container>;
+  return (
+    <GuestGuard>
+      <Container className="bg-background">{children}</Container>
+    </GuestGuard>
+  );
 }

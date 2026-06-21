@@ -2,16 +2,25 @@
 import { Container, Text } from "@resonance/ui";
 import React from "react";
 import { NavItemType } from "../types/shared.types";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 export const PortalNavItem = ({ item }: { item: NavItemType }) => {
   const pathName = usePathname();
   const currentPath = pathName.split("/")[1];
-  const active = currentPath === item.slug;
+  const active = currentPath.includes(item.slug);
+  const router = useRouter();
   return (
-    <Container className="bg-muted rounded-full flex items-center gap-2 px-4 py-3">
+    <Container
+      onClick={() => {
+        router.push(item.link);
+      }}
+      className={`${active ? "bg-brand-secondary-bg-bold" : "bg-muted"} rounded-full flex cursor-pointer items-center gap-2 px-4 py-3`}
+    >
       {active ? item.icon : item.inActiveIcon}
-      <Text variant="bodyXSmall" className="text-primary">
+      <Text
+        variant="bodyXSmall"
+        className={`${active ? "text-inverted" : "text-primary"} `}
+      >
         {item.title}
       </Text>
     </Container>
