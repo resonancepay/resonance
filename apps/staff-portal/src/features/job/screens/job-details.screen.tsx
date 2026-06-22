@@ -20,9 +20,10 @@ import { JobMoreInformation } from "../components/job-more-information";
 import { JobConsumable } from "../components/job-consumable";
 import { JobSop } from "../components/job-sop";
 import { JobQualityScore } from "../components/job-quality-score";
+import { JobClockingInformation } from "../components/job-clocking-information";
 
 export const JobDetailsScreen = () => {
-  const [status, setStatus] = useState<JobType>("pending");
+  const [status, setStatus] = useState<JobType>("paid");
   return (
     <Container className="pb-4">
       <Container className="flex items-center gap-2.5 pb-5 mb-3">
@@ -81,9 +82,11 @@ export const JobDetailsScreen = () => {
                   <Col xs={8}>
                     <JobPictureWrapper status={status} />
                   </Col>
-                  <Col xs={8} className="opacity-30">
-                    <JobImageAddMore status={status} />
-                  </Col>
+                  {status !== "under-review" && status !== "paid" && (
+                    <Col xs={8} className="opacity-30">
+                      <JobImageAddMore status={status} />
+                    </Col>
+                  )}
                 </Row>
               </Container>
             </Container>
@@ -115,9 +118,11 @@ export const JobDetailsScreen = () => {
                   <Col xs={8}>
                     <JobPictureWrapper status={status} />
                   </Col>
-                  <Col xs={8}>
-                    <JobImageAddMore status={status} />
-                  </Col>
+                  {status !== "under-review" && status !== "paid" && (
+                    <Col xs={8} className="opacity-30">
+                      <JobImageAddMore status={status} />
+                    </Col>
+                  )}
                 </Row>
               </Container>
             </Container>
@@ -164,10 +169,16 @@ export const JobDetailsScreen = () => {
         </Col>
         <Col xs={8}>
           <Container className="flex flex-col gap-2.5">
-            <JobQualityScore />
+            {status === "paid" && <JobQualityScore />}
             <JobMapLocation />
-            <JobClockAction status="clock-out" />
+            {status !== "under-review" && status !== "paid" && (
+              <JobClockAction
+                status={status === "in-progress" ? "clock-out" : "clock-in"}
+              />
+            )}
+
             <Container className="pt-4 flex flex-col gap-4">
+              {status !== "pending" && <JobClockingInformation />}
               <JobMoreInformation />
               <JobConsumable />
               <JobSop />

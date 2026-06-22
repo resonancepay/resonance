@@ -1,45 +1,55 @@
 import { Container, Text } from "@resonance/ui";
 import { ChevronDownIcon } from "@resonance/ui/icons";
 import { Col, Row } from "antd";
-import React from "react";
+import React, { useState } from "react";
 import { JobAvailability } from "./job-availability";
 
 export const JobConsumable = () => {
+  const [open, setOpen] = useState(true);
   return (
     <Container className="border-b border-border">
-      <Container className="flex items-center justify-between">
+      <Container
+        className="flex items-center justify-between cursor-pointer"
+        onClick={() => setOpen((prev) => !prev)}
+      >
         <Text variant="bodySmall" tone="primary">
           Consumables
         </Text>
-        <ChevronDownIcon className="text-primary" size={20} />
+        <ChevronDownIcon
+          className="text-primary transition-transform duration-200"
+          size={20}
+          style={{ transform: open ? "rotate(180deg)" : "rotate(0deg)" }}
+        />
       </Container>
-      <Container className="flex items-center bg-surface p-3.5 my-2 rounded-xl flex-col">
-        <Row
-          className="mb-2 border-b-border border-b-[0.5px] w-full pb-2"
-          align="middle"
-        >
-          <Col span={12}>
-            <Text variant="bodyXSmall" tone="secondary">
-              Availability:
-            </Text>
-          </Col>
-          <Col span={12} style={{ display: "flex", justifyContent: "flex-end" }}>
-            <JobAvailability />
-          </Col>
-        </Row>
-        <Row className="w-full pb-2" align="top">
-          <Col span={12}>
-            <Text variant="bodyXSmall" tone="secondary">
-              Item(s) Needed:
-            </Text>
-          </Col>
-          <Col span={12} className="text-right">
-            <Text variant="bodyXSmall" tone="primary">
-              Glass cleaner, Bleach, Detergent, Dissolver.
-            </Text>
-          </Col>
-        </Row>
-      </Container>
+      {open && (
+        <Container className="flex items-center bg-surface p-3.5 my-2 rounded-xl flex-col">
+          <Row
+            className="mb-2 border-b-border border-b-[0.5px] w-full pb-2"
+            align="middle"
+          >
+            <Col span={12}>
+              <Text variant="bodyXSmall" tone="secondary">
+                Availability:
+              </Text>
+            </Col>
+            <Col span={12} style={{ display: "flex", justifyContent: "flex-end" }}>
+              <JobAvailability />
+            </Col>
+          </Row>
+          <Row className="w-full pb-2" align="top">
+            <Col span={12}>
+              <Text variant="bodyXSmall" tone="secondary">
+                Item(s) Needed:
+              </Text>
+            </Col>
+            <Col span={12} className="text-right">
+              <Text variant="bodyXSmall" tone="primary">
+                Glass cleaner, Bleach, Detergent, Dissolver.
+              </Text>
+            </Col>
+          </Row>
+        </Container>
+      )}
     </Container>
   );
 };
