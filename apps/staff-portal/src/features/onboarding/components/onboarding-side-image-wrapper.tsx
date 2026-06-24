@@ -4,7 +4,7 @@ import Image from "next/image";
 
 export const OnboardingSideImageWrapper = () => {
   return (
-    <Container className="relative h-full w-full  overflow-hidden bg-brand-secondary-bg-light rounded-2xl">
+    <Container className="relative flex-1 h-full w-full overflow-hidden bg-brand-secondary-bg-light rounded-2xl">
       {/* Gradient overlay — uses token so it flips with dark/light mode */}
       <Container className="absolute top-0 right-0 bottom-0 left-0 h-full">
         <Image

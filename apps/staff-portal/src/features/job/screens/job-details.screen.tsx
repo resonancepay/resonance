@@ -23,7 +23,7 @@ import { JobQualityScore } from "../components/job-quality-score";
 import { JobClockingInformation } from "../components/job-clocking-information";
 
 export const JobDetailsScreen = () => {
-  const [status, setStatus] = useState<JobType>("paid");
+  const [status, setStatus] = useState<JobType>("scheduled");
   return (
     <Container className="pb-4">
       <Container className="flex items-center gap-2.5 pb-5 mb-3">

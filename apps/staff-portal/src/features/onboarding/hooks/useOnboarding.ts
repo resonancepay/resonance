@@ -27,7 +27,11 @@ export const useOnboardingScreen = () => {
   const { user } = useAuthStore();
   const [status, setStatus] = useState<
     "approved" | "declined" | "pending" | "submitted" | null
-  >(user?.userInfo?.application_submitted ? "submitted" : null);
+  >(
+    user?.userInfo?.application_submitted
+      ? (user?.userInfo?.application_status ?? null)
+      : null,
+  );
   const [referenceCode, setReferenceCode] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
 

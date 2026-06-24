@@ -33,6 +33,13 @@ export interface VerifyOtpPayload {
   user_id: number;
 }
 
+export type ApplicationStatus =
+  | "approved"
+  | "declined"
+  | "pending"
+  | "submitted"
+  | null;
+
 export interface Profile {
   first_name: string;
   last_name: string;
@@ -41,4 +48,5 @@ export interface Profile {
   date_of_birth: string;
   application_submitted: boolean;
   application_approved: boolean;
+  application_status: ApplicationStatus;
 }

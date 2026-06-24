@@ -2,7 +2,11 @@ import { Button, Container, Text } from "@resonance/ui";
 import { OnboardingReferenceWrapper } from "./onboarding-reference";
 import { BackIcon, ChevronRightIcon, WarningIcon } from "@resonance/ui/icons";
 
-export const OnboardingAttention = () => {
+export const OnboardingAttention = ({
+  referenceCode,
+}: {
+  referenceCode: string;
+}) => {
   return (
     <Container>
       <Container className="flex flex-col items-center justify-center">
@@ -17,7 +21,7 @@ export const OnboardingAttention = () => {
           Your proof of right to work document could not be verified.
         </Text>
       </Container>
-      <OnboardingReferenceWrapper />
+      <OnboardingReferenceWrapper referenceCode={referenceCode} />
       <Container className="mt-8">
         <Button
           leftIcon={<BackIcon className="text-inverted" />}

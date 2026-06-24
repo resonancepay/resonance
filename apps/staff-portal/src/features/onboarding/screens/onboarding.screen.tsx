@@ -29,7 +29,7 @@ export const OnboardingScreen = () => {
   return (
     <PortalWrapper className="h-full">
       <Row className="h-full pt-18">
-        <Col xs={8} className="h-full pb-18">
+        <Col xs={8} className="h-full pb-18 flex flex-col">
           <OnboardingSideImageWrapper />
         </Col>
         <Col xs={16} className="h-full overflow-y-auto" ref={scrollRef}>
@@ -38,8 +38,12 @@ export const OnboardingScreen = () => {
               {status ? (
                 <>
                   {status === "approved" && <OnboardingApproved />}
-                  {status === "declined" && <OnboardingDeclined referenceCode={referenceCode} />}
-                  {status === "pending" && <OnboardingAttention />}
+                  {status === "declined" && (
+                    <OnboardingDeclined referenceCode={referenceCode} />
+                  )}
+                  {status === "pending" && (
+                    <OnboardingSubmitted referenceCode={referenceCode} />
+                  )}
                   {status === "submitted" && (
                     <OnboardingSubmitted referenceCode={referenceCode} />
                   )}

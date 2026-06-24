@@ -1,6 +1,5 @@
 import { Container, Text } from "@resonance/ui";
 import { ScoreIcon } from "@resonance/ui/icons";
-import React from "react";
 
 export const JobQualityScore = () => {
   return (
