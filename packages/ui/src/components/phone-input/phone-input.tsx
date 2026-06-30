@@ -172,7 +172,7 @@ export function PhoneInput({
           disabled={disabled}
           placeholder={placeholder ?? "Enter phone number"}
           className={[
-            "flex-1 h-10 rounded-r-2xl rounded-l-sm border outline-none px-4 text-xs transition-colors font-sans",
+            "flex-1 h-10 rounded-r-2xl rounded-l-sm border outline-none px-4 text-base sm:text-xs transition-colors font-sans",
             "placeholder:text-secondary",
             disabled
               ? "bg-muted border-transparent text-tertiary cursor-not-allowed"

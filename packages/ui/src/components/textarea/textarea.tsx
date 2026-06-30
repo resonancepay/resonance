@@ -39,7 +39,7 @@ export function Textarea({
           disabled={disabled}
           className={[
             "w-full min-h-24 border-0 outline-none bg-transparent font-sans resize-none",
-            "px-4 py-3 text-xs placeholder:text-secondary transition-colors",
+            "px-4 py-3 text-base sm:text-xs placeholder:text-secondary transition-colors",
             disabled
               ? "text-tertiary cursor-not-allowed pointer-events-none"
               : error

@@ -10,7 +10,9 @@ export const PortalWrapper = ({
 }) => {
   return (
     <Row justify="center" className={className}>
-      <Col lg={20} className={className}>{children}</Col>
+      <Col lg={20} xs={22} className={className}>
+        {children}
+      </Col>
     </Row>
   );
 };

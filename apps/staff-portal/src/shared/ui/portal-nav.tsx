@@ -75,7 +75,7 @@ export const PortalNav = () => {
               alt="Logo"
             />
           </Container>
-          <Container className="flex items-center gap-2">
+          <Container className=" items-center gap-2 lg:flex hidden">
             {navItems.map((item, key) => {
               return <PortalNavItem item={item} key={key} />;
             })}

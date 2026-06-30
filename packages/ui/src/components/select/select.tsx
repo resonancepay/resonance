@@ -56,7 +56,7 @@ export function Select({
           disabled={disabled}
           onClick={() => setOpen((prev) => !prev)}
           className={[
-            "w-full h-10 rounded-2xl border outline-none px-4 text-xs font-sans transition-colors",
+            "w-full h-10 rounded-2xl border outline-none px-4 text-base sm:text-xs font-sans transition-colors",
             "flex items-center gap-2 cursor-pointer disabled:cursor-not-allowed",
             leftIcon ? "pl-10" : "",
             open
@@ -107,7 +107,7 @@ export function Select({
                   key={option.value}
                   onClick={() => handleSelect(option.value)}
                   className={[
-                    "w-full flex items-center px-4 py-2.5 text-left text-xs font-sans transition-colors hover:bg-muted",
+                    "w-full flex items-center px-4 py-2.5 text-left text-base sm:text-xs font-sans transition-colors hover:bg-muted",
                     value === option.value ? "bg-brand-bg-light text-brand-text-icons" : "text-primary",
                   ].join(" ")}
                 >

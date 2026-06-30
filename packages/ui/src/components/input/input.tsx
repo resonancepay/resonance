@@ -28,7 +28,7 @@ export function Input({
       disabled={disabled}
       className={[
         "w-full h-10 border-0 outline-none transition-colors bg-transparent font-sans",
-        "px-4 text-xs placeholder:text-secondary",
+        "px-4 text-base sm:text-xs placeholder:text-secondary",
         disabled
           ? "text-tertiary cursor-not-allowed pointer-events-none"
           : error

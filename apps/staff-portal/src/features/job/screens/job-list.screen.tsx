@@ -2,9 +2,8 @@
 
 import { Container, Text } from "@resonance/ui";
 import { Col, Row } from "antd";
-import React, { useState } from "react";
+import { useState } from "react";
 import { JobCard } from "../components/job-card";
-import { CheckIcon } from "@resonance/ui/icons";
 import { JobHistoryPill } from "../components/job-history-pill";
 
 type JobTab = "all" | "history";
@@ -14,14 +13,14 @@ export const JobListScreen = () => {
 
   return (
     <Container>
-      <Container className="flex items-center justify-between">
-        <Text variant="h3" className="text-primary">
+      <Container className="flex lg:flex-row flex-col lg:items-center justify-between">
+        <Text variant="h3" className="text-primary lg:mb-0 mb-5">
           Jobs
         </Text>
         <Container className="border-[0.5px] border-border p-1 rounded-full flex bg-surface">
           <Container
             onClick={() => setActiveTab("all")}
-            className={`px-4 py-2 rounded-full cursor-pointer transition-all ${
+            className={`px-4 py-2 rounded-full cursor-pointer text-center lg:w-auto w-full transition-all ${
               activeTab === "all"
                 ? "border border-brand-secondary-border bg-brand-tertiary-bg-light"
                 : ""
@@ -38,7 +37,7 @@ export const JobListScreen = () => {
           </Container>
           <Container
             onClick={() => setActiveTab("history")}
-            className={`px-4 py-2 rounded-full cursor-pointer transition-all ${
+            className={`px-4 py-2 rounded-full cursor-pointer text-center lg:w-auto w-full transition-all ${
               activeTab === "history"
                 ? "border border-brand-secondary-border bg-brand-tertiary-bg-light"
                 : ""
@@ -64,22 +63,22 @@ export const JobListScreen = () => {
           </Container>
           <Container>
             <Row gutter={20}>
-              <Col xs={8}>
+              <Col lg={8} xs={24}>
                 <JobCard status="pending" />
               </Col>
-              <Col xs={8}>
+              <Col lg={8} xs={24}>
                 <JobCard status="in-progress" />
               </Col>
-              <Col xs={8}>
+              <Col lg={8} xs={24}>
                 <JobCard status="under-review" />
               </Col>
-              <Col xs={8}>
+              <Col lg={8} xs={24}>
                 <JobCard status="paid" />
               </Col>
-              <Col xs={8}>
+              <Col lg={8} xs={24}>
                 <JobCard status="paid" />
               </Col>
-              <Col xs={8}>
+              <Col lg={8} xs={24}>
                 <JobCard status="paid" />
               </Col>
             </Row>
@@ -92,25 +91,25 @@ export const JobListScreen = () => {
             </Container>
             <Container>
               <Row gutter={20}>
-                <Col xs={8}>
+                <Col lg={8} xs={24}>
                   <JobCard status="scheduled" />
                 </Col>
-                <Col xs={8}>
+                <Col lg={8} xs={24}>
                   <JobCard status="scheduled" />
                 </Col>
-                <Col xs={8}>
+                <Col lg={8} xs={24}>
                   <JobCard status="scheduled" />
                 </Col>
-                <Col xs={8}>
+                <Col lg={8} xs={24}>
                   <JobCard status="scheduled" />
                 </Col>
-                <Col xs={8}>
+                <Col lg={8} xs={24}>
                   <JobCard status="scheduled" />
                 </Col>
-                <Col xs={8}>
+                <Col lg={8} xs={24}>
                   <JobCard status="scheduled" />
                 </Col>
-                <Col xs={8}>
+                <Col lg={8} xs={24}>
                   <JobCard status="scheduled" />
                 </Col>
               </Row>
@@ -132,13 +131,13 @@ export const JobListScreen = () => {
           </Container>
           <Container>
             <Row gutter={20}>
-              <Col xs={8}>
+              <Col lg={8} xs={24}>
                 <JobCard status="paid" />
               </Col>
-              <Col xs={8}>
+              <Col lg={8} xs={24}>
                 <JobCard status="paid" />
               </Col>
-              <Col xs={8}>
+              <Col lg={8} xs={24}>
                 <JobCard status="paid" />
               </Col>
             </Row>
@@ -151,16 +150,16 @@ export const JobListScreen = () => {
             </Container>
             <Container>
               <Row gutter={20}>
-                <Col xs={8}>
+                <Col lg={8} xs={24}>
                   <JobCard status="paid" />
                 </Col>
-                <Col xs={8}>
+                <Col lg={8} xs={24}>
                   <JobCard status="paid" />
                 </Col>
-                <Col xs={8}>
+                <Col lg={8} xs={24}>
                   <JobCard status="paid" />
                 </Col>
-                <Col xs={8}>
+                <Col lg={8} xs={24}>
                   <JobCard status="paid" />
                 </Col>
               </Row>

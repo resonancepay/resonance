@@ -166,7 +166,7 @@ type LoginErrors = Partial<Record<keyof LoginPayload, string>>;
 
 export const useLoginScreen = () => {
   const router = useRouter();
-  const { setAuth, user } = useAuthStore();
+  const { setAuth } = useAuthStore();
 
   const [formData, setFormData] = useState<LoginPayload>({
     email: "",
@@ -176,16 +176,23 @@ export const useLoginScreen = () => {
   const [errors, setErrors] = useState<LoginErrors>({});
   const { mutate: getProfile } = useGetProfile(
     (data: Profile) => {
+      const currentUser = useAuthStore.getState().user;
+
+      if (!currentUser?.access_token) {
+        router.replace("/login");
+        return;
+      }
+
       setAuth({
-        access_token: user?.access_token!,
-        must_change_password: user?.must_change_password!,
-        token_type: user?.token_type!,
+        access_token: currentUser.access_token,
+        must_change_password: currentUser.must_change_password,
+        token_type: currentUser.token_type,
         userInfo: data,
       });
       if (!data.application_approved) {
         router.replace("/onboarding");
-      }else{
-        router.replace("/da")
+      } else {
+        router.replace("/dashboard");
       }
     },
     () => {},
