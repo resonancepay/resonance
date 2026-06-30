@@ -16,11 +16,5 @@
     "turbo": "latest",
     "typescript": "^5"
   },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "sharp",
-      "unrs-resolver"
-    ]
-  },
-  "packageManager": "pnpm@9.0.0"
+  "packageManager": "pnpm@10.24.0"
 }
