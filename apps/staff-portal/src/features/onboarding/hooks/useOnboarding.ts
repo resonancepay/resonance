@@ -35,6 +35,7 @@ export const useOnboardingScreen = () => {
   const [referenceCode, setReferenceCode] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
 
+
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: 0, behavior: "smooth" });
   }, [activeStep]);

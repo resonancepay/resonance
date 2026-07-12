@@ -5,11 +5,13 @@ import { Col, Row } from "antd";
 import { useState } from "react";
 import { JobCard } from "../components/job-card";
 import { JobHistoryPill } from "../components/job-history-pill";
+import { useGetJobs } from "../hooks/jobs.hook";
 
 type JobTab = "all" | "history";
 
 export const JobListScreen = () => {
   const [activeTab, setActiveTab] = useState<JobTab>("all");
+  const { data: jobs } = useGetJobs();
 
   return (
     <Container>

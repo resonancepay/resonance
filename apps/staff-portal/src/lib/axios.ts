@@ -39,10 +39,10 @@ apiClient.interceptors.response.use(
     const isLoginEndpoint = error.config?.url?.includes("/login");
     console.log(error, "error from response");
     if (error.response?.status === 401 && !isLoginEndpoint) {
-      if (typeof window !== "undefined") {
-        localStorage.removeItem("auth-store");
-        window.location.href = "/login";
-      }
+      // if (typeof window !== "undefined") {
+      //   localStorage.removeItem("auth-store");
+      //   window.location.href = "/login";
+      // }
     }
 
     return Promise.reject(error);

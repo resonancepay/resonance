@@ -30,3 +30,6 @@ export type { CheckboxProps } from "./components/checkbox";
 
 export { Radio } from "./components/radio";
 export type { RadioProps } from "./components/radio";
+
+export { Modal } from "./components/modal";
+export type { ModalProps } from "./components/modal";

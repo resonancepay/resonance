@@ -1,19 +1,18 @@
 "use client";
 import { PageBack } from "@/shared/ui/page-back";
-import { Button, Container, Text } from "@resonance/ui";
+import { Container, Text } from "@resonance/ui";
 import { Col, Row } from "antd";
-import { useState } from "react";
+import { useState, type Dispatch, type SetStateAction } from "react";
 import { JobId } from "../components/job-id";
 import { JobStatus } from "../components/job-status";
 import { JobLocation } from "../components/job-location";
 import { JobUniform } from "../components/job-uniform";
 import { JobTimer } from "../components/job-timer";
-import { InfoIcon, JobIcon2, NextIcon } from "@resonance/ui/icons";
+import { InfoIcon, JobIcon2 } from "@resonance/ui/icons";
 import { JobPictureWrapper } from "../components/job-picture-wrapper";
 import { JobImageAddMore } from "../components/job-image-add-more";
 import { JobRequirement } from "../components/job-requirement";
 import { JobType } from "../types/job.types";
-import Image from "next/image";
 import { JobMapLocation } from "../components/job-map-location";
 import { JobClockAction } from "../components/job-clock-action";
 import { JobMoreInformation } from "../components/job-more-information";
@@ -21,9 +20,34 @@ import { JobConsumable } from "../components/job-consumable";
 import { JobSop } from "../components/job-sop";
 import { JobQualityScore } from "../components/job-quality-score";
 import { JobClockingInformation } from "../components/job-clocking-information";
+import { CannotClockOut } from "../components/modal/cannot-clockout";
+
+const INITIAL_SLOTS = 4;
+const MAX_SLOTS = 8;
+// TODO: replace with the real job id once this screen fetches job data instead of using mock content.
+const MOCK_JOB_ID = 5;
 
 export const JobDetailsScreen = () => {
   const [status, setStatus] = useState<JobType>("scheduled");
+  const [beforePhotos, setBeforePhotos] = useState<(File | null)[]>(
+    Array(INITIAL_SLOTS).fill(null),
+  );
+  const [afterPhotos, setAfterPhotos] = useState<(File | null)[]>(
+    Array(INITIAL_SLOTS).fill(null),
+  );
+
+  const updatePhoto = (
+    setter: Dispatch<SetStateAction<(File | null)[]>>,
+    index: number,
+    file: File | null,
+  ) => {
+    setter((prev) => prev.map((item, i) => (i === index ? file : item)));
+  };
+
+  const addSlot = (setter: Dispatch<SetStateAction<(File | null)[]>>) => {
+    setter((prev) => (prev.length >= MAX_SLOTS ? prev : [...prev, null]));
+  };
+
   return (
     <Container className="pb-4">
       <Container className="flex items-center gap-2.5 pb-5 mb-3">
@@ -37,7 +61,7 @@ export const JobDetailsScreen = () => {
           <Container className="bg-surface border-[0.5px] border-border p-3.5 rounded-xl">
             <Container className="flex items-center justify-between">
               <Text variant="h3" tone="primary">
-                Northgare Office - Floor 3
+                Northgate Office - Floor 3
               </Text>
               <Container className="flex items-center gap-2">
                 <JobId />
@@ -70,23 +94,27 @@ export const JobDetailsScreen = () => {
             <Container className="pt-2.5">
               <Container className="bg-surface p-2 rounded-xl">
                 <Row gutter={[10, 10]}>
-                  <Col xs={8}>
-                    <JobPictureWrapper status={status} />
-                  </Col>
-                  <Col xs={8}>
-                    <JobPictureWrapper status={status} />
-                  </Col>
-                  <Col xs={8}>
-                    <JobPictureWrapper status={status} />
-                  </Col>
-                  <Col xs={8}>
-                    <JobPictureWrapper status={status} />
-                  </Col>
-                  {status !== "under-review" && status !== "paid" && (
-                    <Col xs={8} className="opacity-30">
-                      <JobImageAddMore status={status} />
+                  {beforePhotos.map((file, index) => (
+                    <Col xs={8} key={index}>
+                      <JobPictureWrapper
+                        status={status}
+                        file={file}
+                        onChange={(f) => updatePhoto(setBeforePhotos, index, f)}
+                        jobId={MOCK_JOB_ID}
+                        direction={1}
+                      />
                     </Col>
-                  )}
+                  ))}
+                  {status !== "under-review" &&
+                    status !== "paid" &&
+                    beforePhotos.length < MAX_SLOTS && (
+                      <Col xs={8} className="opacity-30">
+                        <JobImageAddMore
+                          status={status}
+                          onClick={() => addSlot(setBeforePhotos)}
+                        />
+                      </Col>
+                    )}
                 </Row>
               </Container>
             </Container>
@@ -106,23 +134,27 @@ export const JobDetailsScreen = () => {
             <Container className="pt-2.5">
               <Container className="bg-surface p-2 rounded-xl">
                 <Row gutter={[10, 10]}>
-                  <Col xs={8}>
-                    <JobPictureWrapper status={status} />
-                  </Col>
-                  <Col xs={8}>
-                    <JobPictureWrapper status={status} />
-                  </Col>
-                  <Col xs={8}>
-                    <JobPictureWrapper status={status} />
-                  </Col>
-                  <Col xs={8}>
-                    <JobPictureWrapper status={status} />
-                  </Col>
-                  {status !== "under-review" && status !== "paid" && (
-                    <Col xs={8} className="opacity-30">
-                      <JobImageAddMore status={status} />
+                  {afterPhotos.map((file, index) => (
+                    <Col xs={8} key={index}>
+                      <JobPictureWrapper
+                        status={status}
+                        file={file}
+                        onChange={(f) => updatePhoto(setAfterPhotos, index, f)}
+                        jobId={MOCK_JOB_ID}
+                        direction={2}
+                      />
                     </Col>
-                  )}
+                  ))}
+                  {status !== "under-review" &&
+                    status !== "paid" &&
+                    afterPhotos.length < MAX_SLOTS && (
+                      <Col xs={8} className="opacity-30">
+                        <JobImageAddMore
+                          status={status}
+                          onClick={() => addSlot(setAfterPhotos)}
+                        />
+                      </Col>
+                    )}
                 </Row>
               </Container>
             </Container>
