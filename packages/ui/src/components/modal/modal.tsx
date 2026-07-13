@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { MouseEvent, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { Container } from "../container";
 import { ModalProps } from "./modal.types";
@@ -52,7 +52,7 @@ export function Modal({ isOpen, onClose, width = 379, children }: ModalProps) {
       ].join(" ")}
     >
       <Container
-        onClick={(e) => e.stopPropagation()}
+        onClick={(e: MouseEvent) => e.stopPropagation()}
         style={{ width }}
         className={[
           "min-h-92 p-2 bg-surface rounded-2xl overflow-auto",

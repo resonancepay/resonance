@@ -8,4 +8,6 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   leftIcon?: ReactNode;
   rightIcon?: ReactNode;
   leftSlot?: ReactNode;
+  mutedType?: boolean;
+  variant2?: boolean;
 }

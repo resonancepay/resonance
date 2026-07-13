@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { googleSansFlex } from "@resonance/ui/fonts";
+import { AntdRegistry } from "@ant-design/nextjs-registry";
 import "./globals.css";
+import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -14,7 +16,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${googleSansFlex.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col ">
+        <AntdRegistry>
+          <Providers>{children}</Providers>
+        </AntdRegistry>
+      </body>
     </html>
   );
 }

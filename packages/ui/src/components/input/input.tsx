@@ -16,6 +16,8 @@ export function Input({
   leftSlot,
   disabled,
   type,
+  mutedType,
+  variant2,
   ...props
 }: InputProps) {
   const isPassword = type === "password";
@@ -32,10 +34,10 @@ export function Input({
         disabled
           ? "text-tertiary cursor-not-allowed pointer-events-none"
           : error
-          ? "text-danger-text-icons"
-          : "text-primary",
+            ? "text-danger-text-icons"
+            : "text-primary",
         leftIcon ? "pl-10" : "",
-        (isPassword || rightIcon) ? "pr-10" : "",
+        isPassword || rightIcon ? "pr-10" : "",
         props.className,
       ]
         .filter(Boolean)
@@ -47,9 +49,13 @@ export function Input({
     <Container className="flex flex-col gap-1">
       {label && (
         <Container as="label" className="flex items-center gap-0.5 mb-1">
-          <Text variant="bodySmall" className="text-primary">{label}</Text>
+          <Text variant="bodySmall" className="text-primary">
+            {label}
+          </Text>
           {required && (
-            <Text variant="bodySmall" className="text-danger-text-icons">*</Text>
+            <Text variant="bodySmall" className="text-danger-text-icons">
+              *
+            </Text>
           )}
         </Container>
       )}
@@ -60,8 +66,8 @@ export function Input({
           disabled
             ? "bg-muted border-transparent"
             : error
-            ? "bg-surface border-danger-border focus-within:border-danger-border"
-            : "bg-surface border-transparent focus-within:border-brand-border",
+              ? "bg-surface border-danger-border focus-within:border-danger-border"
+              : `${variant2 ? "bg-muted" : "bg-surface "} border-transparent focus-within:border-brand-border`,
         ].join(" ")}
       >
         {leftSlot && (
@@ -100,16 +106,18 @@ export function Input({
             >
               {showPassword ? <EyeOffIcon /> : <EyeOnIcon />}
             </Container>
-          ) : rightIcon && (
-            <Container
-              as="span"
-              className={[
-                "absolute right-3 size-5 shrink-0 flex items-center justify-center",
-                error ? "text-danger-text-icons" : "text-secondary",
-              ].join(" ")}
-            >
-              {rightIcon}
-            </Container>
+          ) : (
+            rightIcon && (
+              <Container
+                as="span"
+                className={[
+                  "absolute right-3 size-5 shrink-0 flex items-center justify-center",
+                  error ? "text-danger-text-icons" : "text-secondary",
+                ].join(" ")}
+              >
+                {rightIcon}
+              </Container>
+            )
           )}
         </Container>
       </Container>

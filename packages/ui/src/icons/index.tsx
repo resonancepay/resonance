@@ -1110,6 +1110,7 @@ export function ClockIcon({ size = 12, className, ...props }: IconProps) {
     </svg>
   );
 }
+
 export function MobilePhoneeIcon({
   size = 12,
   className,
@@ -1132,3 +1133,5 @@ export function MobilePhoneeIcon({
     </svg>
   );
 }
+
+
