@@ -1,10 +1,14 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { ChevronDownIcon } from "../../icons";
 import { Container } from "../container";
 import { Text } from "../text";
 import { SelectProps } from "./select.types";
+
+const MENU_MAX_HEIGHT = 208; // matches max-h-52
+const MENU_GAP = 4;
 
 export function Select({
   options,
@@ -17,21 +21,59 @@ export function Select({
   error,
   disabled,
   leftIcon,
+  variant2,
 }: SelectProps) {
   const [open, setOpen] = useState(false);
+  const [menuPosition, setMenuPosition] = useState<{
+    left: number;
+    width: number;
+    top?: number;
+    bottom?: number;
+  } | null>(null);
   const ref = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   const selected = options.find((o) => o.value === value);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
+      const target = e.target as Node;
+      const insideTrigger = ref.current?.contains(target);
+      const insideMenu = menuRef.current?.contains(target);
+      if (!insideTrigger && !insideMenu) {
         setOpen(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    if (!open || !triggerRef.current) return;
+
+    function updatePosition() {
+      const rect = triggerRef.current!.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const openUpward = spaceBelow < MENU_MAX_HEIGHT + MENU_GAP && rect.top > spaceBelow;
+
+      setMenuPosition({
+        left: rect.left,
+        width: rect.width,
+        ...(openUpward
+          ? { bottom: window.innerHeight - rect.top + MENU_GAP }
+          : { top: rect.bottom + MENU_GAP }),
+      });
+    }
+
+    updatePosition();
+    window.addEventListener("scroll", updatePosition, true);
+    window.addEventListener("resize", updatePosition);
+    return () => {
+      window.removeEventListener("scroll", updatePosition, true);
+      window.removeEventListener("resize", updatePosition);
+    };
+  }, [open]);
 
   function handleSelect(optionValue: string) {
     onChange?.(optionValue);
@@ -52,6 +94,7 @@ export function Select({
       <Container className="relative" ref={ref}>
         <Container
           as="button"
+          ref={triggerRef}
           type="button"
           disabled={disabled}
           onClick={() => setOpen((prev) => !prev)}
@@ -68,7 +111,7 @@ export function Select({
               ? "bg-muted text-tertiary"
               : error
               ? "bg-surface text-danger-text-icons"
-              : "bg-surface text-primary",
+              : `${variant2 ? "bg-muted" : "bg-surface"} text-primary`,
           ].filter(Boolean).join(" ")}
         >
           {leftIcon && (
@@ -97,26 +140,37 @@ export function Select({
           />
         </Container>
 
-        {open && (
-          <Container className="absolute top-full left-0 right-0 mt-1 z-50 rounded-2xl bg-surface shadow-300 border border-border overflow-hidden">
-            <Container className="overflow-y-auto max-h-52">
-              {options.map((option) => (
-                <Container
-                  as="button"
-                  type="button"
-                  key={option.value}
-                  onClick={() => handleSelect(option.value)}
-                  className={[
-                    "w-full flex items-center px-4 py-2.5 text-left text-base sm:text-xs font-sans transition-colors hover:bg-muted",
-                    value === option.value ? "bg-brand-bg-light text-brand-text-icons" : "text-primary",
-                  ].join(" ")}
-                >
-                  {option.label}
-                </Container>
-              ))}
-            </Container>
-          </Container>
-        )}
+        {open && menuPosition && typeof document !== "undefined" &&
+          createPortal(
+            <Container
+              ref={menuRef}
+              className="fixed z-[9999] rounded-2xl bg-surface shadow-300 border border-border overflow-hidden"
+              style={{
+                left: menuPosition.left,
+                width: menuPosition.width,
+                top: menuPosition.top,
+                bottom: menuPosition.bottom,
+              }}
+            >
+              <Container className="overflow-y-auto max-h-52">
+                {options.map((option) => (
+                  <Container
+                    as="button"
+                    type="button"
+                    key={option.value}
+                    onClick={() => handleSelect(option.value)}
+                    className={[
+                      "w-full flex items-center px-4 py-2.5 text-left text-base sm:text-xs font-sans transition-colors hover:bg-muted",
+                      value === option.value ? "bg-brand-bg-light text-brand-text-icons" : "text-primary",
+                    ].join(" ")}
+                  >
+                    {option.label}
+                  </Container>
+                ))}
+              </Container>
+            </Container>,
+            document.body,
+          )}
       </Container>
 
       {error && (

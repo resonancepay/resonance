@@ -1,8 +1,14 @@
+"use client";
+
 import { Button, Container, Input, Text } from "@resonance/ui";
 import { DownloadIcon, FilterIcon, SearchIcon } from "@resonance/ui/icons";
-import React from "react";
+import { Popover } from "antd";
+import { useState } from "react";
+import { FilterPopoverContent } from "./filter-popover-content";
 
 export const TableFilter = () => {
+  const [filterOpen, setFilterOpen] = useState(false);
+
   return (
     <Container className="flex items-center justify-between mb-4">
       <Container className="gap-1 flex items-center">
@@ -21,12 +27,31 @@ export const TableFilter = () => {
           variant2
           leftIcon={<SearchIcon className="text-primary" size={16} />}
         />
-        <Button
-          leftIcon={<FilterIcon className="text-primary" size={16} />}
-          variant="neutral"
+        <Popover
+          trigger="click"
+          open={filterOpen}
+          onOpenChange={setFilterOpen}
+          placement="bottomRight"
+          arrow={false}
+          content={
+            <FilterPopoverContent
+              onCancel={() => setFilterOpen(false)}
+              onSave={() => setFilterOpen(false)}
+            />
+          }
+          classNames={{
+            root: "!p-0",
+            container:
+              "!p-0 !rounded-2xl !shadow-lg !bg-surface border border-border",
+          }}
         >
-          Filter
-        </Button>
+          <Button
+            leftIcon={<FilterIcon className="text-primary" size={16} />}
+            variant="neutral"
+          >
+            Filter
+          </Button>
+        </Popover>
         <Button
           leftIcon={<DownloadIcon className="text-inverted" size={16} />}
           variant="secondary"

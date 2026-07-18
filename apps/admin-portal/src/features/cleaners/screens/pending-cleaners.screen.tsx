@@ -11,9 +11,11 @@ export const PendingCleanersScreen = () => {
   ]);
 
   return (
-    <Container>
+    <Container className="h-full flex flex-col">
       <TableFilter />
-      <PendingCleanersTable />
+      <Container className="flex-1 min-h-0">
+        <PendingCleanersTable />
+      </Container>
     </Container>
   );
 };

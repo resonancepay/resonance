@@ -16,4 +16,5 @@ export interface SelectProps {
   error?: string;
   disabled?: boolean;
   leftIcon?: ReactNode;
+  variant2?: boolean;
 }
