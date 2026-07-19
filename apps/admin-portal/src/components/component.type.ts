@@ -3,6 +3,7 @@ import { ComponentType } from "react";
 interface InnerSubItem {
   label: string;
   action: () => void;
+  href?: string;
 }
 
 export interface NavIconProps {

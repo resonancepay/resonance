@@ -1309,7 +1309,11 @@ export function DownloadIcon({ size = 12, className, ...props }: IconProps) {
   );
 }
 
-export function MoreVerticalIcon({ size = 20, className, ...props }: IconProps) {
+export function MoreVerticalIcon({
+  size = 20,
+  className,
+  ...props
+}: IconProps) {
   return (
     <svg
       width={size}
@@ -1345,5 +1349,39 @@ export function FilterIcon({ size = 12, className, ...props }: IconProps) {
     </svg>
   );
 }
-
-
+export function MinusIcon({ size = 12, className, ...props }: IconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      <path
+        d="M17.5 10C17.5 10.1658 17.4342 10.3247 17.3169 10.4419C17.1997 10.5592 17.0408 10.625 16.875 10.625H3.125C2.95924 10.625 2.80027 10.5592 2.68306 10.4419C2.56585 10.3247 2.5 10.1658 2.5 10C2.5 9.83424 2.56585 9.67527 2.68306 9.55806C2.80027 9.44085 2.95924 9.375 3.125 9.375H16.875C17.0408 9.375 17.1997 9.44085 17.3169 9.55806C17.4342 9.67527 17.5 9.83424 17.5 10Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+export function FlagIcon({ size = 12, className, ...props }: IconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      <path
+        d="M18.125 4.37502V13.75C18.1245 13.839 18.105 13.9268 18.0678 14.0077C18.0306 14.0885 17.9766 14.1605 17.9094 14.2188C16.7156 15.2524 15.5742 15.625 14.4859 15.625C13.0086 15.625 11.6289 14.9422 10.3453 14.3086C8.27109 13.2813 6.46797 12.3914 4.375 14.0445V17.5C4.375 17.6658 4.30915 17.8247 4.19194 17.942C4.07473 18.0592 3.91576 18.125 3.75 18.125C3.58424 18.125 3.42527 18.0592 3.30806 17.942C3.19085 17.8247 3.125 17.6658 3.125 17.5V4.37502C3.1256 4.28598 3.14522 4.19809 3.18254 4.11725C3.21986 4.03641 3.27403 3.96448 3.34141 3.90627C6.15391 1.47033 8.67812 2.71799 10.9031 3.81877C13.0469 4.8797 14.9055 5.79689 17.0906 3.90627C17.1809 3.82797 17.2918 3.77722 17.4101 3.76003C17.5284 3.74283 17.6491 3.75992 17.758 3.80925C17.8669 3.85859 17.9593 3.93811 18.0243 4.03839C18.0894 4.13866 18.1243 4.25549 18.125 4.37502Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}

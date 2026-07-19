@@ -5,4 +5,5 @@ export interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElemen
   required?: boolean;
   hint?: string;
   error?: string;
+  variant2?: boolean;
 }

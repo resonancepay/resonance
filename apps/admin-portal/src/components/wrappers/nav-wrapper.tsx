@@ -4,12 +4,15 @@ import { Container, Text } from "@resonance/ui";
 import { ChevronDownIcon } from "@resonance/ui/icons";
 import { NavWrapperType } from "../component.type";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 
 export const NavWrapper = ({ item }: { item: NavWrapperType }) => {
   const Icon = item.icon;
-  const [expanded, setExpanded] = useState(false);
+  const pathname = usePathname();
   const hasSubItems = item.subItem.length > 0;
+  const hasActiveSubItem = item.subItem.some((sub) => sub.href === pathname);
+  const [expanded, setExpanded] = useState(hasActiveSubItem);
 
   return (
     <Container className="mb-2">
@@ -48,20 +51,27 @@ export const NavWrapper = ({ item }: { item: NavWrapperType }) => {
             className="overflow-hidden"
           >
             <Container className="mt-2 flex flex-col gap-3 pl-9">
-              {item.subItem.map((sub, index) => (
-                <Container
-                  key={index}
-                  as="button"
-                  type="button"
-                  onClick={sub.action}
-                  className="flex items-center gap-2 text-left cursor-pointer"
-                >
-                  <Container className="size-1.5 rounded-full bg-primary shrink-0" />
-                  <Text variant="button" tone="primary">
-                    {sub.label}
-                  </Text>
-                </Container>
-              ))}
+              {item.subItem.map((sub, index) => {
+                const isActive = sub.href === pathname;
+
+                return (
+                  <Container
+                    key={index}
+                    as="button"
+                    type="button"
+                    onClick={sub.action}
+                    className="flex items-center gap-2 text-left cursor-pointer"
+                  >
+                    <Container className="size-1.5 rounded-full bg-primary shrink-0" />
+                    <Text
+                      variant="button"
+                      tone={isActive ? "primary" : "secondary"}
+                    >
+                      {sub.label}
+                    </Text>
+                  </Container>
+                );
+              })}
             </Container>
           </motion.div>
         )}

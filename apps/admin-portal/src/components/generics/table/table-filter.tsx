@@ -3,21 +3,33 @@
 import { Button, Container, Input, Text } from "@resonance/ui";
 import { DownloadIcon, FilterIcon, SearchIcon } from "@resonance/ui/icons";
 import { Popover } from "antd";
-import { useState } from "react";
-import { FilterPopoverContent } from "./filter-popover-content";
+import { ReactNode, useState } from "react";
 
-export const TableFilter = () => {
+interface TableFilterProps {
+  title: string;
+  count: number;
+  renderFilterContent: (props: {
+    onCancel: () => void;
+    onSave: () => void;
+  }) => ReactNode;
+}
+
+export const TableFilter = ({
+  title,
+  count,
+  renderFilterContent,
+}: TableFilterProps) => {
   const [filterOpen, setFilterOpen] = useState(false);
 
   return (
     <Container className="flex items-center justify-between mb-4">
       <Container className="gap-1 flex items-center">
         <Text variant="h5" tone="primary">
-          All pending cleaners
+          {title}
         </Text>
         <Container className="bg-moss-green-bg-light w-6  h-6 flex items-center justify-center rounded-lg">
           <Text variant="bodyXSmall" className="text-moss-green-text-icons">
-            12
+            {count}
           </Text>
         </Container>
       </Container>
@@ -33,12 +45,10 @@ export const TableFilter = () => {
           onOpenChange={setFilterOpen}
           placement="bottomRight"
           arrow={false}
-          content={
-            <FilterPopoverContent
-              onCancel={() => setFilterOpen(false)}
-              onSave={() => setFilterOpen(false)}
-            />
-          }
+          content={renderFilterContent({
+            onCancel: () => setFilterOpen(false),
+            onSave: () => setFilterOpen(false),
+          })}
           classNames={{
             root: "!p-0",
             container:

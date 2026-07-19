@@ -46,7 +46,7 @@ export function Modal({ isOpen, onClose, width = 379, children }: ModalProps) {
     <Container
       onClick={onClose}
       className={[
-        "fixed inset-0 z-50 flex items-center justify-center bg-black/50",
+        "fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm",
         "transition-opacity duration-200 ease-out",
         visible ? "opacity-100" : "opacity-0",
       ].join(" ")}
@@ -55,7 +55,7 @@ export function Modal({ isOpen, onClose, width = 379, children }: ModalProps) {
         onClick={(e: MouseEvent) => e.stopPropagation()}
         style={{ width }}
         className={[
-          "min-h-92 p-2 bg-surface rounded-2xl overflow-auto",
+          "p-2 bg-surface rounded-2xl overflow-auto",
           "transition-all duration-200 ease-out",
           visible ? "opacity-100 scale-100" : "opacity-0 scale-95",
         ].join(" ")}

@@ -15,8 +15,12 @@ import {
   ThemeIcon2,
 } from "@resonance/ui/icons";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
-const navItems: NavWrapperType[] = [
+export const SideNav = () => {
+  const router = useRouter();
+
+  const navItems: NavWrapperType[] = [
   {
     label: "Dashboard",
     clickAction: () => {},
@@ -33,8 +37,16 @@ const navItems: NavWrapperType[] = [
     label: "Cleaner Management",
     clickAction: () => {},
     subItem: [
-      { label: "Pending Cleaners", action: () => {} },
-      { label: "Approved Cleaners", action: () => {} },
+      {
+        label: "Pending Cleaners",
+        href: "/cleaners/pending-cleaners",
+        action: () => router.push("/cleaners/pending-cleaners"),
+      },
+      {
+        label: "Approved Cleaners",
+        href: "/cleaners/approved-cleaners",
+        action: () => router.push("/cleaners/approved-cleaners"),
+      },
     ],
     icon: CleanerIcon,
   },
@@ -62,22 +74,21 @@ const navItems: NavWrapperType[] = [
   },
 ];
 
-const navItem2: NavWrapperType[] = [
-  {
-    label: "Settings",
-    clickAction: () => {},
-    subItem: [],
-    icon: SettingsIcon,
-  },
-  {
-    label: "Theme",
-    clickAction: () => {},
-    subItem: [],
-    icon: ThemeIcon2,
-  },
-];
+  const navItem2: NavWrapperType[] = [
+    {
+      label: "Settings",
+      clickAction: () => {},
+      subItem: [],
+      icon: SettingsIcon,
+    },
+    {
+      label: "Theme",
+      clickAction: () => {},
+      subItem: [],
+      icon: ThemeIcon2,
+    },
+  ];
 
-export const SideNav = () => {
   return (
     <Container className="max-h-screen h-screen w-full flex flex-col justify-between bg-background py-4 px-6">
       <Container>

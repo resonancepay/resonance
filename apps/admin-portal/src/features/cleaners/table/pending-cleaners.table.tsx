@@ -11,6 +11,9 @@ import {
 } from "@resonance/ui/icons";
 import { ColumnDef } from "@tanstack/react-table";
 import { Dropdown, MenuProps } from "antd";
+import Link from "next/link";
+import { useState } from "react";
+import { RejectCleanerModal } from "../components/modal/reject-cleaner-modal";
 
 interface PendingCleaner {
   referenceNo: string;
@@ -313,7 +316,10 @@ const mockData: PendingCleaner[] = [
   },
 ];
 
-const columns: ColumnDef<PendingCleaner>[] = [
+export const PendingCleanersTable = () => {
+  const [rejectModalOpen, setRejectModalOpen] = useState(false);
+
+  const columns: ColumnDef<PendingCleaner>[] = [
   {
     accessorKey: "referenceNo",
     header: "Reference No",
@@ -375,12 +381,14 @@ const columns: ColumnDef<PendingCleaner>[] = [
         {
           key: "view",
           label: (
-            <Container className="flex items-center justify-between gap-8">
-              <Text variant="bodyXSmall" tone="primary">
-                View
-              </Text>
-              <EyeOnIcon size={20} className="text-secondary" />
-            </Container>
+            <Link href={"/cleaners/pending-cleaners/id"}>
+              <Container className="flex items-center justify-between gap-8">
+                <Text variant="bodyXSmall" tone="primary">
+                  View
+                </Text>
+                <EyeOnIcon size={20} className="text-secondary" />
+              </Container>
+            </Link>
           ),
         },
         {
@@ -400,7 +408,10 @@ const columns: ColumnDef<PendingCleaner>[] = [
         {
           key: "reject",
           label: (
-            <Container className="flex items-center justify-between gap-8">
+            <Container
+              className="flex items-center justify-between gap-8"
+              onClick={() => setRejectModalOpen(true)}
+            >
               <Text variant="bodyXSmall" tone="primary">
                 Reject
               </Text>
@@ -431,8 +442,16 @@ const columns: ColumnDef<PendingCleaner>[] = [
       );
     },
   },
-];
+  ];
 
-export const PendingCleanersTable = () => {
-  return <DataTable columns={columns} data={mockData} />;
+  return (
+    <>
+      <DataTable columns={columns} data={mockData} />
+      <RejectCleanerModal
+        isOpen={rejectModalOpen}
+        onClose={() => setRejectModalOpen(false)}
+        onReject={() => setRejectModalOpen(false)}
+      />
+    </>
+  );
 };

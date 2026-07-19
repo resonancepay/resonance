@@ -1,5 +1,6 @@
 "use client";
 
+import { FilterPopoverContent } from "@/components/generics/table/filter-popover-content";
 import { TableFilter } from "@/components/generics/table/table-filter";
 import { useSetBreadcrumb } from "@/context/use-set-breadcrumb";
 import { Container } from "@resonance/ui";
@@ -12,7 +13,13 @@ export const PendingCleanersScreen = () => {
 
   return (
     <Container className="h-full flex flex-col">
-      <TableFilter />
+      <TableFilter
+        title="All pending cleaners"
+        count={12}
+        renderFilterContent={({ onCancel, onSave }) => (
+          <FilterPopoverContent onCancel={onCancel} onSave={onSave} />
+        )}
+      />
       <Container className="flex-1 min-h-0">
         <PendingCleanersTable />
       </Container>

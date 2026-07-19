@@ -18,6 +18,11 @@ const STATUS_CONFIG = {
     bg: "bg-success-bg-bold",
     icon: SuccessIcon,
   },
+  suspended: {
+    label: "Suspended",
+    bg: "bg-danger-bg-bold",
+    icon: DangerIcon,
+  },
 } as const;
 
 export const TableStatus = ({

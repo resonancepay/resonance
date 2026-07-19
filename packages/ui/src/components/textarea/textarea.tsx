@@ -11,6 +11,7 @@ export function Textarea({
   error,
   disabled,
   className,
+  variant2,
   ...props
 }: TextareaProps) {
   return (
@@ -31,7 +32,7 @@ export function Textarea({
             ? "bg-muted border-transparent"
             : error
             ? "bg-surface border-danger-border focus-within:border-danger-border"
-            : "bg-surface border-transparent focus-within:border-brand-border",
+            : `${variant2 ? "bg-muted" : "bg-surface"} border-transparent focus-within:border-brand-border`,
         ].join(" ")}
       >
         <textarea
