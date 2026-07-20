@@ -12,12 +12,14 @@ interface TableFilterProps {
     onCancel: () => void;
     onSave: () => void;
   }) => ReactNode;
+  extraAction?: ReactNode;
 }
 
 export const TableFilter = ({
   title,
   count,
   renderFilterContent,
+  extraAction,
 }: TableFilterProps) => {
   const [filterOpen, setFilterOpen] = useState(false);
 
@@ -68,6 +70,7 @@ export const TableFilter = ({
         >
           Export
         </Button>
+        {extraAction}
       </Container>
     </Container>
   );

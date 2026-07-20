@@ -2,11 +2,12 @@ import { Container, Text } from "@resonance/ui";
 import { FlagIcon, JobIcon, ScoreIcon } from "@resonance/ui/icons";
 import { Col, Row } from "antd";
 import React from "react";
+import { CleanerPerformanceProgressBar } from "./cleaner-progress-bar";
 
 export const CleanerPerformance = () => {
   return (
     <Container>
-      <Row gutter={12}>
+      <Row gutter={12} className="mb-6">
         <Col xs={8}>
           <Container className="bg-muted p-3.5 flex items-center justify-between rounded-xl">
             <Container className="flex flex-col gap-2.5">
@@ -58,6 +59,26 @@ export const CleanerPerformance = () => {
           </Container>
         </Col>
       </Row>
+      <Container>
+        <CleanerPerformanceProgressBar
+          label="Checklist Completion"
+          value="98%"
+          percentage={98}
+          variant="success"
+        />
+        <CleanerPerformanceProgressBar
+          label="On-Time Arrival"
+          value="40%"
+          percentage={40}
+          variant="warning"
+        />
+        <CleanerPerformanceProgressBar
+          label="Client Rating"
+          value="2.0/5.0"
+          percentage={40}
+          variant="danger"
+        />
+      </Container>
     </Container>
   );
 };

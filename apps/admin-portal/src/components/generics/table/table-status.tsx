@@ -1,5 +1,12 @@
 import { Container, Text } from "@resonance/ui";
-import { DangerIcon, PendingIcon, SuccessIcon } from "@resonance/ui/icons";
+import {
+  DangerIcon,
+  InfoIcon,
+  InProgressIcon,
+  MinusIcon,
+  PendingIcon,
+  SuccessIcon,
+} from "@resonance/ui/icons";
 import React from "react";
 
 const STATUS_CONFIG = {
@@ -23,12 +30,46 @@ const STATUS_CONFIG = {
     bg: "bg-danger-bg-bold",
     icon: DangerIcon,
   },
+  scheduled: {
+    label: "Scheduled",
+    bg: "bg-indigo-bg-bold",
+    icon: InfoIcon,
+  },
+  "in-progress": {
+    label: "In Progress",
+    bg: "bg-blue-bg-bold",
+    icon: InProgressIcon,
+  },
+  review: {
+    label: "Review",
+    bg: "bg-yinmn-blue-bg-bold",
+    icon: MinusIcon,
+  },
+  approved: {
+    label: "Approved",
+    bg: "bg-success-bg-bold",
+    icon: SuccessIcon,
+  },
+  cancelled: {
+    label: "Cancelled",
+    bg: "bg-danger-bg-bold",
+    icon: DangerIcon,
+  },
 } as const;
 
 export const TableStatus = ({
   status,
 }: {
-  status: "pending" | "rejected" | "active" | "suspended" | "approved";
+  status:
+    | "pending"
+    | "rejected"
+    | "active"
+    | "suspended"
+    | "approved"
+    | "scheduled"
+    | "in-progress"
+    | "review"
+    | "cancelled";
 }) => {
   if (!(status in STATUS_CONFIG)) return null;
 

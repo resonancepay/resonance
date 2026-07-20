@@ -29,7 +29,7 @@ export const SideNav = () => {
   },
   {
     label: "Jobs",
-    clickAction: () => {},
+    clickAction: () => router.push("/jobs"),
     subItem: [],
     icon: JobIcon,
   },
