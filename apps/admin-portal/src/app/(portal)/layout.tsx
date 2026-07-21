@@ -15,7 +15,7 @@ function PortalLayout({ children }: { children: ReactNode }) {
         <Col xs={4} className="h-full">
           <SideNav />
         </Col>
-        <Col xs={20} className="!flex !flex-col h-full overflow-hidden">
+        <Col xs={20} className="flex! flex-col! h-full overflow-hidden">
           <BreadcrumbProvider>
             <TopNav />
             <Container className="flex-1 min-h-0 overflow-y-auto">

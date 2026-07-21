@@ -9,7 +9,8 @@
     "./fonts": "./src/fonts.ts",
     "./styles/tokens.css": "./src/styles/tokens.css",
     "./styles/theme.css": "./src/styles/theme.css",
-    "./icons": "./src/icons/index.tsx"
+    "./icons": "./src/icons/index.tsx",
+    "./job-status": "./src/constants/job-status.ts"
   },
   "scripts": {
     "lint": "eslint . --ext .ts,.tsx"

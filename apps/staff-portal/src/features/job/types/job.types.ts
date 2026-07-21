@@ -1,9 +1,6 @@
-export type JobType =
-  | "pending"
-  | "in-progress"
-  | "under-review"
-  | "paid"
-  | "scheduled";
+import { JobStatusValue } from "@resonance/ui/job-status";
+
+export type JobType = JobStatusValue;
 
 export interface Job {
   job_id_display: string;

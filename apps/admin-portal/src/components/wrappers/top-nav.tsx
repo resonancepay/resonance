@@ -10,19 +10,14 @@ import { AdminPortalWrapper as PortalWrapper } from "./admin-portal-wrapper";
 
 export const TopNav = () => {
   const { breadcrumbs, title } = useBreadcrumbContext();
-
-  if (breadcrumbs.length === 0 && !title) {
-    return (
-      <Container className="h-20 px-6 flex flex-col justify-center border-b border-border bg-surface" />
-    );
-  }
+  const hasBreadcrumbContent = breadcrumbs.length > 0 || !!title;
 
   return (
     <Container className="py-4 mb-6 border-b border-border bg-surface">
       <PortalWrapper>
         <Container className=" flex items-center justify-between">
           <Container className="flex flex-col gap-1.5">
-            {breadcrumbs.length > 1 && (
+            {hasBreadcrumbContent && breadcrumbs.length > 1 && (
               <Container className="flex items-center gap-1.5">
                 {breadcrumbs.map((item, index) => {
                   const isLast = index === breadcrumbs.length - 1;
@@ -49,7 +44,7 @@ export const TopNav = () => {
                 })}
               </Container>
             )}
-            {title && (
+            {hasBreadcrumbContent && title && (
               <Text variant="h3" tone="primary">
                 {title}
               </Text>

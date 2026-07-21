@@ -10,10 +10,11 @@ interface JobFilterContentProps {
 }
 
 const statusOptions = [
+  { label: "Pending", value: "pending" },
   { label: "Scheduled", value: "scheduled" },
   { label: "In Progress", value: "in-progress" },
-  { label: "Review", value: "review" },
-  { label: "Approved", value: "approved" },
+  { label: "Under Review", value: "under-review" },
+  { label: "Paid", value: "paid" },
   { label: "Cancelled", value: "cancelled" },
 ];
 

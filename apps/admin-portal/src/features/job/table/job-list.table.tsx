@@ -3,7 +3,15 @@
 import { DataTable } from "@/components/generics/data-table";
 import { TableStatus } from "@/components/generics/table/table-status";
 import { Container, Text } from "@resonance/ui";
-import { EyeOnIcon, MoreVerticalIcon, UserIcon } from "@resonance/ui/icons";
+import {
+  CheckIcon,
+  CloseIcon,
+  EditIcon,
+  EyeOnIcon,
+  MoreVerticalIcon,
+  UserIcon,
+} from "@resonance/ui/icons";
+import { JobStatusValue } from "@resonance/ui/job-status";
 import { ColumnDef } from "@tanstack/react-table";
 import { Dropdown, MenuProps } from "antd";
 import Link from "next/link";
@@ -17,7 +25,7 @@ interface Job {
   jobType: string;
   date: string;
   time: string;
-  status: "scheduled" | "in-progress" | "review" | "approved" | "cancelled";
+  status: JobStatusValue;
 }
 
 const mockData: Job[] = [
@@ -39,7 +47,7 @@ const mockData: Job[] = [
     jobType: "Home",
     date: "11 July 2026",
     time: "15:55 PM",
-    status: "approved",
+    status: "paid",
   },
   {
     jobId: "Job-1236",
@@ -59,7 +67,7 @@ const mockData: Job[] = [
     jobType: "Public",
     date: "11 July 2026",
     time: "15:55 PM",
-    status: "approved",
+    status: "paid",
   },
   {
     jobId: "Job-1238",
@@ -79,7 +87,7 @@ const mockData: Job[] = [
     jobType: "Home",
     date: "11 July 2026",
     time: "15:55 PM",
-    status: "review",
+    status: "under-review",
   },
   {
     jobId: "Job-1240",
@@ -89,7 +97,7 @@ const mockData: Job[] = [
     jobType: "Hospital",
     date: "11 July 2026",
     time: "15:55 PM",
-    status: "cancelled",
+    status: "pending",
   },
   {
     jobId: "Job-1241",
@@ -109,7 +117,7 @@ const mockData: Job[] = [
     jobType: "Office",
     date: "11 July 2026",
     time: "15:55 PM",
-    status: "review",
+    status: "under-review",
   },
   {
     jobId: "Job-1243",
@@ -139,7 +147,7 @@ const mockData: Job[] = [
     jobType: "Office",
     date: "11 July 2026",
     time: "15:55 PM",
-    status: "scheduled",
+    status: "cancelled",
   },
 ];
 
@@ -208,7 +216,11 @@ const columns: ColumnDef<Job>[] = [
   {
     id: "actions",
     header: "",
-    cell: () => {
+    cell: ({ row }) => {
+      const status = row.original.status;
+      const isEditable = status === "pending" || status === "scheduled";
+      const isUnderReview = status === "under-review";
+
       const items: MenuProps["items"] = [
         {
           key: "view",
@@ -223,6 +235,50 @@ const columns: ColumnDef<Job>[] = [
             </Link>
           ),
         },
+        ...(isEditable
+          ? [
+              {
+                key: "edit",
+                label: (
+                  <Container className="flex items-center justify-between gap-8">
+                    <Text variant="bodyXSmall" tone="primary">
+                      Edit
+                    </Text>
+                    <EditIcon size={20} className="text-secondary" />
+                  </Container>
+                ),
+              },
+              {
+                key: "cancel",
+                label: (
+                  <Container className="flex items-center justify-between gap-8">
+                    <Text variant="bodyXSmall" tone="primary">
+                      Cancel
+                    </Text>
+                    <CloseIcon size={20} className="text-danger-text-icons" />
+                  </Container>
+                ),
+              },
+            ]
+          : []),
+        ...(isUnderReview
+          ? [
+              {
+                key: "approve",
+                label: (
+                  <Container className="flex items-center justify-between gap-8">
+                    <Text variant="bodyXSmall" tone="primary">
+                      Approve
+                    </Text>
+                    <CheckIcon
+                      size={20}
+                      className="text-brand-secondary-text-icons"
+                    />
+                  </Container>
+                ),
+              },
+            ]
+          : []),
       ];
 
       return (

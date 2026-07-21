@@ -1367,6 +1367,25 @@ export function MinusIcon({ size = 12, className, ...props }: IconProps) {
     </svg>
   );
 }
+export function EditIcon({ size = 12, className, ...props }: IconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      <path
+        d="M13.488 2.513a1.75 1.75 0 0 1 2.474 2.474l-.943.943-2.474-2.474.943-.943ZM11.196 4.805 3.293 12.707a1 1 0 0 0-.263.464l-.803 3.212a.5.5 0 0 0 .606.606l3.212-.803a1 1 0 0 0 .464-.263l7.902-7.902-2.475-2.475Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
 export function FlagIcon({ size = 12, className, ...props }: IconProps) {
   return (
     <svg
