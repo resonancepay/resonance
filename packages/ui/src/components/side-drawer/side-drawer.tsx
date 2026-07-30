@@ -3,9 +3,9 @@
 import { MouseEvent, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { Container } from "../container";
-import { ModalProps } from "./modal.types";
+import { SideDrawerProps } from "./side-drawer.types";
 
-export function Modal({ isOpen, onClose, width = 379, children }: ModalProps) {
+export function SideDrawer({ isOpen, onClose, width = 460, children }: SideDrawerProps) {
   const [mounted, setMounted] = useState(false);
   const [visible, setVisible] = useState(false);
 
@@ -13,7 +13,7 @@ export function Modal({ isOpen, onClose, width = 379, children }: ModalProps) {
     if (isOpen) {
       setMounted(true);
       // A single rAF often fires before the browser paints the initial
-      // (invisible) state, so the transition never gets a starting frame
+      // (off-screen) state, so the transition never gets a starting frame
       // to animate from. Waiting a second rAF guarantees that paint happened.
       let raf2 = 0;
       const raf1 = requestAnimationFrame(() => {
@@ -55,7 +55,7 @@ export function Modal({ isOpen, onClose, width = 379, children }: ModalProps) {
     <Container
       onClick={onClose}
       className={[
-        "fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm",
+        "fixed inset-0 z-50 bg-black/50 backdrop-blur-sm",
         "transition-opacity duration-200 ease-out",
         visible ? "opacity-100" : "opacity-0",
       ].join(" ")}
@@ -64,9 +64,9 @@ export function Modal({ isOpen, onClose, width = 379, children }: ModalProps) {
         onClick={(e: MouseEvent) => e.stopPropagation()}
         style={{ width }}
         className={[
-          "p-2 bg-surface rounded-2xl overflow-auto",
-          "transition-all duration-200 ease-out",
-          visible ? "opacity-100 scale-100" : "opacity-0 scale-95",
+          "fixed inset-y-4 right-4 bg-surface rounded-2xl shadow-lg overflow-hidden flex flex-col",
+          "transition-transform duration-200 ease-out",
+          visible ? "translate-x-0" : "translate-x-[calc(100%+1rem)]",
         ].join(" ")}
       >
         {children}

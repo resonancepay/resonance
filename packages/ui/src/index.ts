@@ -33,3 +33,6 @@ export type { RadioProps } from "./components/radio";
 
 export { Modal } from "./components/modal";
 export type { ModalProps } from "./components/modal";
+
+export { SideDrawer } from "./components/side-drawer";
+export type { SideDrawerProps } from "./components/side-drawer";

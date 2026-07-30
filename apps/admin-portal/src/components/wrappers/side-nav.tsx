@@ -62,7 +62,7 @@ export const SideNav = () => {
   },
   {
     label: "Cleaning Sites",
-    clickAction: () => {},
+    clickAction: () => router.push("/cleaning-sites"),
     subItem: [],
     icon: CleaningSiteIcon,
   },
