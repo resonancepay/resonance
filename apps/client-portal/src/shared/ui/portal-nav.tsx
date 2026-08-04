@@ -7,6 +7,8 @@ import {
   DarkModeIcon,
   DashboardIcon,
   DashboardIcon2,
+  JobIcon,
+  JobIcon2,
   LightModeIcon,
   NotificationIcon,
   UserIcon,
@@ -24,6 +26,13 @@ export const PortalNav = () => {
       icon: <DashboardIcon size={20} className="text-inverted" />,
       inActiveIcon: <DashboardIcon2 size={20} className="text-primary" />,
       slug: "dashboard",
+    },
+    {
+      title: "Jobs",
+      link: "/jobs",
+      icon: <JobIcon size={20} className="text-inverted" />,
+      inActiveIcon: <JobIcon2 size={20} className="text-primary" />,
+      slug: "job",
     },
   ];
 
