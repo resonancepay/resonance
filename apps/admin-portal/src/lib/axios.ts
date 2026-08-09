@@ -1,4 +1,6 @@
 import axios from "axios";
+import { useAuthStore } from "@/shared/store/auth.store";
+import { ensureFreshToken } from "@/features/auth/services/token-refresh.service";
 
 const apiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -8,22 +10,18 @@ const apiClient = axios.create({
 });
 
 // ─── Request Interceptor ────────────────────────────────────────────
-// Runs before every outgoing request.
-// Once the auth store is set up, replace the localStorage call
-// with however the token is stored (e.g. zustand store, cookies, etc.)
+// Runs before every outgoing request. ensureFreshToken checks the current
+// token's expiry and refreshes it inline if it's close to expiring, then
+// we attach whatever token comes back (or none, if the session is dead).
 apiClient.interceptors.request.use(
-  (config) => {
-    if (typeof window !== "undefined") {
-      try {
-        const raw = localStorage.getItem("auth-store");
-        const token = raw ? JSON.parse(raw)?.state?.user?.access_token : null;
-        if (token) {
-          config.headers.Authorization = `Bearer ${token}`;
-        }
-      } catch {
-        // corrupted storage — skip attaching token
-      }
+  async (config) => {
+    if (typeof window === "undefined") return config;
+
+    const token = await ensureFreshToken();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
+
     return config;
   },
   (error) => Promise.reject(error),
@@ -31,18 +29,13 @@ apiClient.interceptors.request.use(
 
 // ─── Response Interceptor ───────────────────────────────────────────
 // Runs on every response that comes back.
-// 401 → token expired or invalid → clear session and redirect to login
-// All other errors are re-thrown so each service can handle them.
+// 401 → session invalid → clear the store. AuthGuard reacts to that change
+// and redirects to /login, so no manual navigation is needed here.
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    const isLoginEndpoint = error.config?.url?.includes("/login");
-    console.log(error, "error from response");
-    if (error.response?.status === 401 && !isLoginEndpoint) {
-      // if (typeof window !== "undefined") {
-      //   localStorage.removeItem("auth-store");
-      //   window.location.href = "/login";
-      // }
+    if (error.response?.status === 401) {
+      useAuthStore.getState().clearAuth();
     }
 
     return Promise.reject(error);

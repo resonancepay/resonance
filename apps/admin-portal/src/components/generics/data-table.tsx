@@ -1,6 +1,7 @@
 "use client";
 
 import { Container, Text } from "@resonance/ui";
+import { FolderIcon } from "@resonance/ui/icons";
 import {
   ColumnDef,
   flexRender,
@@ -13,13 +14,15 @@ import { Pagination } from "./table/pagination";
 interface DataTableProps<TData> {
   columns: ColumnDef<TData, any>[];
   data: TData[];
-  emptyMessage?: string;
+  emptyTitle?: string;
+  emptyDescription?: string;
 }
 
 export function DataTable<TData>({
   columns,
   data,
-  emptyMessage = "No records found",
+  emptyTitle = "No records found",
+  emptyDescription,
 }: DataTableProps<TData>) {
   const table = useReactTable({
     data,
@@ -75,14 +78,24 @@ export function DataTable<TData>({
               ))
             ) : (
               <Container as="tr">
-                <Container
-                  as="td"
-                  colSpan={columns.length}
-                  className="px-4 py-3.5 text-center"
-                >
-                  <Text variant="bodySmall" tone="secondary">
-                    {emptyMessage}
-                  </Text>
+                <Container as="td" colSpan={columns.length} className="px-4 py-3.5">
+                  <Container className="flex flex-col items-center justify-center gap-3 py-12">
+                    <FolderIcon />
+                    <Container className="flex flex-col items-center gap-1">
+                      <Text variant="bodySmall" tone="primary">
+                        {emptyTitle}
+                      </Text>
+                      {emptyDescription && (
+                        <Text
+                          variant="bodyXSmall"
+                          tone="secondary"
+                          className="text-center"
+                        >
+                          {emptyDescription}
+                        </Text>
+                      )}
+                    </Container>
+                  </Container>
                 </Container>
               </Container>
             )}

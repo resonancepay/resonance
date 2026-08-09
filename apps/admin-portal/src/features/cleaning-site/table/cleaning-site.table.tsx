@@ -14,188 +14,41 @@ import {
 import { ColumnDef } from "@tanstack/react-table";
 import { Dropdown, MenuProps } from "antd";
 import Link from "next/link";
+import { Site } from "../types/site.type";
 
-interface CleaningSite {
-  siteName: string;
-  address: string;
-  clientName: string;
-  clientEmail: string;
-  jobType: string;
-  jobs: number;
-  uniforms: number;
-  dateAdded: string;
-  timeAdded: string;
-  status: "active" | "suspended";
-}
-
-const mockData: CleaningSite[] = [
+const columns: ColumnDef<Site>[] = [
   {
-    siteName: "London Office 5",
-    address: "12, London Park, London",
-    clientName: "Samuel Nwanze",
-    clientEmail: "micheal@mail.com",
-    jobType: "Office",
-    jobs: 1,
-    uniforms: 3,
-    dateAdded: "11 July 2026",
-    timeAdded: "15:55 PM",
-    status: "active",
-  },
-  {
-    siteName: "London Office 5",
-    address: "12, London Park, London",
-    clientName: "Naomi Abam",
-    clientEmail: "brooklynm@gmail.com",
-    jobType: "Home",
-    jobs: 3,
-    uniforms: 3,
-    dateAdded: "11 July 2026",
-    timeAdded: "15:55 PM",
-    status: "active",
-  },
-  {
-    siteName: "London Office 5",
-    address: "12, London Park, London",
-    clientName: "Ruth Fubara",
-    clientEmail: "sophiak@yandex.com",
-    jobType: "Home",
-    jobs: 3,
-    uniforms: 3,
-    dateAdded: "11 July 2026",
-    timeAdded: "15:55 PM",
-    status: "active",
-  },
-  {
-    siteName: "London Office 5",
-    address: "12, London Park, London",
-    clientName: "Margaret Wokoma",
-    clientEmail: "portharcourt@hotmail.com",
-    jobType: "Office",
-    jobs: 0,
-    uniforms: 3,
-    dateAdded: "11 July 2026",
-    timeAdded: "15:55 PM",
-    status: "active",
-  },
-  {
-    siteName: "London Office 5",
-    address: "12, London Park, London",
-    clientName: "Philip Olanrewaju",
-    clientEmail: "davidw@outlook.com",
-    jobType: "Office",
-    jobs: 0,
-    uniforms: 3,
-    dateAdded: "11 July 2026",
-    timeAdded: "15:55 PM",
-    status: "active",
-  },
-  {
-    siteName: "London Office 5",
-    address: "12, London Park, London",
-    clientName: "Priscilla Omisore",
-    clientEmail: "lukew@gmail.com",
-    jobType: "Warehouse",
-    jobs: 3,
-    uniforms: 3,
-    dateAdded: "11 July 2026",
-    timeAdded: "15:55 PM",
-    status: "active",
-  },
-  {
-    siteName: "London Office 5",
-    address: "12, London Park, London",
-    clientName: "Elizabeth Ogunleye",
-    clientEmail: "calabarfinest@yandex.com",
-    jobType: "Warehouse",
-    jobs: 3,
-    uniforms: 3,
-    dateAdded: "11 July 2026",
-    timeAdded: "15:55 PM",
-    status: "active",
-  },
-  {
-    siteName: "London Office 5",
-    address: "12, London Park, London",
-    clientName: "James Inatimi",
-    clientEmail: "ekitifountain@gmail.com",
-    jobType: "Offices",
-    jobs: 3,
-    uniforms: 3,
-    dateAdded: "11 July 2026",
-    timeAdded: "15:55 PM",
-    status: "active",
-  },
-  {
-    siteName: "London Office 5",
-    address: "12, London Park, London",
-    clientName: "Margaret Pepple",
-    clientEmail: "nasarawaminerals@gmail.com",
-    jobType: "Offices",
-    jobs: 3,
-    uniforms: 3,
-    dateAdded: "11 July 2026",
-    timeAdded: "15:55 PM",
-    status: "active",
-  },
-  {
-    siteName: "London Office 5",
-    address: "12, London Park, London",
-    clientName: "Hannah Anigbogu",
-    clientEmail: "yobepride@outlook.com",
-    jobType: "Offices",
-    jobs: 0,
-    uniforms: 3,
-    dateAdded: "11 July 2026",
-    timeAdded: "15:55 PM",
-    status: "active",
-  },
-  {
-    siteName: "London Office 5",
-    address: "12, London Park, London",
-    clientName: "Paul Iwalewa",
-    clientEmail: "kwaraharmony@yandex.com",
-    jobType: "Offices",
-    jobs: 0,
-    uniforms: 3,
-    dateAdded: "11 July 2026",
-    timeAdded: "15:55 PM",
-    status: "suspended",
-  },
-];
-
-const columns: ColumnDef<CleaningSite>[] = [
-  {
-    accessorKey: "siteName",
+    accessorKey: "site_name",
     header: "Cleaning Site",
     cell: ({ row }) => (
       <Container className="flex flex-col gap-0.5">
         <Text variant="bodySmall" tone="primary">
-          {row.original.siteName}
+          {row.original.site_name}
         </Text>
         <Text variant="bodyXSmall" tone="secondary">
-          {row.original.address}
+          {row.original.site_address}
         </Text>
       </Container>
     ),
   },
   {
-    accessorKey: "clientName",
+    accessorKey: "client_name",
     header: "Client",
     cell: ({ row }) => (
       <Container className="flex flex-col gap-0.5">
         <Text variant="bodySmall" tone="primary">
-          {row.original.clientName}
+          {row.original.client_name}
         </Text>
         <Text variant="bodyXSmall" tone="secondary">
-          {row.original.clientEmail}
+          {row.original.client_email}
         </Text>
       </Container>
     ),
   },
   {
-    accessorKey: "jobType",
+    accessorKey: "job_type",
     header: "Job Type",
-    cell: ({ row }) => <JobTypeTag label={row.original.jobType} />,
+    cell: ({ row }) => <JobTypeTag label={row.original.job_type} />,
   },
   {
     accessorKey: "jobs",
@@ -216,35 +69,42 @@ const columns: ColumnDef<CleaningSite>[] = [
     ),
   },
   {
-    accessorKey: "dateAdded",
+    accessorKey: "date_added",
     header: "Date Added",
-    cell: ({ row }) => (
-      <Container className="flex flex-col gap-0.5">
-        <Text variant="bodySmall" tone="primary">
-          {row.original.dateAdded}
-        </Text>
-        <Text variant="bodyXSmall" tone="secondary">
-          {row.original.timeAdded}
-        </Text>
-      </Container>
-    ),
+    cell: ({ row }) => {
+      const [date, time] = row.original.date_added.split(" . ");
+      return (
+        <Container className="flex flex-col gap-0.5">
+          <Text variant="bodySmall" tone="primary">
+            {date}
+          </Text>
+          {time && (
+            <Text variant="bodyXSmall" tone="secondary">
+              {time}
+            </Text>
+          )}
+        </Container>
+      );
+    },
   },
   {
-    accessorKey: "status",
+    accessorKey: "is_active",
     header: "Status",
-    cell: ({ row }) => <TableStatus status={row.original.status} />,
+    cell: ({ row }) => (
+      <TableStatus status={row.original.is_active ? "active" : "suspended"} />
+    ),
   },
   {
     id: "actions",
     header: "",
     cell: ({ row }) => {
-      const isActive = row.original.status === "active";
+      const isActive = row.original.is_active;
 
       const items: MenuProps["items"] = [
         {
           key: "view",
           label: (
-            <Link href={"/cleaning-sites/id"}>
+            <Link href={`/cleaning-sites/${row.original.site_id}`}>
               <Container className="flex items-center justify-between gap-8">
                 <Text variant="bodyXSmall" tone="primary">
                   View Site
@@ -284,7 +144,10 @@ const columns: ColumnDef<CleaningSite>[] = [
                   <Text variant="bodyXSmall" tone="primary">
                     Reactivate
                   </Text>
-                  <CheckIcon size={20} className="text-brand-secondary-text-icons" />
+                  <CheckIcon
+                    size={20}
+                    className="text-brand-secondary-text-icons"
+                  />
                 </Container>
               ),
             },
@@ -313,6 +176,20 @@ const columns: ColumnDef<CleaningSite>[] = [
   },
 ];
 
-export const CleaningSiteTable = () => {
-  return <DataTable columns={columns} data={mockData} />;
+interface CleaningSiteTableProps {
+  data: Site[];
+  isLoading?: boolean;
+}
+
+export const CleaningSiteTable = ({
+  data,
+  isLoading,
+}: CleaningSiteTableProps) => {
+  return (
+    <DataTable
+      columns={columns}
+      data={data}
+      emptyTitle={isLoading ? "Loading sites…" : "No records found"}
+    />
+  );
 };

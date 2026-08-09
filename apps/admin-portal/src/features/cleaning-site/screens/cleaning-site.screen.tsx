@@ -4,40 +4,41 @@ import { TableFilter } from "@/components/generics/table/table-filter";
 import { useSetBreadcrumb } from "@/context/use-set-breadcrumb";
 import { Button, Container } from "@resonance/ui";
 import { AddIcon } from "@resonance/ui/icons";
-import { useState } from "react";
 import { CleaningSiteFilterContent } from "../components/cleaning-site-filter-content";
 import { AddSiteDrawer } from "../components/drawer/add-site-drawer";
 import { CleaningSiteTable } from "../table/cleaning-site.table";
+import { useCleaningSiteScreen } from "../hooks/useCleaningSite";
 
 export const CleaningSiteScreen = () => {
   useSetBreadcrumb([{ label: "Cleaning Sites", href: "/cleaning-sites" }]);
-  const [addSiteOpen, setAddSiteOpen] = useState(false);
+  const { sites, isLoading, count, addSiteOpen, openAddSite, closeAddSite } =
+    useCleaningSiteScreen();
 
   return (
     <Container className="h-full flex flex-col">
       <TableFilter
         title="All cleaning sites"
-        count={12}
+        count={count}
         renderFilterContent={({ onCancel, onSave }) => (
           <CleaningSiteFilterContent onCancel={onCancel} onSave={onSave} />
         )}
         extraAction={
           <Button
             leftIcon={<AddIcon className="text-inverted" size={16} />}
-            onClick={() => setAddSiteOpen(true)}
+            onClick={openAddSite}
           >
             Add Site
           </Button>
         }
       />
       <Container className="flex-1 min-h-0">
-        <CleaningSiteTable />
+        <CleaningSiteTable data={sites} isLoading={isLoading} />
       </Container>
 
       <AddSiteDrawer
         isOpen={addSiteOpen}
-        onClose={() => setAddSiteOpen(false)}
-        onSave={() => setAddSiteOpen(false)}
+        onClose={closeAddSite}
+        onSave={closeAddSite}
       />
     </Container>
   );
