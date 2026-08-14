@@ -3,15 +3,27 @@
 import { Container, Text } from "@resonance/ui";
 import { Col, Row } from "antd";
 import { useState } from "react";
+import { Job } from "../types/job.types";
 import { JobCard } from "../components/job-card";
 import { JobHistoryPill } from "../components/job-history-pill";
-import { useGetJobs } from "../hooks/jobs.hook";
+import { useJobListScreen } from "../hooks/useJobListScreen";
 
 type JobTab = "all" | "history";
 
+const JobGrid = ({ jobs }: { jobs: Job[] }) => (
+  <Row gutter={20}>
+    {jobs.map((job) => (
+      <Col lg={8} xs={24} key={job.job_id}>
+        <JobCard job={job} />
+      </Col>
+    ))}
+  </Row>
+);
+
 export const JobListScreen = () => {
   const [activeTab, setActiveTab] = useState<JobTab>("all");
-  const { data: jobs } = useGetJobs();
+  const { isLoading, todayJobs, tomorrowJobs, laterJobs, historyJobs } =
+    useJobListScreen();
 
   return (
     <Container>
@@ -56,117 +68,75 @@ export const JobListScreen = () => {
           </Container>
         </Container>
       </Container>
-      {activeTab === "all" && (
+
+      {isLoading && (
+        <Text variant="bodySmall" tone="secondary" className="mt-7">
+          Loading jobs…
+        </Text>
+      )}
+
+      {!isLoading && activeTab === "all" && (
         <>
-          <Container className="mt-7 bg-brand-secondary-bg-light mb-2.5 px-3 py-2 rounded-lg">
-            <Text variant="h5" className="text-primary">
-              Today&apos;s Job
-            </Text>
-          </Container>
-          <Container>
-            <Row gutter={20}>
-              <Col lg={8} xs={24}>
-                <JobCard status="pending" />
-              </Col>
-              <Col lg={8} xs={24}>
-                <JobCard status="in-progress" />
-              </Col>
-              <Col lg={8} xs={24}>
-                <JobCard status="under-review" />
-              </Col>
-              <Col lg={8} xs={24}>
-                <JobCard status="paid" />
-              </Col>
-              <Col lg={8} xs={24}>
-                <JobCard status="paid" />
-              </Col>
-              <Col lg={8} xs={24}>
-                <JobCard status="paid" />
-              </Col>
-            </Row>
-          </Container>
-          <Container className="mt-6">
-            <Container className="bg-brand-bg-light px-3 py-2 mb-2.5 rounded-lg">
-              <Text tone="primary" variant="h5">
-                Tomorrow&apos;s Job
+          {todayJobs.length === 0 &&
+            tomorrowJobs.length === 0 &&
+            laterJobs.length === 0 && (
+              <Text variant="bodySmall" tone="secondary" className="mt-7">
+                No jobs scheduled.
               </Text>
+            )}
+
+          {todayJobs.length > 0 && (
+            <>
+              <Container className="mt-7 bg-brand-secondary-bg-light mb-2.5 px-3 py-2 rounded-lg">
+                <Text variant="h5" className="text-primary">
+                  Today&apos;s Job
+                </Text>
+              </Container>
+              <JobGrid jobs={todayJobs} />
+            </>
+          )}
+
+          {tomorrowJobs.length > 0 && (
+            <Container className="mt-6">
+              <Container className="bg-brand-bg-light px-3 py-2 mb-2.5 rounded-lg">
+                <Text tone="primary" variant="h5">
+                  Tomorrow&apos;s Job
+                </Text>
+              </Container>
+              <JobGrid jobs={tomorrowJobs} />
             </Container>
-            <Container>
-              <Row gutter={20}>
-                <Col lg={8} xs={24}>
-                  <JobCard status="scheduled" />
-                </Col>
-                <Col lg={8} xs={24}>
-                  <JobCard status="scheduled" />
-                </Col>
-                <Col lg={8} xs={24}>
-                  <JobCard status="scheduled" />
-                </Col>
-                <Col lg={8} xs={24}>
-                  <JobCard status="scheduled" />
-                </Col>
-                <Col lg={8} xs={24}>
-                  <JobCard status="scheduled" />
-                </Col>
-                <Col lg={8} xs={24}>
-                  <JobCard status="scheduled" />
-                </Col>
-                <Col lg={8} xs={24}>
-                  <JobCard status="scheduled" />
-                </Col>
-              </Row>
+          )}
+
+          {laterJobs.length > 0 && (
+            <Container className="mt-6">
+              <Container className="bg-muted px-3 py-2 mb-2.5 rounded-lg">
+                <Text tone="primary" variant="h5">
+                  Upcoming Jobs
+                </Text>
+              </Container>
+              <JobGrid jobs={laterJobs} />
             </Container>
-          </Container>
+          )}
         </>
       )}
-      {activeTab === "history" && (
+
+      {!isLoading && activeTab === "history" && (
         <>
           <Container className="flex items-center gap-2">
             <JobHistoryPill label="All" />
             <JobHistoryPill label="Last 7 days" />
             <JobHistoryPill label="Last Month" />
           </Container>
-          <Container className="mt-7 bg-brand-secondary-bg-light mb-2.5 px-3 py-2 rounded-lg">
-            <Text variant="h5" className="text-primary">
-              Yesterday
+
+          {historyJobs.length === 0 ? (
+            <Text variant="bodySmall" tone="secondary" className="mt-7">
+              No past jobs.
             </Text>
-          </Container>
-          <Container>
-            <Row gutter={20}>
-              <Col lg={8} xs={24}>
-                <JobCard status="paid" />
-              </Col>
-              <Col lg={8} xs={24}>
-                <JobCard status="paid" />
-              </Col>
-              <Col lg={8} xs={24}>
-                <JobCard status="paid" />
-              </Col>
-            </Row>
-          </Container>
-          <Container className="mt-6">
-            <Container className="bg-brand-bg-light px-3 py-2 mb-2.5 rounded-lg">
-              <Text tone="primary" variant="h5">
-                June 2, 2026
-              </Text>
+          ) : (
+            <Container className="mt-7">
+              <JobGrid jobs={historyJobs} />
             </Container>
-            <Container>
-              <Row gutter={20}>
-                <Col lg={8} xs={24}>
-                  <JobCard status="paid" />
-                </Col>
-                <Col lg={8} xs={24}>
-                  <JobCard status="paid" />
-                </Col>
-                <Col lg={8} xs={24}>
-                  <JobCard status="paid" />
-                </Col>
-                <Col lg={8} xs={24}>
-                  <JobCard status="paid" />
-                </Col>
-              </Row>
-            </Container>
-          </Container>
+          )}
         </>
       )}
     </Container>

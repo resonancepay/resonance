@@ -15,14 +15,28 @@ export const VerifyEmailScreen = () => {
     otpError,
     handleVerifyEmail,
     handleResendOtp,
+    handleBack,
     isVerifying,
     isResending,
+    resendCountdown,
   } = useVerifyEmailScreen();
 
   return (
     <AuthWrapper
       authLabel="Verify your email address"
-      subAuthLabel={`Enter the 6-digit code sent to your email address ${email}`}
+      onBack={handleBack}
+      subAuthLabel={
+        <>
+          Enter the 6-digit code sent to your email address{" "}
+          <Text
+            as="span"
+            variant="bodySmall"
+            className="text-brand-secondary-text-icons"
+          >
+            {email}
+          </Text>
+        </>
+      }
     >
       <Container as="form" onSubmit={handleVerifyEmail}>
         <Container className="flex justify-center">
@@ -50,26 +64,36 @@ export const VerifyEmailScreen = () => {
             disabled={otp.length < 6 || isVerifying}
             loading={isVerifying}
           >
-            Verify Email
+            Verify Account
           </Button>
         </Container>
         <Container className="mt-6">
           <Text className="text-center text-primary" variant="bodySmall">
-            Yet to receive code?{"  "}
+            Yet to receive the code?{"  "}
             <Container as="span">
-              <Container
-                as="button"
-                type="button"
-                onClick={handleResendOtp}
-                disabled={isResending}
-              >
+              {resendCountdown > 0 ? (
                 <Text
+                  as="span"
                   variant="button"
-                  className="text-brand-tertiary-text-icons"
+                  className="text-tertiary"
                 >
-                  {isResending ? "Resending..." : "Resend code"}
+                  Resend in {resendCountdown}s
                 </Text>
-              </Container>
+              ) : (
+                <Container
+                  as="button"
+                  type="button"
+                  onClick={handleResendOtp}
+                  disabled={isResending}
+                >
+                  <Text
+                    variant="button"
+                    className="text-brand-tertiary-text-icons"
+                  >
+                    {isResending ? "Resending..." : "Resend code"}
+                  </Text>
+                </Container>
+              )}
             </Container>
           </Text>
         </Container>

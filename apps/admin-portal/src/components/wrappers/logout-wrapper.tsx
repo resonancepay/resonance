@@ -4,9 +4,11 @@ import { LogoutIcon, UserIcon } from "@resonance/ui/icons";
 export const LogoutWrapper = ({
   name,
   email,
+  onLogout,
 }: {
   name: string;
   email: string;
+  onLogout: () => void;
 }) => {
   return (
     <Container className="bg-brand-bg-light px-3 py-2.5 rounded-2xl flex justify-between items-center gap-2">
@@ -23,7 +25,9 @@ export const LogoutWrapper = ({
           </Text>
         </Container>
       </Container>
-      <LogoutIcon className="text-primary shrink-0" />
+      <Container as="button" type="button" onClick={onLogout} className="shrink-0">
+        <LogoutIcon className="text-primary" />
+      </Container>
     </Container>
   );
 };

@@ -9,19 +9,24 @@ const VARIANT_FILL_CLASS: Record<ProgressBarVariant, string> = {
   danger: "bg-danger-text-icons",
 };
 
+const variantForPercentage = (percentage: number): ProgressBarVariant => {
+  if (percentage < 40) return "danger";
+  if (percentage < 70) return "warning";
+  return "success";
+};
+
 interface CleanerPerformanceProgressBarProps {
   label: string;
   value: string;
   percentage: number;
-  variant?: ProgressBarVariant;
 }
 
 export const CleanerPerformanceProgressBar = ({
   label,
   value,
   percentage,
-  variant = "success",
 }: CleanerPerformanceProgressBarProps) => {
+  const variant = variantForPercentage(percentage);
   return (
     <Container className="border-[0.5px] border-border rounded-xl p-3.5 mb-4">
       <Container className="flex items-center justify-between mb-2">

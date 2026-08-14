@@ -1,12 +1,14 @@
 import { Button, Container, Modal, Text } from "@resonance/ui";
-import { CheckIcon, MobilePhoneeIcon, WarningIcon } from "@resonance/ui/icons";
-import Image from "next/image";
-import React, { useState } from "react";
+import { WarningIcon } from "@resonance/ui/icons";
 
-export const CannotClockOut = () => {
-  const [showModal, setShowModal] = useState(true);
+interface CannotClockOutProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export const CannotClockOut = ({ isOpen, onClose }: CannotClockOutProps) => {
   return (
-    <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
+    <Modal isOpen={isOpen} onClose={onClose}>
       <Container className="bg-warning-bg-light h-40 flex items-center justify-center">
         <WarningIcon size={112} className="text-warning-text-icons" />
       </Container>
@@ -22,7 +24,7 @@ export const CannotClockOut = () => {
         </Container>
       </Container>
       <Container className=" border-t-[0.5px] gap-2.5 border-border pt-4 px-2 pb-2 flex">
-        <Button className="w-full" size="regular" variant="neutral">
+        <Button className="w-full" size="regular" variant="neutral" onClick={onClose}>
           Cancel
         </Button>
       </Container>

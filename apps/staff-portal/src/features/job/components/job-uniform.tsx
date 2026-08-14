@@ -2,7 +2,13 @@ import { Container, Text } from "@resonance/ui";
 import Image from "next/image";
 import React from "react";
 
-export const JobUniform = () => {
+interface JobUniformProps {
+  uniform?: string;
+}
+
+export const JobUniform = ({
+  uniform = "Navy uniform, rubber gloves",
+}: JobUniformProps) => {
   return (
     <Container className={`flex items-center gap-1.5 min-w-0`}>
       <Image
@@ -16,9 +22,9 @@ export const JobUniform = () => {
         variant="bodyXSmall"
         tone="secondary"
         className="truncate"
-        title="Navy uniform, rubber gloves"
+        title={uniform}
       >
-        Navy uniform, rubber gloves
+        {uniform}
       </Text>
     </Container>
   );

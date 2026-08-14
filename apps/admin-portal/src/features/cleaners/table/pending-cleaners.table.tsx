@@ -13,332 +13,33 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Dropdown, MenuProps } from "antd";
 import Link from "next/link";
 import { useState } from "react";
+import { ApproveCleanerModal } from "../components/modal/approve-cleaner-modal";
 import { RejectCleanerModal } from "../components/modal/reject-cleaner-modal";
+import { PendingCleaner } from "../types/cleaner.type";
 
-interface PendingCleaner {
-  referenceNo: string;
-  applicantName: string;
-  applicantEmail: string;
-  dob: string;
-  dateApplied: string;
-  timeApplied: string;
-  status: "pending" | "rejected";
-}
-
-const mockData: PendingCleaner[] = [
+const getColumns = (
+  onApprove: (applicationId: number) => void,
+  onReject: (applicationId: number) => void,
+): ColumnDef<PendingCleaner>[] => [
   {
-    referenceNo: "RC-2026-04827",
-    applicantName: "Mary Abam",
-    applicantEmail: "ekitifountain@icloud.com",
-    dob: "06 June 1996",
-    dateApplied: "11 July 2026",
-    timeApplied: "15:55 PM",
-    status: "pending",
-  },
-  {
-    referenceNo: "RC-2026-04827",
-    applicantName: "Priscilla Iwalewa",
-    applicantEmail: "brooklynm@gmail.com",
-    dob: "06 June 1996",
-    dateApplied: "11 July 2026",
-    timeApplied: "15:55 PM",
-    status: "rejected",
-  },
-  {
-    referenceNo: "RC-2026-04827",
-    applicantName: "Priscilla Iwalewa",
-    applicantEmail: "brooklynm@gmail.com",
-    dob: "06 June 1996",
-    dateApplied: "11 July 2026",
-    timeApplied: "15:55 PM",
-    status: "rejected",
-  },
-  {
-    referenceNo: "RC-2026-04827",
-    applicantName: "Priscilla Iwalewa",
-    applicantEmail: "brooklynm@gmail.com",
-    dob: "06 June 1996",
-    dateApplied: "11 July 2026",
-    timeApplied: "15:55 PM",
-    status: "rejected",
-  },
-  {
-    referenceNo: "RC-2026-04827",
-    applicantName: "Priscilla Iwalewa",
-    applicantEmail: "brooklynm@gmail.com",
-    dob: "06 June 1996",
-    dateApplied: "11 July 2026",
-    timeApplied: "15:55 PM",
-    status: "rejected",
-  },
-  {
-    referenceNo: "RC-2026-04827",
-    applicantName: "Priscilla Iwalewa",
-    applicantEmail: "brooklynm@gmail.com",
-    dob: "06 June 1996",
-    dateApplied: "11 July 2026",
-    timeApplied: "15:55 PM",
-    status: "rejected",
-  },
-  {
-    referenceNo: "RC-2026-04827",
-    applicantName: "Priscilla Iwalewa",
-    applicantEmail: "brooklynm@gmail.com",
-    dob: "06 June 1996",
-    dateApplied: "11 July 2026",
-    timeApplied: "15:55 PM",
-    status: "rejected",
-  },
-  {
-    referenceNo: "RC-2026-04827",
-    applicantName: "Priscilla Iwalewa",
-    applicantEmail: "brooklynm@gmail.com",
-    dob: "06 June 1996",
-    dateApplied: "11 July 2026",
-    timeApplied: "15:55 PM",
-    status: "rejected",
-  },
-  {
-    referenceNo: "RC-2026-04827",
-    applicantName: "Priscilla Iwalewa",
-    applicantEmail: "brooklynm@gmail.com",
-    dob: "06 June 1996",
-    dateApplied: "11 July 2026",
-    timeApplied: "15:55 PM",
-    status: "rejected",
-  },
-  {
-    referenceNo: "RC-2026-04827",
-    applicantName: "Priscilla Iwalewa",
-    applicantEmail: "brooklynm@gmail.com",
-    dob: "06 June 1996",
-    dateApplied: "11 July 2026",
-    timeApplied: "15:55 PM",
-    status: "rejected",
-  },
-  {
-    referenceNo: "RC-2026-04827",
-    applicantName: "Priscilla Iwalewa",
-    applicantEmail: "brooklynm@gmail.com",
-    dob: "06 June 1996",
-    dateApplied: "11 July 2026",
-    timeApplied: "15:55 PM",
-    status: "rejected",
-  },
-  {
-    referenceNo: "RC-2026-04827",
-    applicantName: "Priscilla Iwalewa",
-    applicantEmail: "brooklynm@gmail.com",
-    dob: "06 June 1996",
-    dateApplied: "11 July 2026",
-    timeApplied: "15:55 PM",
-    status: "rejected",
-  },
-  {
-    referenceNo: "RC-2026-04827",
-    applicantName: "Priscilla Iwalewa",
-    applicantEmail: "brooklynm@gmail.com",
-    dob: "06 June 1996",
-    dateApplied: "11 July 2026",
-    timeApplied: "15:55 PM",
-    status: "rejected",
-  },
-  {
-    referenceNo: "RC-2026-04827",
-    applicantName: "Priscilla Iwalewa",
-    applicantEmail: "brooklynm@gmail.com",
-    dob: "06 June 1996",
-    dateApplied: "11 July 2026",
-    timeApplied: "15:55 PM",
-    status: "rejected",
-  },
-  {
-    referenceNo: "RC-2026-04827",
-    applicantName: "Priscilla Iwalewa",
-    applicantEmail: "brooklynm@gmail.com",
-    dob: "06 June 1996",
-    dateApplied: "11 July 2026",
-    timeApplied: "15:55 PM",
-    status: "rejected",
-  },
-  {
-    referenceNo: "RC-2026-04827",
-    applicantName: "Priscilla Iwalewa",
-    applicantEmail: "brooklynm@gmail.com",
-    dob: "06 June 1996",
-    dateApplied: "11 July 2026",
-    timeApplied: "15:55 PM",
-    status: "rejected",
-  },
-  {
-    referenceNo: "RC-2026-04827",
-    applicantName: "Priscilla Iwalewa",
-    applicantEmail: "brooklynm@gmail.com",
-    dob: "06 June 1996",
-    dateApplied: "11 July 2026",
-    timeApplied: "15:55 PM",
-    status: "rejected",
-  },
-  {
-    referenceNo: "RC-2026-04827",
-    applicantName: "Priscilla Iwalewa",
-    applicantEmail: "brooklynm@gmail.com",
-    dob: "06 June 1996",
-    dateApplied: "11 July 2026",
-    timeApplied: "15:55 PM",
-    status: "rejected",
-  },
-  {
-    referenceNo: "RC-2026-04827",
-    applicantName: "Priscilla Iwalewa",
-    applicantEmail: "brooklynm@gmail.com",
-    dob: "06 June 1996",
-    dateApplied: "11 July 2026",
-    timeApplied: "15:55 PM",
-    status: "rejected",
-  },
-  {
-    referenceNo: "RC-2026-04827",
-    applicantName: "Priscilla Iwalewa",
-    applicantEmail: "brooklynm@gmail.com",
-    dob: "06 June 1996",
-    dateApplied: "11 July 2026",
-    timeApplied: "15:55 PM",
-    status: "rejected",
-  },
-  {
-    referenceNo: "RC-2026-04827",
-    applicantName: "Priscilla Iwalewa",
-    applicantEmail: "brooklynm@gmail.com",
-    dob: "06 June 1996",
-    dateApplied: "11 July 2026",
-    timeApplied: "15:55 PM",
-    status: "rejected",
-  },
-  {
-    referenceNo: "RC-2026-04827",
-    applicantName: "Priscilla Iwalewa",
-    applicantEmail: "brooklynm@gmail.com",
-    dob: "06 June 1996",
-    dateApplied: "11 July 2026",
-    timeApplied: "15:55 PM",
-    status: "rejected",
-  },
-  {
-    referenceNo: "RC-2026-04827",
-    applicantName: "Priscilla Iwalewa",
-    applicantEmail: "brooklynm@gmail.com",
-    dob: "06 June 1996",
-    dateApplied: "11 July 2026",
-    timeApplied: "15:55 PM",
-    status: "rejected",
-  },
-  {
-    referenceNo: "RC-2026-04827",
-    applicantName: "Priscilla Iwalewa",
-    applicantEmail: "brooklynm@gmail.com",
-    dob: "06 June 1996",
-    dateApplied: "11 July 2026",
-    timeApplied: "15:55 PM",
-    status: "rejected",
-  },
-  {
-    referenceNo: "RC-2026-04827",
-    applicantName: "Priscilla Iwalewa",
-    applicantEmail: "brooklynm@gmail.com",
-    dob: "06 June 1996",
-    dateApplied: "11 July 2026",
-    timeApplied: "15:55 PM",
-    status: "rejected",
-  },
-  {
-    referenceNo: "RC-2026-04827",
-    applicantName: "Priscilla Iwalewa",
-    applicantEmail: "brooklynm@gmail.com",
-    dob: "06 June 1996",
-    dateApplied: "11 July 2026",
-    timeApplied: "15:55 PM",
-    status: "rejected",
-  },
-  {
-    referenceNo: "RC-2026-04827",
-    applicantName: "Priscilla Iwalewa",
-    applicantEmail: "brooklynm@gmail.com",
-    dob: "06 June 1996",
-    dateApplied: "11 July 2026",
-    timeApplied: "15:55 PM",
-    status: "rejected",
-  },
-  {
-    referenceNo: "RC-2026-04827",
-    applicantName: "Priscilla Iwalewa",
-    applicantEmail: "brooklynm@gmail.com",
-    dob: "06 June 1996",
-    dateApplied: "11 July 2026",
-    timeApplied: "15:55 PM",
-    status: "rejected",
-  },
-  {
-    referenceNo: "RC-2026-04827",
-    applicantName: "Priscilla Iwalewa",
-    applicantEmail: "brooklynm@gmail.com",
-    dob: "06 June 1996",
-    dateApplied: "11 July 2026",
-    timeApplied: "15:55 PM",
-    status: "rejected",
-  },
-  {
-    referenceNo: "RC-2026-04827",
-    applicantName: "Priscilla Iwalewa",
-    applicantEmail: "brooklynm@gmail.com",
-    dob: "06 June 1996",
-    dateApplied: "11 July 2026",
-    timeApplied: "15:55 PM",
-    status: "rejected",
-  },
-  {
-    referenceNo: "RC-2026-04827",
-    applicantName: "Priscilla Iwalewa",
-    applicantEmail: "brooklynm@gmail.com",
-    dob: "06 June 1996",
-    dateApplied: "11 July 2026",
-    timeApplied: "15:55 PM",
-    status: "rejected",
-  },
-  {
-    referenceNo: "RC-2026-04827",
-    applicantName: "Priscilla Iwalewa",
-    applicantEmail: "brooklynm@gmail.com",
-    dob: "06 June 1996",
-    dateApplied: "11 July 2026",
-    timeApplied: "15:55 PM",
-    status: "rejected",
-  },
-];
-
-export const PendingCleanersTable = () => {
-  const [rejectModalOpen, setRejectModalOpen] = useState(false);
-
-  const columns: ColumnDef<PendingCleaner>[] = [
-  {
-    accessorKey: "referenceNo",
+    accessorKey: "reference_no",
     header: "Reference No",
     cell: ({ row }) => (
       <Text variant="bodySmall" tone="primary">
-        {row.original.referenceNo}
+        {row.original.reference_no}
       </Text>
     ),
   },
   {
-    accessorKey: "applicantName",
+    accessorKey: "full_name",
     header: "Applicant",
     cell: ({ row }) => (
       <Container className="flex flex-col gap-0.5">
         <Text variant="bodySmall" tone="primary">
-          {row.original.applicantName}
+          {row.original.full_name}
         </Text>
         <Text variant="bodyXSmall" tone="secondary">
-          {row.original.applicantEmail}
+          {row.original.email}
         </Text>
       </Container>
     ),
@@ -353,15 +54,15 @@ export const PendingCleanersTable = () => {
     ),
   },
   {
-    accessorKey: "dateApplied",
+    accessorKey: "submitted_date",
     header: "Date Applied",
     cell: ({ row }) => (
       <Container className="flex flex-col gap-0.5">
         <Text variant="bodySmall" tone="primary">
-          {row.original.dateApplied}
+          {row.original.submitted_date}
         </Text>
         <Text variant="bodyXSmall" tone="secondary">
-          {row.original.timeApplied}
+          {row.original.submitted_time}
         </Text>
       </Container>
     ),
@@ -369,19 +70,17 @@ export const PendingCleanersTable = () => {
   {
     accessorKey: "status",
     header: "Status",
-    cell: ({ row }) => {
-      return <TableStatus status="pending" />;
-    },
+    cell: ({ row }) => <TableStatus status={row.original.status} />,
   },
   {
     id: "actions",
     header: "",
-    cell: () => {
+    cell: ({ row }) => {
       const items: MenuProps["items"] = [
         {
           key: "view",
           label: (
-            <Link href={"/cleaners/pending-cleaners/id"}>
+            <Link href={`/cleaners/pending-cleaners/${row.original.application_id}`}>
               <Container className="flex items-center justify-between gap-8">
                 <Text variant="bodyXSmall" tone="primary">
                   View
@@ -393,6 +92,7 @@ export const PendingCleanersTable = () => {
         },
         {
           key: "approve",
+          onClick: () => onApprove(row.original.application_id),
           label: (
             <Container className="flex items-center justify-between gap-8">
               <Text variant="bodyXSmall" tone="primary">
@@ -407,11 +107,9 @@ export const PendingCleanersTable = () => {
         },
         {
           key: "reject",
+          onClick: () => onReject(row.original.application_id),
           label: (
-            <Container
-              className="flex items-center justify-between gap-8"
-              onClick={() => setRejectModalOpen(true)}
-            >
+            <Container className="flex items-center justify-between gap-8">
               <Text variant="bodyXSmall" tone="primary">
                 Reject
               </Text>
@@ -442,15 +140,55 @@ export const PendingCleanersTable = () => {
       );
     },
   },
-  ];
+];
+
+interface PendingCleanersTableProps {
+  data: PendingCleaner[];
+  isLoading?: boolean;
+  onApprove: (applicationId: number) => void;
+  onReject: (applicationId: number, data: { reason: string; description: string }) => void;
+  isApproving?: boolean;
+  isRejecting?: boolean;
+}
+
+export const PendingCleanersTable = ({
+  data,
+  isLoading,
+  onApprove,
+  onReject,
+  isApproving,
+  isRejecting,
+}: PendingCleanersTableProps) => {
+  const [approvingId, setApprovingId] = useState<number | null>(null);
+  const [rejectingId, setRejectingId] = useState<number | null>(null);
 
   return (
     <>
-      <DataTable columns={columns} data={mockData} />
+      <DataTable
+        columns={getColumns(
+          (applicationId) => setApprovingId(applicationId),
+          (applicationId) => setRejectingId(applicationId),
+        )}
+        data={data}
+        emptyTitle={isLoading ? "Loading cleaners…" : "No records found"}
+      />
+      <ApproveCleanerModal
+        isOpen={approvingId !== null}
+        onClose={() => setApprovingId(null)}
+        isPending={isApproving}
+        onApprove={() => {
+          if (approvingId !== null) onApprove(approvingId);
+          setApprovingId(null);
+        }}
+      />
       <RejectCleanerModal
-        isOpen={rejectModalOpen}
-        onClose={() => setRejectModalOpen(false)}
-        onReject={() => setRejectModalOpen(false)}
+        isOpen={rejectingId !== null}
+        onClose={() => setRejectingId(null)}
+        isPending={isRejecting}
+        onReject={(data) => {
+          if (rejectingId !== null) onReject(rejectingId, data);
+          setRejectingId(null);
+        }}
       />
     </>
   );

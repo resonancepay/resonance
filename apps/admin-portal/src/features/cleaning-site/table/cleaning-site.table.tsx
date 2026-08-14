@@ -13,10 +13,15 @@ import {
 } from "@resonance/ui/icons";
 import { ColumnDef } from "@tanstack/react-table";
 import { Dropdown, MenuProps } from "antd";
-import Link from "next/link";
 import { Site } from "../types/site.type";
+import { normalizeUniforms } from "../utils/normalize-uniforms";
 
-const columns: ColumnDef<Site>[] = [
+const getColumns = (
+  onViewSite?: (site: Site) => void,
+  onEditSite?: (site: Site) => void,
+  onToggleStatus?: (site: Site) => void,
+  togglingSiteId?: number | null,
+): ColumnDef<Site>[] => [
   {
     accessorKey: "site_name",
     header: "Cleaning Site",
@@ -64,7 +69,7 @@ const columns: ColumnDef<Site>[] = [
     header: "Uniforms",
     cell: ({ row }) => (
       <Text variant="bodySmall" tone="primary">
-        {row.original.uniforms}
+        {normalizeUniforms(row.original.uniforms).length}
       </Text>
     ),
   },
@@ -103,19 +108,19 @@ const columns: ColumnDef<Site>[] = [
       const items: MenuProps["items"] = [
         {
           key: "view",
+          onClick: () => onViewSite?.(row.original),
           label: (
-            <Link href={`/cleaning-sites/${row.original.site_id}`}>
-              <Container className="flex items-center justify-between gap-8">
-                <Text variant="bodyXSmall" tone="primary">
-                  View Site
-                </Text>
-                <EyeOnIcon size={20} className="text-secondary" />
-              </Container>
-            </Link>
+            <Container className="flex items-center justify-between gap-8">
+              <Text variant="bodyXSmall" tone="primary">
+                View Site
+              </Text>
+              <EyeOnIcon size={20} className="text-secondary" />
+            </Container>
           ),
         },
         {
           key: "edit",
+          onClick: () => onEditSite?.(row.original),
           label: (
             <Container className="flex items-center justify-between gap-8">
               <Text variant="bodyXSmall" tone="primary">
@@ -128,6 +133,8 @@ const columns: ColumnDef<Site>[] = [
         isActive
           ? {
               key: "suspend",
+              disabled: togglingSiteId === row.original.site_id,
+              onClick: () => onToggleStatus?.(row.original),
               label: (
                 <Container className="flex items-center justify-between gap-8">
                   <Text variant="bodyXSmall" tone="primary">
@@ -139,6 +146,8 @@ const columns: ColumnDef<Site>[] = [
             }
           : {
               key: "reactivate",
+              disabled: togglingSiteId === row.original.site_id,
+              onClick: () => onToggleStatus?.(row.original),
               label: (
                 <Container className="flex items-center justify-between gap-8">
                   <Text variant="bodyXSmall" tone="primary">
@@ -179,15 +188,23 @@ const columns: ColumnDef<Site>[] = [
 interface CleaningSiteTableProps {
   data: Site[];
   isLoading?: boolean;
+  onViewSite?: (site: Site) => void;
+  onEditSite?: (site: Site) => void;
+  onToggleStatus?: (site: Site) => void;
+  togglingSiteId?: number | null;
 }
 
 export const CleaningSiteTable = ({
   data,
   isLoading,
+  onViewSite,
+  onEditSite,
+  onToggleStatus,
+  togglingSiteId,
 }: CleaningSiteTableProps) => {
   return (
     <DataTable
-      columns={columns}
+      columns={getColumns(onViewSite, onEditSite, onToggleStatus, togglingSiteId)}
       data={data}
       emptyTitle={isLoading ? "Loading sites…" : "No records found"}
     />

@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   activateSite,
   addSite,
@@ -13,6 +13,7 @@ import {
   EditSitePayload,
   Site,
   SiteActionPayload,
+  SiteListResponse,
 } from "../types/site.type";
 
 export const useSites = () => {
@@ -74,8 +75,42 @@ export const useSuspendSite = (
   });
 };
 
+// Toggles a site's active/suspended state, flipping it in the cached list
+// immediately (optimistic) so the table updates without waiting on the
+// round trip, then reconciles with the server once the call settles.
+export const useToggleSiteStatus = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (site: Site) =>
+      site.is_active
+        ? suspendSite({ site_id: site.site_id })
+        : activateSite({ site_id: site.site_id }),
+    onMutate: async (site) => {
+      await queryClient.cancelQueries({ queryKey: ["sites"] });
+      const previous = queryClient.getQueryData<SiteListResponse>(["sites"]);
+
+      queryClient.setQueryData<SiteListResponse>(["sites"], (old) =>
+        old?.map((s) =>
+          s.site_id === site.site_id ? { ...s, is_active: !s.is_active } : s,
+        ),
+      );
+
+      return { previous };
+    },
+    onError: (_err, _site, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(["sites"], context.previous);
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["sites"] });
+    },
+  });
+};
+
 export const useExportSites = (
-  sc: (val: Blob) => void,
+  sc: (val: string) => void,
   ec?: (err: any) => void,
 ) => {
   return useMutation({

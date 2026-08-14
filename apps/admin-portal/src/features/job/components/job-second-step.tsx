@@ -3,32 +3,26 @@
 import { Button, Checkbox, Container, Input, Text } from "@resonance/ui";
 import { CheckIcon, SearchIcon } from "@resonance/ui/icons";
 import { useMemo, useState } from "react";
-
-const CHECKLIST_OPTIONS = [
-  { id: "clean-lobby-glass", label: "Clean lobby glass" },
-  { id: "vacuum-hallway-carpet", label: "Vacuum hallway carpet" },
-  { id: "polish-lift-interior", label: "Polish lift interior" },
-  { id: "dust-artificial-flowers", label: "Dust all artificial flowers" },
-  {
-    id: "clean-coffee-stain-reception-couch",
-    label: "Clean coffee stain on reception couch",
-  },
-  { id: "clean-underneath-tables", label: "Clean underneath the tables" },
-  { id: "clear-office-pantry", label: "Clear out the office pantry" },
-  { id: "clean-kitchen-cabinets", label: "Clean kitchen cabinets" },
-  { id: "dust-artworks", label: "Dust the artworks" },
-  { id: "dust-chandeliers", label: "Dust the chandeliers" },
-  { id: "polish-leather-chairs", label: "Polish the leather chairs" },
-];
+import { CHECKLIST_OPTIONS } from "../utils/job-form-options";
 
 interface JobSecondStepProps {
+  selected: string[];
+  error?: string;
+  isPending?: boolean;
+  onToggle: (id: string) => void;
   onCancel: () => void;
-  onSave: (selectedChecklistIds: string[]) => void;
+  onSave: () => void;
 }
 
-export const JobSecondStep = ({ onCancel, onSave }: JobSecondStepProps) => {
+export const JobSecondStep = ({
+  selected,
+  error,
+  isPending,
+  onToggle,
+  onCancel,
+  onSave,
+}: JobSecondStepProps) => {
   const [search, setSearch] = useState("");
-  const [selected, setSelected] = useState<Set<string>>(new Set());
 
   const filteredOptions = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -37,18 +31,6 @@ export const JobSecondStep = ({ onCancel, onSave }: JobSecondStepProps) => {
       option.label.toLowerCase().includes(query),
     );
   }, [search]);
-
-  const toggleOption = (id: string) => {
-    setSelected((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        next.add(id);
-      }
-      return next;
-    });
-  };
 
   return (
     <Container>
@@ -75,14 +57,12 @@ export const JobSecondStep = ({ onCancel, onSave }: JobSecondStepProps) => {
         {filteredOptions.map((option) => (
           <Container
             key={option.id}
-            as="button"
-            type="button"
-            onClick={() => toggleOption(option.id)}
-            className="bg-background rounded-xl px-2 py-2.5 flex items-center gap-3 text-left"
+            onClick={() => onToggle(option.id)}
+            className="bg-background rounded-xl px-2 py-2.5 flex items-center gap-3 text-left cursor-pointer"
           >
             <Checkbox
-              checked={selected.has(option.id)}
-              onChange={() => toggleOption(option.id)}
+              checked={selected.includes(option.id)}
+              onChange={() => onToggle(option.id)}
             />
             <Text variant="bodySmall" tone="primary">
               {option.label}
@@ -101,6 +81,12 @@ export const JobSecondStep = ({ onCancel, onSave }: JobSecondStepProps) => {
         )}
       </Container>
 
+      {error && (
+        <Text variant="bodyXSmall" className="text-danger-text-icons mt-3">
+          {error}
+        </Text>
+      )}
+
       <Container className="h-px bg-border my-8" />
 
       <Container className="flex items-center gap-3">
@@ -111,7 +97,9 @@ export const JobSecondStep = ({ onCancel, onSave }: JobSecondStepProps) => {
           variant="primary"
           className="flex-1"
           rightIcon={<CheckIcon className="text-inverted" size={18} />}
-          onClick={() => onSave(Array.from(selected))}
+          onClick={onSave}
+          disabled={isPending}
+          loading={isPending}
         >
           Save
         </Button>

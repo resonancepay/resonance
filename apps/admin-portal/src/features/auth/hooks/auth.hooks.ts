@@ -1,5 +1,5 @@
-import { useMutation } from "@tanstack/react-query";
-import { login, refresh } from "../services/auth.service";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { getProfile, login, refresh } from "../services/auth.service";
 import { LoginPayload, LoginResponse, RefreshResponse } from "../types/auth.type";
 
 export const useLogin = (
@@ -21,5 +21,12 @@ export const useRefresh = (
     mutationFn: () => refresh(),
     onSuccess: sc,
     onError: ec,
+  });
+};
+
+export const useProfile = () => {
+  return useQuery({
+    queryKey: ["admin-profile"],
+    queryFn: () => getProfile(),
   });
 };

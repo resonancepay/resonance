@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
+  approveJob,
   cancelJob,
   createJob,
   editJob,
@@ -8,6 +9,8 @@ import {
   getJobs,
 } from "../services/job.service";
 import {
+  ApproveJobPayload,
+  ApproveJobResponse,
   CancelJobPayload,
   CreateJobPayload,
   EditJobPayload,
@@ -21,7 +24,7 @@ export const useJobs = () => {
   });
 };
 
-export const useJob = (jobId: string, enabled = true) => {
+export const useJob = (jobId: number, enabled = true) => {
   return useQuery({
     queryKey: ["job", jobId],
     queryFn: () => getJob({ job_id: jobId }),
@@ -57,6 +60,17 @@ export const useCancelJob = (
 ) => {
   return useMutation({
     mutationFn: (payload: CancelJobPayload) => cancelJob(payload),
+    onSuccess: sc,
+    onError: ec,
+  });
+};
+
+export const useApproveJob = (
+  sc: (val: ApproveJobResponse) => void,
+  ec?: (err: any) => void,
+) => {
+  return useMutation({
+    mutationFn: (payload: ApproveJobPayload) => approveJob(payload),
     onSuccess: sc,
     onError: ec,
   });

@@ -2,7 +2,13 @@ import { Container, Text } from "@resonance/ui";
 import React from "react";
 import Image from "next/image";
 
-export const JobLocation = () => {
+interface JobLocationProps {
+  address?: string;
+}
+
+export const JobLocation = ({
+  address = "12 Northgate Rd, London EC1",
+}: JobLocationProps) => {
   return (
     <Container className="flex items-center gap-2 min-w-0">
       <Image
@@ -16,9 +22,9 @@ export const JobLocation = () => {
         variant="bodyXSmall"
         tone="secondary"
         className="truncate"
-        title="12 Northgate Rd, London EC1 12 Northgate Rd, London EC1"
+        title={address}
       >
-        12 Northgate Rd, London EC1
+        {address}
       </Text>
     </Container>
   );

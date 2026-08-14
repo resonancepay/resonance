@@ -1,6 +1,5 @@
-// NOTE: Site itself is confirmed against the real GET /v1/admin/sites
-// response. AddSitePayload/EditSitePayload are still provisional — grounded
-// in the add-site-drawer form, not yet confirmed against the API.
+// NOTE: Site, AddSitePayload, and EditSitePayload are all confirmed against
+// the real API.
 
 export interface Site {
   site_id: number;
@@ -10,7 +9,7 @@ export interface Site {
   client_email: string;
   job_type: string;
   jobs: number;
-  uniforms: number;
+  uniforms: string[];
   date_added: string;
   is_active: boolean;
 }
@@ -23,15 +22,18 @@ export interface SiteDetailsPayload {
 
 export interface AddSitePayload {
   site_name: string;
-  site_address: string;
+  address: string;
+  gps_lat: number;
+  gps_lng: number;
   job_type: string;
-  uniforms: string[];
+  uniform: string[];
   client_name: string;
   client_email: string;
 }
 
-export interface EditSitePayload extends Partial<AddSitePayload> {
+export interface EditSitePayload extends AddSitePayload {
   site_id: number;
+  is_active: boolean;
 }
 
 export interface SiteActionPayload {

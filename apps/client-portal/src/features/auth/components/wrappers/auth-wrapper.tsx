@@ -1,17 +1,20 @@
 import { Col, Row } from "antd";
 import { ReactNode } from "react";
 import { AuthImage } from "../auth-image";
-import { Container, Text } from "@resonance/ui";
+import { Button, Container, Text } from "@resonance/ui";
+import { BackIcon } from "@resonance/ui/icons";
 import Image from "next/image";
 
 export const AuthWrapper = ({
   children,
   authLabel,
   subAuthLabel,
+  onBack,
 }: {
   children: ReactNode;
   authLabel: string;
-  subAuthLabel?: string;
+  subAuthLabel?: ReactNode;
+  onBack?: () => void;
 }) => {
   return (
     <Row>
@@ -26,6 +29,20 @@ export const AuthWrapper = ({
       >
         <Row justify="center">
           <Col xs={22} md={18} lg={14}>
+            {onBack && (
+              <Container className="pb-6">
+                <Button
+                  type="button"
+                  variant="neutral"
+                  size="small"
+                  leftIcon={<BackIcon size={16} />}
+                  onClick={onBack}
+                  className="rounded-full"
+                >
+                  Back
+                </Button>
+              </Container>
+            )}
             <Container className="pb-6">
               <Image
                 width={74}

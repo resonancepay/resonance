@@ -2,7 +2,11 @@ import { Container, Text } from "@resonance/ui";
 import Image from "next/image";
 import React from "react";
 
-export const JobType = () => {
+interface JobTypeProps {
+  jobType?: string;
+}
+
+export const JobType = ({ jobType = "Office" }: JobTypeProps) => {
   return (
     <Container
       as="span"
@@ -15,7 +19,7 @@ export const JobType = () => {
         alt="house"
       />
       <Text variant="buttonXS" tone="primary">
-        Office
+        {jobType}
       </Text>
     </Container>
   );

@@ -1,11 +1,20 @@
 import { Button, Container, Modal, Text } from "@resonance/ui";
 import { ClockIcon, WarningIcon } from "@resonance/ui/icons";
 import Image from "next/image";
-import { useState } from "react";
-export const ClockingOut = () => {
-  const [showModal, setShowModal] = useState(true);
+
+interface ClockingOutProps {
+  isOpen: boolean;
+  onClose: () => void;
+  address?: string;
+}
+
+export const ClockingOut = ({
+  isOpen,
+  onClose,
+  address = "12 Northgate Rd, London EC1",
+}: ClockingOutProps) => {
   return (
-    <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
+    <Modal isOpen={isOpen} onClose={onClose}>
       <Container className="bg-brand-bg-light h-40 flex items-center justify-center">
         <ClockIcon size={112} className="text-brand-bg-bold" />
       </Container>
@@ -13,7 +22,7 @@ export const ClockingOut = () => {
         <Container className="mx-6  bg-warning-bg-light flex items-center px-2.5 py-1.5 rounded-full gap-2">
           <WarningIcon size={16} className="text-warning-text-icons" />
           <Text variant="bodyXSmall" tone="warning">
-            You must be within 200 m of the site to clock in
+            You must be within 200 m of the site to clock in
           </Text>
         </Container>
         <Container className="mt-3 flex flex-col gap-3 items-center justify-center">
@@ -28,13 +37,13 @@ export const ClockingOut = () => {
               src="/assets/images/Round Pushpin.png"
             />
             <Text variant="bodyXSmall" tone="secondary">
-              12 Northgate Rd, London EC1
+              {address}
             </Text>
           </Container>
         </Container>
       </Container>
       <Container className=" border-t-[0.5px] gap-2.5 border-border pt-4 px-2 pb-2 flex">
-        <Button className="w-full" size="regular" variant="neutral">
+        <Button className="w-full" size="regular" variant="neutral" onClick={onClose}>
           Cancel
         </Button>
       </Container>

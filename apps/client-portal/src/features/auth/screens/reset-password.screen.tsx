@@ -1,41 +1,51 @@
 "use client";
 
+import React, { useState } from "react";
 import { AuthWrapper } from "../components/wrappers/auth-wrapper";
-import { Button, Container, Input, Text } from "@resonance/ui";
 import { PasswordRequirement } from "../components/pword-requirement";
-import { TickIcon } from "@resonance/ui/icons";
 import { LoginInfo } from "../components/login-info";
-import { useRouter } from "next/navigation";
+import { Button, Container, Input } from "@resonance/ui";
+import { EyeOffIcon, EyeOnIcon, TickIcon } from "@resonance/ui/icons";
 import { useResetPasswordScreen } from "../hooks/useAuth";
 
 export const ResetPasswordScreen = () => {
-  const router = useRouter();
   const {
-    newPassword,
-    confirmPassword,
-    errors,
-    isPending,
+    password,
+    passwordError,
     requirements,
+    allRequirementsMet,
     handlePasswordChange,
-    handleConfirmPasswordChange,
     handleResetPassword,
+    isPending,
   } = useResetPasswordScreen();
+  const [showPassword, setShowPassword] = useState(false);
 
   return (
     <AuthWrapper authLabel="Reset your account password">
-      <Container
-        as="form"
-        onSubmit={handleResetPassword}
-      >
+      <Container as="form" onSubmit={handleResetPassword}>
         <Container className="mb-4">
           <Input
             label="New Password"
             required
-            placeholder="Enter password"
-            type="password"
-            value={newPassword}
+            placeholder="Enter your new password"
+            type={showPassword ? "text" : "password"}
+            value={password}
             onChange={handlePasswordChange}
-            error={errors.newPassword}
+            error={passwordError}
+            rightIcon={
+              <Container
+                as="button"
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="cursor-pointer"
+              >
+                {showPassword ? (
+                  <EyeOffIcon size={18} className="text-secondary" />
+                ) : (
+                  <EyeOnIcon size={18} className="text-secondary" />
+                )}
+              </Container>
+            }
           />
         </Container>
 
@@ -49,51 +59,22 @@ export const ResetPasswordScreen = () => {
           ))}
         </Container>
 
-        <Container className="mb-4">
-          <Input
-            label="Confirm Password"
-            required
-            placeholder="Re-enter password"
-            type="password"
-            value={confirmPassword}
-            onChange={handleConfirmPasswordChange}
-            error={errors.confirmPassword}
-          />
-        </Container>
-
         <Container className="mt-8 w-full">
           <Button
             rightIcon={<TickIcon size={20} />}
             type="submit"
             variant="primary"
             className="w-full"
+            disabled={!allRequirementsMet || isPending}
             loading={isPending}
           >
             Save Password
           </Button>
         </Container>
+      </Container>
 
-        <Container className="mt-6">
-          <Text className="text-center text-primary" variant="bodySmall">
-            Don&apos;t have an account?{"  "}
-            <Container as="span">
-              <Container
-                onClick={() => router.push("/register")}
-                as="button"
-              >
-                {" "}
-                <Text variant="button" className="text-brand-tertiary-text-icons">
-                  {" "}
-                  Register
-                </Text>
-              </Container>
-            </Container>
-          </Text>
-        </Container>
-
-        <Container className="mt-8">
-          <LoginInfo />
-        </Container>
+      <Container className="mt-8">
+        <LoginInfo />
       </Container>
     </AuthWrapper>
   );

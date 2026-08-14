@@ -1,12 +1,23 @@
 import { Button, Container, Modal, Text } from "@resonance/ui";
 import { DangerIcon, RetryIcon, WarningIcon } from "@resonance/ui/icons";
 import Image from "next/image";
-import React, { useState } from "react";
+import React from "react";
 
-export const NotAtCleaningSiteModal = () => {
-  const [showModal, setShowModal] = useState(true);
+interface NotAtCleaningSiteModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onRetry: () => void;
+  address?: string;
+}
+
+export const NotAtCleaningSiteModal = ({
+  isOpen,
+  onClose,
+  onRetry,
+  address = "12 Northgate Rd, London EC1",
+}: NotAtCleaningSiteModalProps) => {
   return (
-    <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
+    <Modal isOpen={isOpen} onClose={onClose}>
       <Container className="bg-danger-bg-light h-40 flex items-center justify-center">
         <DangerIcon size={112} className="text-danger-text-icons" />
       </Container>
@@ -14,7 +25,7 @@ export const NotAtCleaningSiteModal = () => {
         <Container className="mx-6  bg-warning-bg-light flex items-center px-2.5 py-1.5 rounded-full gap-2">
           <WarningIcon size={16} className="text-warning-text-icons" />
           <Text variant="bodyXSmall" tone="warning">
-            You must be within 200 m of the site to clock in
+            You must be within 200 m of the site to clock in
           </Text>
         </Container>
         <Container className="mt-3 flex flex-col gap-3 items-center justify-center">
@@ -29,16 +40,22 @@ export const NotAtCleaningSiteModal = () => {
               src="/assets/images/Round Pushpin.png"
             />
             <Text variant="bodyXSmall" tone="secondary">
-              12 Northgate Rd, London EC1
+              {address}
             </Text>
           </Container>
         </Container>
       </Container>
       <Container className=" border-t-[0.5px] gap-2.5 border-border pt-4 px-2 pb-2 flex">
-        <Button className="w-full" size="regular" variant="neutral">
+        <Button className="w-full" size="regular" variant="neutral" onClick={onClose}>
           Cancel
         </Button>
-        <Button rightIcon={<RetryIcon className="text-inverted" size={16} />} className="w-full" size="regular" variant="green">
+        <Button
+          rightIcon={<RetryIcon className="text-inverted" size={16} />}
+          className="w-full"
+          size="regular"
+          variant="green"
+          onClick={onRetry}
+        >
           Retry
         </Button>
       </Container>

@@ -1,15 +1,15 @@
 import { Container, Text } from "@resonance/ui";
 import { AddIcon } from "@resonance/ui/icons";
 import React from "react";
-import { JobType } from "../types/job.types";
 
 interface JobImageAddMoreProps {
-  status: JobType;
+  status: string;
   onClick?: () => void;
 }
 
 export const JobImageAddMore = ({ status, onClick }: JobImageAddMoreProps) => {
-  const disabled = status === "pending";
+  const disabled =
+    status === "pending" || status === "scheduled" || status === "approved";
 
   return (
     <Container

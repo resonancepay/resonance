@@ -14,6 +14,11 @@ const CLEANER_STATUS_CONFIG = {
     bg: "bg-danger-bg-bold",
     icon: DangerIcon,
   },
+  approved: {
+    label: "Approved",
+    bg: "bg-success-bg-bold",
+    icon: SuccessIcon,
+  },
   active: {
     label: "Active",
     bg: "bg-success-bg-bold",
@@ -57,11 +62,19 @@ const STATUS_CONFIG = {
 export const TableStatus = ({
   status,
 }: {
-  status: "rejected" | "active" | "suspended" | JobStatusValue;
+  status: string;
 }) => {
-  if (!(status in STATUS_CONFIG)) return null;
+  // API casing/spacing isn't consistent (e.g. "Pending" vs "pending", "Under
+  // Review" vs the config's "under-review" key), so normalize both before
+  // the lookup rather than silently rendering nothing on a mismatch.
+  const normalized = status
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "-") as keyof typeof STATUS_CONFIG;
 
-  const { label, bg, icon: Icon } = STATUS_CONFIG[status as keyof typeof STATUS_CONFIG];
+  if (!(normalized in STATUS_CONFIG)) return null;
+
+  const { label, bg, icon: Icon } = STATUS_CONFIG[normalized];
 
   return (
     <Container className={`px-1 py-0.5 inline-flex rounded-full ${bg}`}>

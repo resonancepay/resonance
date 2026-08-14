@@ -4,7 +4,15 @@ import { Col, Row } from "antd";
 import React, { useState } from "react";
 import { JobAvailability } from "./job-availability";
 
-export const JobConsumable = () => {
+interface JobConsumableProps {
+  itemsNeeded?: string;
+  itemsProvided?: boolean;
+}
+
+export const JobConsumable = ({
+  itemsNeeded = "Glass cleaner, Bleach, Detergent, Dissolver.",
+  itemsProvided = true,
+}: JobConsumableProps) => {
   const [open, setOpen] = useState(true);
   return (
     <Container className="border-b border-border">
@@ -33,7 +41,7 @@ export const JobConsumable = () => {
               </Text>
             </Col>
             <Col span={12} style={{ display: "flex", justifyContent: "flex-end" }}>
-              <JobAvailability />
+              <JobAvailability provided={itemsProvided} />
             </Col>
           </Row>
           <Row className="w-full pb-2" align="top">
@@ -44,7 +52,7 @@ export const JobConsumable = () => {
             </Col>
             <Col span={12} className="text-right">
               <Text variant="bodyXSmall" tone="primary">
-                Glass cleaner, Bleach, Detergent, Dissolver.
+                {itemsNeeded}
               </Text>
             </Col>
           </Row>

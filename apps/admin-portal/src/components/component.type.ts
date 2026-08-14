@@ -16,4 +16,5 @@ export interface NavWrapperType {
   clickAction: () => void;
   subItem: InnerSubItem[];
   icon: ComponentType<NavIconProps>;
+  href?: string;
 }

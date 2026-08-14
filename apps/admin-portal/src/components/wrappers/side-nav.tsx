@@ -3,6 +3,8 @@
 import { NavWrapperType } from "@/components/component.type";
 import { NavWrapper } from "@/components/wrappers/nav-wrapper";
 import { LogoutWrapper } from "@/components/wrappers/logout-wrapper";
+import { useAdminProfile } from "@/features/auth/hooks/useAdminProfile";
+import { useAuthStore } from "@/shared/store/auth.store";
 import { Container, Text } from "@resonance/ui";
 import {
   CleanerIcon,
@@ -19,6 +21,13 @@ import { useRouter } from "next/navigation";
 
 export const SideNav = () => {
   const router = useRouter();
+  const { fullName, email, isLoading } = useAdminProfile();
+  const { clearAuth } = useAuthStore();
+
+  const handleLogout = () => {
+    clearAuth();
+    router.push("/login");
+  };
 
   const navItems: NavWrapperType[] = [
   {
@@ -32,6 +41,7 @@ export const SideNav = () => {
     clickAction: () => router.push("/jobs"),
     subItem: [],
     icon: JobIcon,
+    href: "/jobs",
   },
   {
     label: "Cleaner Management",
@@ -65,6 +75,7 @@ export const SideNav = () => {
     clickAction: () => router.push("/cleaning-sites"),
     subItem: [],
     icon: CleaningSiteIcon,
+    href: "/cleaning-sites",
   },
   {
     label: "Teams",
@@ -126,7 +137,11 @@ export const SideNav = () => {
           </Container>
         </Container>
       </Container>
-      <LogoutWrapper name="Micheal Angelo" email="micheal@mail.com" />
+      <LogoutWrapper
+        name={isLoading ? "…" : (fullName ?? "—")}
+        email={isLoading ? "" : (email ?? "")}
+        onLogout={handleLogout}
+      />
     </Container>
   );
 };

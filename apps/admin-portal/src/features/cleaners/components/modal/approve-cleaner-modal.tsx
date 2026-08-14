@@ -7,9 +7,10 @@ interface ApproveCleanerModalProps {
   isOpen: boolean;
   onClose: () => void;
   onApprove: () => void;
+  isPending?: boolean;
 }
 
-export const ApproveCleanerModal = ({ isOpen, onClose, onApprove }: ApproveCleanerModalProps) => {
+export const ApproveCleanerModal = ({ isOpen, onClose, onApprove, isPending }: ApproveCleanerModalProps) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose} width={379}>
       <Container className="bg-success-bg-light rounded-xl h-28 flex items-center justify-center">
@@ -31,6 +32,7 @@ export const ApproveCleanerModal = ({ isOpen, onClose, onApprove }: ApproveClean
           variant="green"
           rightIcon={<CheckIcon size={16} className="text-inverted" />}
           onClick={onApprove}
+          loading={isPending}
         >
           Approve
         </Button>

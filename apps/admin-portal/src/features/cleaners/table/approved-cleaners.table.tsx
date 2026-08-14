@@ -14,174 +14,28 @@ import {
 import { ColumnDef } from "@tanstack/react-table";
 import { Dropdown, MenuProps } from "antd";
 import Link from "next/link";
-
-interface ApprovedCleaner {
-  cleanerId: string;
-  cleanerName: string;
-  cleanerEmail: string;
-  availability: "available" | "off" | "on-a-job";
-  jobs: string;
-  score: string;
-  dateApproved: string;
-  timeApproved: string;
-  status: "active" | "suspended";
-}
-
-const mockData: ApprovedCleaner[] = [
-  {
-    cleanerId: "CL-001",
-    cleanerName: "Mary Abam",
-    cleanerEmail: "ekitifountain@icloud.com",
-    availability: "available",
-    jobs: "100",
-    score: "98%",
-    dateApproved: "11 July 2026",
-    timeApproved: "15:55 PM",
-    status: "active",
-  },
-  {
-    cleanerId: "CL-001",
-    cleanerName: "Priscilla Iwalewa",
-    cleanerEmail: "brooklynm@gmail.com",
-    availability: "off",
-    jobs: "23",
-    score: "88%",
-    dateApproved: "11 July 2026",
-    timeApproved: "15:55 PM",
-    status: "suspended",
-  },
-  {
-    cleanerId: "CL-001",
-    cleanerName: "Mary Olaniyan",
-    cleanerEmail: "sophiak@yandex.com",
-    availability: "available",
-    jobs: "09",
-    score: "79%",
-    dateApproved: "11 July 2026",
-    timeApproved: "15:55 PM",
-    status: "active",
-  },
-  {
-    cleanerId: "CL-001",
-    cleanerName: "Margaret Obubra",
-    cleanerEmail: "portharcourt@hotmail.com",
-    availability: "off",
-    jobs: "12",
-    score: "88%",
-    dateApproved: "11 July 2026",
-    timeApproved: "15:55 PM",
-    status: "suspended",
-  },
-  {
-    cleanerId: "CL-001",
-    cleanerName: "Grace Tukur",
-    cleanerEmail: "davidw@outlook.com",
-    availability: "available",
-    jobs: "12",
-    score: "98%",
-    dateApproved: "11 July 2026",
-    timeApproved: "15:55 PM",
-    status: "active",
-  },
-  {
-    cleanerId: "CL-001",
-    cleanerName: "Stephen Opuogbo",
-    cleanerEmail: "lukew@gmail.com",
-    availability: "available",
-    jobs: "98",
-    score: "79%",
-    dateApproved: "11 July 2026",
-    timeApproved: "15:55 PM",
-    status: "active",
-  },
-  {
-    cleanerId: "CL-001",
-    cleanerName: "Grace Aliyu",
-    cleanerEmail: "calabarfinest@yandex.com",
-    availability: "on-a-job",
-    jobs: "45",
-    score: "98%",
-    dateApproved: "11 July 2026",
-    timeApproved: "15:55 PM",
-    status: "active",
-  },
-  {
-    cleanerId: "CL-001",
-    cleanerName: "John Maduabuchi",
-    cleanerEmail: "ekitifountain@gmail.com",
-    availability: "on-a-job",
-    jobs: "98",
-    score: "79%",
-    dateApproved: "11 July 2026",
-    timeApproved: "15:55 PM",
-    status: "active",
-  },
-  {
-    cleanerId: "CL-001",
-    cleanerName: "Esther Amakiri",
-    cleanerEmail: "nasarawaminerals@gmail.com",
-    availability: "on-a-job",
-    jobs: "0",
-    score: "98%",
-    dateApproved: "11 July 2026",
-    timeApproved: "15:55 PM",
-    status: "active",
-  },
-  {
-    cleanerId: "CL-001",
-    cleanerName: "Samuel Aluko",
-    cleanerEmail: "yobepride@outlook.com",
-    availability: "on-a-job",
-    jobs: "45",
-    score: "88%",
-    dateApproved: "11 July 2026",
-    timeApproved: "15:55 PM",
-    status: "active",
-  },
-  {
-    cleanerId: "CL-001",
-    cleanerName: "Hannah Wariboko",
-    cleanerEmail: "kwaraharmony@yandex.com",
-    availability: "on-a-job",
-    jobs: "0",
-    score: "79%",
-    dateApproved: "11 July 2026",
-    timeApproved: "15:55 PM",
-    status: "active",
-  },
-  {
-    cleanerId: "CL-001",
-    cleanerName: "Joshua Amakiri",
-    cleanerEmail: "naijaswag@gmail.com",
-    availability: "on-a-job",
-    jobs: "0",
-    score: "88%",
-    dateApproved: "11 July 2026",
-    timeApproved: "15:55 PM",
-    status: "active",
-  },
-];
+import { ApprovedCleaner } from "../types/cleaner.type";
 
 const columns: ColumnDef<ApprovedCleaner>[] = [
   {
-    accessorKey: "cleanerId",
+    accessorKey: "cleaner_id_label",
     header: "Cleaner ID",
     cell: ({ row }) => (
       <Text variant="bodySmall" tone="primary">
-        {row.original.cleanerId}
+        {row.original.cleaner_id_label}
       </Text>
     ),
   },
   {
-    accessorKey: "cleanerName",
+    accessorKey: "full_name",
     header: "Cleaner",
     cell: ({ row }) => (
       <Container className="flex flex-col gap-0.5">
         <Text variant="bodySmall" tone="primary">
-          {row.original.cleanerName}
+          {row.original.full_name}
         </Text>
         <Text variant="bodyXSmall" tone="secondary">
-          {row.original.cleanerEmail}
+          {row.original.email}
         </Text>
       </Container>
     ),
@@ -213,15 +67,15 @@ const columns: ColumnDef<ApprovedCleaner>[] = [
     ),
   },
   {
-    accessorKey: "dateApproved",
+    accessorKey: "approved_date",
     header: "Date Approved",
     cell: ({ row }) => (
       <Container className="flex flex-col gap-0.5">
         <Text variant="bodySmall" tone="primary">
-          {row.original.dateApproved}
+          {row.original.approved_date}
         </Text>
         <Text variant="bodyXSmall" tone="secondary">
-          {row.original.timeApproved}
+          {row.original.approved_time}
         </Text>
       </Container>
     ),
@@ -235,13 +89,15 @@ const columns: ColumnDef<ApprovedCleaner>[] = [
     id: "actions",
     header: "",
     cell: ({ row }) => {
-      const isActive = row.original.status === "active";
+      // Real status value is "Approved" (confirmed), not "active" as
+      // originally guessed from mock data — "suspended" is still unconfirmed.
+      const isActive = row.original.status.toLowerCase() !== "suspended";
 
       const items: MenuProps["items"] = [
         {
           key: "view",
           label: (
-            <Link href={"/cleaners/approved-cleaners/id"}>
+            <Link href={`/cleaners/approved-cleaners/${row.original.application_id}`}>
               <Container className="flex items-center justify-between gap-8">
                 <Text variant="bodyXSmall" tone="primary">
                   View
@@ -302,6 +158,20 @@ const columns: ColumnDef<ApprovedCleaner>[] = [
   },
 ];
 
-export const ApprovedCleanersTable = () => {
-  return <DataTable columns={columns} data={mockData} />;
+interface ApprovedCleanersTableProps {
+  data: ApprovedCleaner[];
+  isLoading?: boolean;
+}
+
+export const ApprovedCleanersTable = ({
+  data,
+  isLoading,
+}: ApprovedCleanersTableProps) => {
+  return (
+    <DataTable
+      columns={columns}
+      data={data}
+      emptyTitle={isLoading ? "Loading cleaners…" : "No records found"}
+    />
+  );
 };

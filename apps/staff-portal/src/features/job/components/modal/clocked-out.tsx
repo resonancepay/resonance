@@ -1,11 +1,19 @@
 import { Button, Container, Modal, Text } from "@resonance/ui";
 import { SuccessIcon } from "@resonance/ui/icons";
-import { useState } from "react";
 
-export const ClockedOut = () => {
-  const [showModal, setShowModal] = useState(true);
+interface ClockedOutProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSeeOtherJobs: () => void;
+}
+
+export const ClockedOut = ({
+  isOpen,
+  onClose,
+  onSeeOtherJobs,
+}: ClockedOutProps) => {
   return (
-    <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
+    <Modal isOpen={isOpen} onClose={onClose}>
       <Container className="bg-success-bg-light h-40 flex items-center justify-center">
         <SuccessIcon size={112} className="text-success-text-icons" />
       </Container>
@@ -20,10 +28,15 @@ export const ClockedOut = () => {
         </Container>
       </Container>
       <Container className=" border-t-[0.5px] gap-2.5 border-border pt-4 px-2 pb-2 flex">
-        <Button variant="neutral" className="w-full">
+        <Button variant="neutral" className="w-full" onClick={onClose}>
           Ok
         </Button>
-        <Button className="w-full" size="regular" variant="primary">
+        <Button
+          className="w-full"
+          size="regular"
+          variant="primary"
+          onClick={onSeeOtherJobs}
+        >
           See other jobs
         </Button>
       </Container>

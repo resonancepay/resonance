@@ -8,6 +8,7 @@ interface RejectCleanerModalProps {
   isOpen: boolean;
   onClose: () => void;
   onReject: (data: { reason: string; description: string }) => void;
+  isPending?: boolean;
 }
 
 const rejectReasons = [
@@ -17,7 +18,7 @@ const rejectReasons = [
   { label: "Other", value: "other" },
 ];
 
-export const RejectCleanerModal = ({ isOpen, onClose, onReject }: RejectCleanerModalProps) => {
+export const RejectCleanerModal = ({ isOpen, onClose, onReject, isPending }: RejectCleanerModalProps) => {
   const [reason, setReason] = useState<string | undefined>(undefined);
   const [description, setDescription] = useState("");
 
@@ -69,6 +70,7 @@ export const RejectCleanerModal = ({ isOpen, onClose, onReject }: RejectCleanerM
           variant="danger"
           rightIcon={<CloseIcon size={16} className="text-inverted" />}
           onClick={handleReject}
+          loading={isPending}
         >
           Reject
         </Button>

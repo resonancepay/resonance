@@ -1,60 +1,56 @@
+import { Fragment } from "react";
+import { Text } from "@resonance/ui";
 import { CleanerTabWrapper } from "./cleaner-tab-wrapper";
 import { InnerCleanerTabWrapper } from "./inner-cleaner-tab-wrapper";
 import { CleanerSectionDivider } from "../cleaner-section-divider";
 import { DetailSection } from "./detail-section";
+import { CleanerExperience } from "../../types/cleaner.type";
 
-export const Experience = () => {
+interface ExperienceProps {
+  experience: CleanerExperience[];
+}
+
+export const Experience = ({ experience }: ExperienceProps) => {
+  if (experience.length === 0) {
+    return (
+      <CleanerTabWrapper>
+        <InnerCleanerTabWrapper>
+          <Text variant="bodySmall" tone="secondary">
+            No employment history on record.
+          </Text>
+        </InnerCleanerTabWrapper>
+      </CleanerTabWrapper>
+    );
+  }
+
   return (
     <CleanerTabWrapper>
-      <InnerCleanerTabWrapper>
-        <DetailSection
-          title="Experience 1"
-          subtitle="See all the cleaner's employment history"
-          fields={[
-            { label: "Employer", value: "Emperor Cleaning Services" },
-            { label: "Job Title", value: "Cleaner" },
-            { label: "Start Date", value: "12 June 2021" },
-            { label: "End Date", value: "12 June 2023" },
-            {
-              label: "Responsibility",
-              value:
-                "I was in charge of cleaning all offices jobs as well as office complex before proceeding to supersede shopping malls cleaning.",
-              span: 16,
-            },
-            {
-              label: "Responsibility",
-              value:
-                "I left cause the pay wasn't substantial anymore considering the recent inflation, also I moved further form my previous home.",
-              span: 16,
-            },
-          ]}
-        />
-      </InnerCleanerTabWrapper>
-
-      <CleanerSectionDivider />
-
-      <InnerCleanerTabWrapper>
-        <DetailSection
-          fields={[
-            { label: "Employer", value: "Emperor Cleaning Services" },
-            { label: "Job Title", value: "Cleaner" },
-            { label: "Start Date", value: "12 June 2021" },
-            { label: "End Date", value: "12 June 2023" },
-            {
-              label: "Responsibility",
-              value:
-                "I was in charge of cleaning all offices jobs as well as office complex before proceeding to supersede shopping malls cleaning.",
-              span: 16,
-            },
-            {
-              label: "Responsibility",
-              value:
-                "I left cause the pay wasn't substantial anymore considering the recent inflation, also I moved further form my previous home.",
-              span: 16,
-            },
-          ]}
-        />
-      </InnerCleanerTabWrapper>
+      {experience.map((entry, index) => (
+        <Fragment key={index}>
+          {index > 0 && <CleanerSectionDivider />}
+          <InnerCleanerTabWrapper>
+            <DetailSection
+              title={index === 0 ? "Experience" : undefined}
+              subtitle={
+                index === 0
+                  ? "See all the cleaner's employment history"
+                  : undefined
+              }
+              fields={[
+                { label: "Employer", value: entry.employer },
+                { label: "Job Title", value: entry.job_title },
+                { label: "Start Date", value: entry.start_date },
+                { label: "End Date", value: entry.end_date },
+                {
+                  label: "Responsibility",
+                  value: entry.responsibility,
+                  span: 16,
+                },
+              ]}
+            />
+          </InnerCleanerTabWrapper>
+        </Fragment>
+      ))}
     </CleanerTabWrapper>
   );
 };

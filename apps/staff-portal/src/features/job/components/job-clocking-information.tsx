@@ -3,7 +3,17 @@ import { ChevronDownIcon } from "@resonance/ui/icons";
 import { Col, Row } from "antd";
 import React, { useState } from "react";
 
-export const JobClockingInformation = () => {
+interface JobClockingInformationProps {
+  checkInTime?: string;
+  checkOutTime?: string;
+  timeTaken?: string;
+}
+
+export const JobClockingInformation = ({
+  checkInTime = "08:00",
+  checkOutTime = "N/A",
+  timeTaken = "N/A",
+}: JobClockingInformationProps) => {
   const [open, setOpen] = useState(true);
   return (
     <Container className="border-b border-border">
@@ -33,7 +43,7 @@ export const JobClockingInformation = () => {
             </Col>
             <Col span={12} className="text-right">
               <Text variant="bodyXSmall" tone="primary">
-                08:00
+                {checkInTime || "N/A"}
               </Text>
             </Col>
           </Row>
@@ -48,7 +58,7 @@ export const JobClockingInformation = () => {
             </Col>
             <Col span={12} className="text-right">
               <Text variant="bodyXSmall" tone="primary">
-                N/A
+                {checkOutTime || "N/A"}
               </Text>
             </Col>
           </Row>
@@ -60,7 +70,7 @@ export const JobClockingInformation = () => {
             </Col>
             <Col span={12} className="text-right">
               <Text variant="bodyXSmall" tone="primary">
-                N/A
+                {timeTaken}
               </Text>
             </Col>
           </Row>

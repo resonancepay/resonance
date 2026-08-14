@@ -4,8 +4,23 @@ import { CleanerSectionDivider } from "../cleaner-section-divider";
 import { TableStatus } from "@/components/generics/table/table-status";
 import { DetailSection } from "./detail-section";
 import { CleanerDocWrapper } from "./cleaner-doc-wrapper";
+import {
+  CleanerAccountInfo,
+  CleanerEligibility,
+  CleanerSuitability,
+} from "../../types/cleaner.type";
 
-export const AccountInfo = () => {
+interface AccountInfoProps {
+  accountInfo: CleanerAccountInfo;
+  eligibility: CleanerEligibility;
+  suitability: CleanerSuitability;
+}
+
+export const AccountInfo = ({
+  accountInfo,
+  eligibility,
+  suitability,
+}: AccountInfoProps) => {
   return (
     <CleanerTabWrapper>
       <InnerCleanerTabWrapper>
@@ -13,16 +28,16 @@ export const AccountInfo = () => {
           title="Account Information"
           subtitle="Personal and basic Information"
           fields={[
-            { label: "First Name", value: "Mary" },
-            { label: "Last Name", value: "Abam" },
-            { label: "Reference Code", value: "RC-2026-04827" },
-            { label: "Email Address", value: "ekitifountain@icloud.com" },
-            { label: "Phone Number", value: "+44 123 4567 8901" },
-            { label: "Date Of Birth", value: "06 June 1996" },
-            { label: "Applied Date", value: "11 June 2026 • 11:55 PM" },
+            { label: "First Name", value: accountInfo.first_name },
+            { label: "Last Name", value: accountInfo.last_name },
+            { label: "Reference Code", value: accountInfo.reference_code },
+            { label: "Email Address", value: accountInfo.email },
+            { label: "Phone Number", value: accountInfo.phone },
+            { label: "Date Of Birth", value: accountInfo.dob },
+            { label: "Applied Date", value: accountInfo.applied_date },
             {
               label: "Account Status",
-              value: <TableStatus status="pending" />,
+              value: <TableStatus status={accountInfo.status} />,
             },
           ]}
         />
@@ -35,15 +50,30 @@ export const AccountInfo = () => {
           title="Eligibility"
           subtitle="All information and docs uploaded"
           fields={[
-            { label: "Are you eligible to work in the UK?", value: "YES" },
-            { label: "National Issuance Number", value: "123456768" },
-            { label: "Consent to a DBS", value: "YES" },
-            { label: "Right to work", value: <CleanerDocWrapper /> },
+            {
+              label: "Are you eligible to work in the UK?",
+              value: eligibility.eligible_to_work ? "YES" : "NO",
+            },
+            {
+              label: "National Issuance Number",
+              value: eligibility.national_insurance,
+            },
+            {
+              label: "Consent to a DBS",
+              value: eligibility.dbs_consent ? "YES" : "NO",
+            },
+            {
+              label: "Right to work",
+              value: <CleanerDocWrapper label={eligibility.rtw_document} />,
+            },
             {
               label: "Official criminal record and background check",
               value: "DBS (Disclosure and Barring Service)",
             },
-            { label: "Prove Document", value: <CleanerDocWrapper /> },
+            {
+              label: "Prove Document",
+              value: <CleanerDocWrapper label={eligibility.ccd_document} />,
+            },
           ]}
         />
       </InnerCleanerTabWrapper>
@@ -55,10 +85,19 @@ export const AccountInfo = () => {
           title="Suitability"
           subtitle="See cleaner's availability options"
           fields={[
-            { label: "Availability", value: "Su, Mo, Tu, We, Th, Fr, St" },
-            { label: "Uniform Size", value: "XL" },
-            { label: "Reliable Transport", value: "YES" },
-            { label: "Work on Holidays", value: "NO" },
+            {
+              label: "Availability",
+              value: suitability.availability.join(", "),
+            },
+            { label: "Uniform Size", value: suitability.uniform_size },
+            {
+              label: "Reliable Transport",
+              value: suitability.reliable_transport ? "YES" : "NO",
+            },
+            {
+              label: "Work on Holidays",
+              value: suitability.work_on_holidays ? "YES" : "NO",
+            },
           ]}
         />
       </InnerCleanerTabWrapper>

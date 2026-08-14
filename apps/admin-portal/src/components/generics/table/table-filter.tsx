@@ -13,6 +13,8 @@ interface TableFilterProps {
     onSave: () => void;
   }) => ReactNode;
   extraAction?: ReactNode;
+  onExport?: () => void;
+  isExporting?: boolean;
 }
 
 export const TableFilter = ({
@@ -20,6 +22,8 @@ export const TableFilter = ({
   count,
   renderFilterContent,
   extraAction,
+  onExport,
+  isExporting,
 }: TableFilterProps) => {
   const [filterOpen, setFilterOpen] = useState(false);
 
@@ -67,6 +71,9 @@ export const TableFilter = ({
         <Button
           leftIcon={<DownloadIcon className="text-inverted" size={16} />}
           variant="secondary"
+          onClick={onExport}
+          disabled={isExporting}
+          loading={isExporting}
         >
           Export
         </Button>

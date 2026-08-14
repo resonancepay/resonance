@@ -17,7 +17,7 @@ export const LoginInfo = () => {
       </Container>
       <Container className="flex gap-2 items-start mt-2">
         <Text variant="bodyXSmall" className="text-secondary">
-          Having trouble logging in? Email us at{" "}
+          Having trouble logging in? Contact your manager or email{" "}
           <Text as="span" className="text-primary" variant="bodyXSmall">
             support@resonanceclean.co.uk
           </Text>

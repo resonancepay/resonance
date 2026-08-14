@@ -1,11 +1,19 @@
 import { Button, Container, Modal, Text } from "@resonance/ui";
 import { CheckIcon, SuccessIcon } from "@resonance/ui/icons";
-import { useState } from "react";
 
-export const ClockedIn = () => {
-  const [showModal, setShowModal] = useState(true);
+interface ClockedInProps {
+  isOpen: boolean;
+  onClose: () => void;
+  address?: string;
+}
+
+export const ClockedIn = ({
+  isOpen,
+  onClose,
+  address = "12 Northgate Rd, London EC1",
+}: ClockedInProps) => {
   return (
-    <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
+    <Modal isOpen={isOpen} onClose={onClose}>
       <Container className="bg-success-bg-light h-40 flex items-center justify-center">
         <SuccessIcon size={112} className="text-success-text-icons" />
       </Container>
@@ -15,7 +23,7 @@ export const ClockedIn = () => {
             You have been clocked in
           </Text>
           <Text variant="bodyXSmall" tone="secondary">
-            12 Northgate Rd, London EC1
+            {address}
           </Text>
         </Container>
       </Container>
@@ -25,6 +33,7 @@ export const ClockedIn = () => {
           className="w-full"
           size="regular"
           variant="primary"
+          onClick={onClose}
         >
           Ok
         </Button>

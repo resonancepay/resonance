@@ -3,7 +3,7 @@
 import { Container, Text } from "@resonance/ui";
 import { ChevronDownIcon } from "@resonance/ui/icons";
 import { NavWrapperType } from "../component.type";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -14,6 +14,21 @@ export const NavWrapper = ({ item }: { item: NavWrapperType }) => {
   const hasActiveSubItem = item.subItem.some((sub) => sub.href === pathname);
   const [expanded, setExpanded] = useState(hasActiveSubItem);
 
+  // The sidebar persists across client-side navigations (it never
+  // remounts), so `expanded`'s initial value only reflects the pathname at
+  // first mount. Re-sync it whenever the route lands on one of this item's
+  // sub-pages, so navigating between top-level sections doesn't leave a
+  // previously-active submenu stuck open/highlighted.
+  useEffect(() => {
+    if (hasActiveSubItem) setExpanded(true);
+  }, [hasActiveSubItem]);
+
+  const isActive =
+    !hasSubItems &&
+    !!item.href &&
+    (pathname === item.href || pathname.startsWith(`${item.href}/`));
+  const highlighted = hasActiveSubItem || isActive;
+
   return (
     <Container className="mb-2">
       <Container
@@ -22,20 +37,20 @@ export const NavWrapper = ({ item }: { item: NavWrapperType }) => {
         onClick={() => (hasSubItems ? setExpanded((prev) => !prev) : item.clickAction())}
         className={[
           "w-full px-2 py-2.5 flex items-center gap-2 rounded-xl cursor-pointer",
-          expanded ? "bg-brand-bg-bold" : "",
+          highlighted ? "bg-brand-bg-bold" : "",
         ].join(" ")}
       >
         <Icon size={20} className="text-brand-secondary-text-icons" />
         <Text
           variant="button"
-          className={`flex-1 text-left ${expanded ? "text-inverted" : "text-primary"}`}
+          className={`flex-1 text-left ${highlighted ? "text-inverted" : "text-primary"}`}
         >
           {item.label}
         </Text>
         {hasSubItems && (
           <ChevronDownIcon
             size={16}
-            className={expanded ? "text-inverted" : "text-secondary"}
+            className={highlighted ? "text-inverted" : "text-secondary"}
           />
         )}
       </Container>

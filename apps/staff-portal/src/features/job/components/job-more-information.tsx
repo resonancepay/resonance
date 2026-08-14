@@ -5,7 +5,25 @@ import React, { useState } from "react";
 import { JobId } from "./job-id";
 import { JobType } from "./job-type";
 
-export const JobMoreInformation = () => {
+interface JobMoreInformationProps {
+  siteName?: string;
+  jobIdLabel?: string;
+  jobType?: string;
+  jobDate?: string;
+  jobTime?: string;
+  duration?: string;
+  payout?: string;
+}
+
+export const JobMoreInformation = ({
+  siteName = "Northgate Office - Floor 3",
+  jobIdLabel,
+  jobType,
+  jobDate = "Thur 24, Jun 2026",
+  jobTime = "08:00",
+  duration = "02 Hours 30 Minutes",
+  payout = "£80.56",
+}: JobMoreInformationProps) => {
   const [open, setOpen] = useState(true);
   return (
     <Container className="border-b border-border">
@@ -35,7 +53,7 @@ export const JobMoreInformation = () => {
             </Col>
             <Col span={12} className="text-right">
               <Text variant="bodyXSmall" tone="primary">
-                Northgate Office - Floor 3
+                {siteName}
               </Text>
             </Col>
           </Row>
@@ -49,7 +67,7 @@ export const JobMoreInformation = () => {
               </Text>
             </Col>
             <Col span={12} style={{ display: "flex", justifyContent: "flex-end" }}>
-              <JobId />
+              <JobId jobId={jobIdLabel} />
             </Col>
           </Row>
           <Row
@@ -62,7 +80,7 @@ export const JobMoreInformation = () => {
               </Text>
             </Col>
             <Col span={12} style={{ display: "flex", justifyContent: "flex-end" }}>
-              <JobType />
+              <JobType jobType={jobType} />
             </Col>
           </Row>
           <Row className="mb-2 border-b-border border-b-[0.5px] w-full pb-2">
@@ -73,10 +91,10 @@ export const JobMoreInformation = () => {
             </Col>
             <Col span={12} className="text-right">
               <Text variant="bodyXSmall" tone="primary">
-                Thur 24, Jun 2026
+                {jobDate}
               </Text>
               <Text tone="secondary" variant="bodyXSmall">
-                08:00
+                {jobTime}
               </Text>
             </Col>
           </Row>
@@ -91,7 +109,7 @@ export const JobMoreInformation = () => {
             </Col>
             <Col span={12} className="text-right">
               <Text variant="bodyXSmall" tone="primary">
-                02 Hours 30 Minutes
+                {duration}
               </Text>
             </Col>
           </Row>
@@ -103,7 +121,7 @@ export const JobMoreInformation = () => {
             </Col>
             <Col span={12} className="text-right">
               <Text variant="bodyXSmall" tone="primary">
-                £80.56
+                {payout}
               </Text>
             </Col>
           </Row>

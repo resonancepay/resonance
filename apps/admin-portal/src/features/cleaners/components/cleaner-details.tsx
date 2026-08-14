@@ -7,23 +7,41 @@ import { Experience } from "../components/cleaner-tabs/experience";
 import { Qualification } from "../components/cleaner-tabs/qualification";
 import { Contact } from "../components/cleaner-tabs/contact";
 import { Reference } from "../components/cleaner-tabs/reference";
+import { CleanerApplicationDetails } from "../types/cleaner.type";
 
-const TAB_COMPONENTS = {
-  "account-info": AccountInfo,
-  experience: Experience,
-  qualification: Qualification,
-  contact: Contact,
-  reference: Reference,
-} as const;
+type TabKey = "account-info" | "experience" | "qualification" | "contact" | "reference";
 
-type TabKey = keyof typeof TAB_COMPONENTS;
+interface CleanerDetailsProps {
+  details: CleanerApplicationDetails;
+  showPendingBanner?: boolean;
+  onApprove?: () => void;
+  onReject?: (data: { reason: string; description: string }) => void;
+  isApproving?: boolean;
+  isRejecting?: boolean;
+}
 
-export const CleanerDetails = () => {
+export const CleanerDetails = ({
+  details,
+  showPendingBanner = false,
+  onApprove,
+  onReject,
+  isApproving,
+  isRejecting,
+}: CleanerDetailsProps) => {
   const [activeTab, setActiveTab] = useState<TabKey>("account-info");
-  const ActiveTabComponent = TAB_COMPONENTS[activeTab];
+
   return (
     <Container>
-      <PendingCleanerBanner />
+      {showPendingBanner && onApprove && onReject && (
+        <PendingCleanerBanner
+          name={`${details.account_info.first_name} ${details.account_info.last_name}`}
+          email={details.account_info.email}
+          onApprove={onApprove}
+          onReject={onReject}
+          isApproving={isApproving}
+          isRejecting={isRejecting}
+        />
+      )}
       <CleanerTab
         tabs={[
           {
@@ -39,7 +57,19 @@ export const CleanerDetails = () => {
           { label: "Reference", action: () => setActiveTab("reference") },
         ]}
       />
-      <ActiveTabComponent />
+      {activeTab === "account-info" && (
+        <AccountInfo
+          accountInfo={details.account_info}
+          eligibility={details.eligibility}
+          suitability={details.suitability}
+        />
+      )}
+      {activeTab === "experience" && <Experience experience={details.experience} />}
+      {activeTab === "qualification" && (
+        <Qualification qualifications={details.qualifications} />
+      )}
+      {activeTab === "contact" && <Contact contacts={details.emergency_contacts} />}
+      {activeTab === "reference" && <Reference referees={details.referee} />}
     </Container>
   );
 };

@@ -8,10 +8,21 @@ import { JobFilterContent } from "../components/job-filter-content";
 import { JobStatusTabs } from "../components/job-status-tabs";
 import { JobListTable } from "../table/job-list.table";
 import { useRouter } from "next/navigation";
+import { useJobListScreen } from "../hooks/useJobList";
 
 export const JobListScreen = () => {
   useSetBreadcrumb([{ label: "Jobs", href: "/jobs" }]);
   const router = useRouter();
+  const {
+    jobs,
+    isLoading,
+    count,
+    approveModalOpen,
+    openApproveModal,
+    closeApproveModal,
+    handleApprove,
+    isApproving,
+  } = useJobListScreen();
 
   return (
     <Container className="h-full flex flex-col">
@@ -28,7 +39,7 @@ export const JobListScreen = () => {
       />
       <TableFilter
         title="All jobs"
-        count={12}
+        count={count}
         renderFilterContent={({ onCancel, onSave }) => (
           <JobFilterContent onCancel={onCancel} onSave={onSave} />
         )}
@@ -44,7 +55,15 @@ export const JobListScreen = () => {
         }
       />
       <Container className="flex-1 min-h-0">
-        <JobListTable />
+        <JobListTable
+          data={jobs}
+          isLoading={isLoading}
+          approveModalOpen={approveModalOpen}
+          onOpenApprove={openApproveModal}
+          onCloseApprove={closeApproveModal}
+          onApprove={handleApprove}
+          isApproving={isApproving}
+        />
       </Container>
     </Container>
   );

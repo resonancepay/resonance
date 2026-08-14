@@ -11,163 +11,31 @@ import {
   MoreVerticalIcon,
   UserIcon,
 } from "@resonance/ui/icons";
-import { JobStatusValue } from "@resonance/ui/job-status";
 import { ColumnDef } from "@tanstack/react-table";
 import { Dropdown, MenuProps } from "antd";
 import Link from "next/link";
+import { ApproveJobFormData } from "../hooks/useJobApproval";
+import { ApproveJobModal } from "../components/modal/approve-job-modal";
 import { JobTypeTag } from "../components/job-type-tag";
+import { Job } from "../types/job.type";
 
-interface Job {
-  jobId: string;
-  siteName: string;
-  address: string;
-  cleanerName: string;
-  jobType: string;
-  date: string;
-  time: string;
-  status: JobStatusValue;
-}
-
-const mockData: Job[] = [
+const buildColumns = (onApprove: (jobId: number) => void): ColumnDef<Job>[] => [
   {
-    jobId: "Job-1234",
-    siteName: "Northgare Office - Floor 3",
-    address: "12 Northgate Rd, London EC1",
-    cleanerName: "Mary Abam",
-    jobType: "Office",
-    date: "11 July 2026",
-    time: "15:55 PM",
-    status: "scheduled",
-  },
-  {
-    jobId: "Job-1235",
-    siteName: "Northgare Office - Floor 3",
-    address: "12 Northgate Rd, London EC1",
-    cleanerName: "Priscilla Iwalewa",
-    jobType: "Home",
-    date: "11 July 2026",
-    time: "15:55 PM",
-    status: "paid",
-  },
-  {
-    jobId: "Job-1236",
-    siteName: "Northgare Office - Floor 3",
-    address: "12 Northgate Rd, London EC1",
-    cleanerName: "Mary Olaniyan",
-    jobType: "Warehouse",
-    date: "11 July 2026",
-    time: "15:55 PM",
-    status: "in-progress",
-  },
-  {
-    jobId: "Job-1237",
-    siteName: "Northgare Office - Floor 3",
-    address: "12 Northgate Rd, London EC1",
-    cleanerName: "Margaret Obubra",
-    jobType: "Public",
-    date: "11 July 2026",
-    time: "15:55 PM",
-    status: "paid",
-  },
-  {
-    jobId: "Job-1238",
-    siteName: "Northgare Office - Floor 3",
-    address: "12 Northgate Rd, London EC1",
-    cleanerName: "Grace Tukur",
-    jobType: "Home",
-    date: "11 July 2026",
-    time: "15:55 PM",
-    status: "in-progress",
-  },
-  {
-    jobId: "Job-1239",
-    siteName: "Northgare Office - Floor 3",
-    address: "12 Northgate Rd, London EC1",
-    cleanerName: "Stephen Opuogbo",
-    jobType: "Home",
-    date: "11 July 2026",
-    time: "15:55 PM",
-    status: "under-review",
-  },
-  {
-    jobId: "Job-1240",
-    siteName: "Northgare Office - Floor 3",
-    address: "12 Northgate Rd, London EC1",
-    cleanerName: "Grace Aliyu",
-    jobType: "Hospital",
-    date: "11 July 2026",
-    time: "15:55 PM",
-    status: "pending",
-  },
-  {
-    jobId: "Job-1241",
-    siteName: "Northgare Office - Floor 3",
-    address: "12 Northgate Rd, London EC1",
-    cleanerName: "John Maduabuchi",
-    jobType: "Office",
-    date: "11 July 2026",
-    time: "15:55 PM",
-    status: "in-progress",
-  },
-  {
-    jobId: "Job-1242",
-    siteName: "Northgare Office - Floor 3",
-    address: "12 Northgate Rd, London EC1",
-    cleanerName: "Esther Amakiri",
-    jobType: "Office",
-    date: "11 July 2026",
-    time: "15:55 PM",
-    status: "under-review",
-  },
-  {
-    jobId: "Job-1243",
-    siteName: "Northgare Office - Floor 3",
-    address: "12 Northgate Rd, London EC1",
-    cleanerName: "Samuel Aluko",
-    jobType: "Office",
-    date: "11 July 2026",
-    time: "15:55 PM",
-    status: "scheduled",
-  },
-  {
-    jobId: "Job-1244",
-    siteName: "Northgare Office - Floor 3",
-    address: "12 Northgate Rd, London EC1",
-    cleanerName: "Hannah Wariboko",
-    jobType: "Office",
-    date: "11 July 2026",
-    time: "15:55 PM",
-    status: "scheduled",
-  },
-  {
-    jobId: "Job-1245",
-    siteName: "Northgare Office - Floor 3",
-    address: "12 Northgate Rd, London EC1",
-    cleanerName: "Joshua Amakiri",
-    jobType: "Office",
-    date: "11 July 2026",
-    time: "15:55 PM",
-    status: "cancelled",
-  },
-];
-
-const columns: ColumnDef<Job>[] = [
-  {
-    accessorKey: "jobId",
+    accessorKey: "job_id_label",
     header: "Job ID",
     cell: ({ row }) => (
       <Text variant="bodySmall" tone="primary">
-        {row.original.jobId}
+        {row.original.job_id_label}
       </Text>
     ),
   },
   {
-    accessorKey: "siteName",
+    accessorKey: "site_name",
     header: "Cleaning Site",
     cell: ({ row }) => (
       <Container className="flex flex-col gap-0.5">
         <Text variant="bodySmall" tone="primary">
-          {row.original.siteName}
+          {row.original.site_name}
         </Text>
         <Text variant="bodyXSmall" tone="secondary">
           {row.original.address}
@@ -176,7 +44,7 @@ const columns: ColumnDef<Job>[] = [
     ),
   },
   {
-    accessorKey: "cleanerName",
+    accessorKey: "cleaner_name",
     header: "Cleaner",
     cell: ({ row }) => (
       <Container className="flex items-center gap-2">
@@ -184,26 +52,26 @@ const columns: ColumnDef<Job>[] = [
           <UserIcon size={14} className="text-brand-secondary-text-icons" />
         </Container>
         <Text variant="bodySmall" tone="primary">
-          {row.original.cleanerName}
+          {row.original.cleaner_name}
         </Text>
       </Container>
     ),
   },
   {
-    accessorKey: "jobType",
+    accessorKey: "job_type",
     header: "Job Type",
-    cell: ({ row }) => <JobTypeTag label={row.original.jobType} />,
+    cell: ({ row }) => <JobTypeTag label={row.original.job_type} />,
   },
   {
-    accessorKey: "date",
+    accessorKey: "job_date",
     header: "Date",
     cell: ({ row }) => (
       <Container className="flex flex-col gap-0.5">
         <Text variant="bodySmall" tone="primary">
-          {row.original.date}
+          {row.original.job_date}
         </Text>
         <Text variant="bodyXSmall" tone="secondary">
-          {row.original.time}
+          {row.original.job_time}
         </Text>
       </Container>
     ),
@@ -217,7 +85,9 @@ const columns: ColumnDef<Job>[] = [
     id: "actions",
     header: "",
     cell: ({ row }) => {
-      const status = row.original.status;
+      // API sends Title Case with spaces (e.g. "Under Review"), so normalize
+      // before comparing rather than checking against the raw value.
+      const status = row.original.status.trim().toLowerCase().replace(/\s+/g, "-");
       const isEditable = status === "pending" || status === "scheduled";
       const isUnderReview = status === "under-review";
 
@@ -225,7 +95,7 @@ const columns: ColumnDef<Job>[] = [
         {
           key: "view",
           label: (
-            <Link href={"/jobs/id"}>
+            <Link href={`/jobs/${row.original.job_id}`}>
               <Container className="flex items-center justify-between gap-8">
                 <Text variant="bodyXSmall" tone="primary">
                   View
@@ -240,12 +110,14 @@ const columns: ColumnDef<Job>[] = [
               {
                 key: "edit",
                 label: (
-                  <Container className="flex items-center justify-between gap-8">
-                    <Text variant="bodyXSmall" tone="primary">
-                      Edit
-                    </Text>
-                    <EditIcon size={20} className="text-secondary" />
-                  </Container>
+                  <Link href={`/jobs/${row.original.job_id}/edit`}>
+                    <Container className="flex items-center justify-between gap-8">
+                      <Text variant="bodyXSmall" tone="primary">
+                        Edit
+                      </Text>
+                      <EditIcon size={20} className="text-secondary" />
+                    </Container>
+                  </Link>
                 ),
               },
               {
@@ -265,6 +137,7 @@ const columns: ColumnDef<Job>[] = [
           ? [
               {
                 key: "approve",
+                onClick: () => onApprove(row.original.job_id),
                 label: (
                   <Container className="flex items-center justify-between gap-8">
                     <Text variant="bodyXSmall" tone="primary">
@@ -304,6 +177,39 @@ const columns: ColumnDef<Job>[] = [
   },
 ];
 
-export const JobListTable = () => {
-  return <DataTable columns={columns} data={mockData} />;
+interface JobListTableProps {
+  data: Job[];
+  isLoading?: boolean;
+  approveModalOpen: boolean;
+  onOpenApprove: (jobId: number) => void;
+  onCloseApprove: () => void;
+  onApprove: (data: ApproveJobFormData) => void;
+  isApproving?: boolean;
+}
+
+export const JobListTable = ({
+  data,
+  isLoading,
+  approveModalOpen,
+  onOpenApprove,
+  onCloseApprove,
+  onApprove,
+  isApproving,
+}: JobListTableProps) => {
+  return (
+    <>
+      <DataTable
+        columns={buildColumns(onOpenApprove)}
+        data={data}
+        emptyTitle={isLoading ? "Loading jobs…" : "No records found"}
+      />
+
+      <ApproveJobModal
+        isOpen={approveModalOpen}
+        onClose={onCloseApprove}
+        onApprove={onApprove}
+        isPending={isApproving}
+      />
+    </>
+  );
 };

@@ -3,8 +3,32 @@ import { FlagIcon, JobIcon, ScoreIcon } from "@resonance/ui/icons";
 import { Col, Row } from "antd";
 import React from "react";
 import { CleanerPerformanceProgressBar } from "./cleaner-progress-bar";
+import { CleanerPerformance as CleanerPerformanceData } from "../types/cleaner.type";
 
-export const CleanerPerformance = () => {
+// Field formats (score, client_rating, checklist_completion, ontime_arrival)
+// are unconfirmed strings — parsed defensively rather than assumed.
+const parsePercentage = (value: string): number => {
+  const match = value.match(/\d+(\.\d+)?/);
+  return match ? Math.min(100, Math.max(0, parseFloat(match[0]))) : 0;
+};
+
+const parseRatingPercentage = (value: string): number => {
+  const match = value.match(/^(\d+(\.\d+)?)\s*\/\s*(\d+(\.\d+)?)/);
+  if (match) {
+    const numerator = parseFloat(match[1]);
+    const denominator = parseFloat(match[3]);
+    if (denominator > 0) {
+      return Math.min(100, Math.max(0, (numerator / denominator) * 100));
+    }
+  }
+  return parsePercentage(value);
+};
+
+interface CleanerPerformanceProps {
+  performance: CleanerPerformanceData;
+}
+
+export const CleanerPerformance = ({ performance }: CleanerPerformanceProps) => {
   return (
     <Container>
       <Row gutter={12} className="mb-6">
@@ -16,13 +40,8 @@ export const CleanerPerformance = () => {
               </Text>
               <Container className="flex items-center gap-1">
                 <Text variant="h3" tone="primary">
-                  98%
+                  {performance.score}
                 </Text>
-                <Container className="bg-success-bg-light rounded-lg py-px px-1">
-                  <Text tone="success" variant="buttonXS">
-                    +3
-                  </Text>
-                </Container>
               </Container>
             </Container>
             <ScoreIcon size={32} className="text-brand-text-icons" />
@@ -36,7 +55,7 @@ export const CleanerPerformance = () => {
               </Text>
               <Container className="flex items-center gap-1">
                 <Text variant="h3" tone="primary">
-                  50
+                  {performance.jobs}
                 </Text>
               </Container>
             </Container>
@@ -51,7 +70,7 @@ export const CleanerPerformance = () => {
               </Text>
               <Container className="flex items-center gap-1">
                 <Text variant="h3" tone="primary">
-                  02
+                  {performance.flagged}
                 </Text>
               </Container>
             </Container>
@@ -62,21 +81,18 @@ export const CleanerPerformance = () => {
       <Container>
         <CleanerPerformanceProgressBar
           label="Checklist Completion"
-          value="98%"
-          percentage={98}
-          variant="success"
+          value={performance.checklist_completion}
+          percentage={parsePercentage(performance.checklist_completion)}
         />
         <CleanerPerformanceProgressBar
           label="On-Time Arrival"
-          value="40%"
-          percentage={40}
-          variant="warning"
+          value={performance.ontime_arrival}
+          percentage={parsePercentage(performance.ontime_arrival)}
         />
         <CleanerPerformanceProgressBar
           label="Client Rating"
-          value="2.0/5.0"
-          percentage={40}
-          variant="danger"
+          value={performance.client_rating}
+          percentage={parseRatingPercentage(performance.client_rating)}
         />
       </Container>
     </Container>

@@ -1,15 +1,16 @@
 "use client";
 import { Button, Container, Input, Text } from "@resonance/ui";
+import { EyeOffIcon, EyeOnIcon, NextIcon } from "@resonance/ui/icons";
 import { AuthWrapper } from "../components/wrappers/auth-wrapper";
-import { NextIcon } from "@resonance/ui/icons";
-import { useRouter } from "next/navigation";
 import { LoginInfo } from "../components/login-info";
 import { useLoginScreen } from "../hooks/useAuth";
-import React from "react";
+import { useRouter } from "next/navigation";
+import React, { useState } from "react";
 
 export const LoginScreen = () => {
   const router = useRouter();
   const {
+    step,
     formData,
     errors,
     serverError,
@@ -17,9 +18,16 @@ export const LoginScreen = () => {
     handleLogin,
     isPending,
   } = useLoginScreen();
+  const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <AuthWrapper authLabel="Welcome back! 😎">
+    <AuthWrapper
+      authLabel={
+        step === "email"
+          ? "Enter your email to access your cleaning jobs."
+          : "Welcome back! Enter your password to continue."
+      }
+    >
       <Container
         as="form"
         onSubmit={(e: React.FormEvent) => {
@@ -27,42 +35,63 @@ export const LoginScreen = () => {
           handleLogin();
         }}
       >
-        <Container className="mb-4">
-          <Input
-            label="Email Address"
-            required
-            placeholder="example@mail.com"
-            type="email"
-            value={formData.email}
-            onChange={handleChange("email")}
-            error={errors.email}
-          />
-        </Container>
-        <Container className="mb-4">
-          <Input
-            type="password"
-            label="Password"
-            required
-            placeholder="Enter your password"
-            value={formData.password}
-            onChange={handleChange("password")}
-            error={errors.password}
-          />
-          <Container className="flex justify-end mt-2">
-            <Container
-              onClick={() => router.push("recover-account")}
-              as="button"
-              type="button"
-            >
-              <Text
-                variant="button"
-                className="text-brand-secondary-text-icons"
+        {step === "email" && (
+          <Container className="mb-4">
+            <Input
+              label="Email Address"
+              required
+              placeholder="example@mail.com"
+              type="email"
+              value={formData.email}
+              onChange={handleChange("email")}
+              error={errors.email}
+            />
+          </Container>
+        )}
+        {step === "password" && (
+          <Container className="mb-4">
+            <Input
+              type={showPassword ? "text" : "password"}
+              label="Password"
+              required
+              placeholder="Enter your password"
+              value={formData.password}
+              onChange={handleChange("password")}
+              error={errors.password}
+              autoFocus
+              rightIcon={
+                <Container
+                  as="button"
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="cursor-pointer"
+                >
+                  {showPassword ? (
+                    <EyeOffIcon size={18} className="text-secondary" />
+                  ) : (
+                    <EyeOnIcon size={18} className="text-secondary" />
+                  )}
+                </Container>
+              }
+            />
+            <Container className="flex justify-center mt-3">
+              <Container
+                as="button"
+                type="button"
+                onClick={() => router.push("/forgot-password")}
               >
-                Forgot password
-              </Text>
+                <Text variant="button" className="text-brand-secondary-text-icons">
+                  Forgot password?
+                </Text>
+              </Container>
             </Container>
           </Container>
-        </Container>
+        )}
+        {serverError && (
+          <Text variant="bodySmall" className="text-danger-text-icons mb-2">
+            {serverError}
+          </Text>
+        )}
 
         <Container className="mt-8 w-full">
           <Button
@@ -74,23 +103,11 @@ export const LoginScreen = () => {
             disabled={isPending}
             loading={isPending}
           >
-            Login
+            {step === "email" ? "Continue" : "Log In"}
           </Button>
         </Container>
       </Container>
 
-      <Container className="mt-6">
-        <Text className="text-center text-primary" variant="bodySmall">
-          Don&apos;t have an account?{"  "}
-          <Container as="span">
-            <Container onClick={() => router.push("/register")} as="button">
-              <Text variant="button" className="text-brand-tertiary-text-icons">
-                Register
-              </Text>
-            </Container>
-          </Container>
-        </Text>
-      </Container>
       <Container className="mt-8">
         <LoginInfo />
       </Container>

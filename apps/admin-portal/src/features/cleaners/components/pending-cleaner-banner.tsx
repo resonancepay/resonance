@@ -12,7 +12,23 @@ import { ApproveCleanerModal } from "./modal/approve-cleaner-modal";
 import { ArchiveCleanerModal } from "./modal/archive-cleaner-modal";
 import { RejectCleanerModal } from "./modal/reject-cleaner-modal";
 
-export const PendingCleanerBanner = () => {
+interface PendingCleanerBannerProps {
+  name: string;
+  email: string;
+  onApprove: () => void;
+  onReject: (data: { reason: string; description: string }) => void;
+  isApproving?: boolean;
+  isRejecting?: boolean;
+}
+
+export const PendingCleanerBanner = ({
+  name,
+  email,
+  onApprove,
+  onReject,
+  isApproving,
+  isRejecting,
+}: PendingCleanerBannerProps) => {
   const [rejectModalOpen, setRejectModalOpen] = useState(false);
   const [approveModalOpen, setApproveModalOpen] = useState(false);
   const [archiveModalOpen, setArchiveModalOpen] = useState(false);
@@ -26,10 +42,10 @@ export const PendingCleanerBanner = () => {
           </Container>
           <Container>
             <Text tone="primary" variant="h5">
-              Mary Abram
+              {name}
             </Text>
             <Text tone="secondary" variant="bodySmall">
-              ekitifountain@icloud.com
+              {email}
             </Text>
           </Container>
         </Container>
@@ -61,13 +77,21 @@ export const PendingCleanerBanner = () => {
       <RejectCleanerModal
         isOpen={rejectModalOpen}
         onClose={() => setRejectModalOpen(false)}
-        onReject={() => setRejectModalOpen(false)}
+        isPending={isRejecting}
+        onReject={(data) => {
+          onReject(data);
+          setRejectModalOpen(false);
+        }}
       />
 
       <ApproveCleanerModal
         isOpen={approveModalOpen}
         onClose={() => setApproveModalOpen(false)}
-        onApprove={() => setApproveModalOpen(false)}
+        isPending={isApproving}
+        onApprove={() => {
+          onApprove();
+          setApproveModalOpen(false);
+        }}
       />
 
       <ArchiveCleanerModal

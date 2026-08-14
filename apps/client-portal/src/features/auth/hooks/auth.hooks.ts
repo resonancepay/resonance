@@ -1,34 +1,35 @@
 import { useMutation } from "@tanstack/react-query";
 import {
   login,
-  register,
   resendOtp,
-  forgotPassword,
-  resetPassword,
   verifyOtp,
   profile,
+  verifyPassword,
+  refresh,
+  logout,
+  changePassword,
+  deleteProfile,
 } from "../services/auth.service";
 import {
   LoginPayload,
-  ForgotPasswordPayload,
-  ResetPasswordPayload,
-  RegisterResponse,
+  LoginResponse,
+  ResendOtpPayload,
+  ResendOtpResponse,
   VerifyOtpPayload,
+  VerifyOtpResponse,
+  VerifyPasswordPayload,
+  VerifyPasswordResponse,
+  RefreshResponse,
+  LogoutResponse,
+  ChangePasswordPayload,
+  Profile,
+  DeleteProfileResponse,
 } from "../types/auth.type";
-import { useToast } from "@/shared/toast";
 
-export const useRegister = (
-  sc: (val: RegisterResponse) => void,
+export const useLogin = (
+  sc: (val: LoginResponse) => void,
   ec?: (err: any) => void,
 ) => {
-  return useMutation({
-    mutationFn: register,
-    onSuccess: sc,
-    onError: ec,
-  });
-};
-
-export const useLogin = (sc: (val: any) => void, ec?: (err: any) => void) => {
   return useMutation({
     mutationFn: (payload: LoginPayload) => login(payload),
     onSuccess: sc,
@@ -37,55 +38,18 @@ export const useLogin = (sc: (val: any) => void, ec?: (err: any) => void) => {
 };
 
 export const useResendOtp = (
-  sc: (val: any) => void,
+  sc: (val: ResendOtpResponse) => void,
   ec?: (err: any) => void,
 ) => {
   return useMutation({
-    mutationFn: (user_id: string) => resendOtp(user_id),
-    onSuccess: sc,
-    onError: ec,
-  });
-};
-
-export const useForgotPassword = (
-  sc: (val: any) => void,
-  ec?: (err: any) => void,
-) => {
-  const { addToast } = useToast();
-  return useMutation({
-    mutationFn: (payload: ForgotPasswordPayload) => forgotPassword(payload),
-    onSuccess: (res) => {
-      sc(res);
-      addToast({
-        title: "Reset link sent",
-        description: "Password reset link sent to email",
-        variant: "success",
-        duration: 10000,
-      });
-    },
-    onError: (e) => {
-      console.log(e, "Error page");
-      addToast({
-        title: "",
-        variant: "error",
-      });
-    },
-  });
-};
-
-export const useResetPassword = (
-  sc: (val: any) => void,
-  ec?: (err: any) => void,
-) => {
-  return useMutation({
-    mutationFn: (payload: ResetPasswordPayload) => resetPassword(payload),
+    mutationFn: (payload: ResendOtpPayload) => resendOtp(payload),
     onSuccess: sc,
     onError: ec,
   });
 };
 
 export const useVerifyOtp = (
-  sc: (val: any) => void,
+  sc: (val: VerifyOtpResponse) => void,
   ec?: (err: any) => void,
 ) => {
   return useMutation({
@@ -96,11 +60,66 @@ export const useVerifyOtp = (
 };
 
 export const useGetProfile = (
-  sc: (val: any) => void,
+  sc: (val: Profile) => void,
   ec?: (err: any) => void,
 ) => {
   return useMutation({
     mutationFn: () => profile(),
+    onSuccess: sc,
+    onError: ec,
+  });
+};
+
+export const useVerifyPassword = (
+  sc: (val: VerifyPasswordResponse) => void,
+  ec?: (err: any) => void,
+) => {
+  return useMutation({
+    mutationFn: (payload: VerifyPasswordPayload) => verifyPassword(payload),
+    onSuccess: sc,
+    onError: ec,
+  });
+};
+
+export const useRefresh = (
+  sc: (val: RefreshResponse) => void,
+  ec?: (err: any) => void,
+) => {
+  return useMutation({
+    mutationFn: () => refresh(),
+    onSuccess: sc,
+    onError: ec,
+  });
+};
+
+export const useLogout = (
+  sc: (val: LogoutResponse) => void,
+  ec?: (err: any) => void,
+) => {
+  return useMutation({
+    mutationFn: () => logout(),
+    onSuccess: sc,
+    onError: ec,
+  });
+};
+
+export const useChangePassword = (
+  sc: (val: any) => void,
+  ec?: (err: any) => void,
+) => {
+  return useMutation({
+    mutationFn: (payload: ChangePasswordPayload) => changePassword(payload),
+    onSuccess: sc,
+    onError: ec,
+  });
+};
+
+export const useDeleteProfile = (
+  sc: (val: DeleteProfileResponse) => void,
+  ec?: (err: any) => void,
+) => {
+  return useMutation({
+    mutationFn: () => deleteProfile(),
     onSuccess: sc,
     onError: ec,
   });

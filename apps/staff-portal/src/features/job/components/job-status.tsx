@@ -1,6 +1,9 @@
 import { Container, Text } from "@resonance/ui";
-import { JOB_STATUS_CONFIG, JobStatusColor } from "@resonance/ui/job-status";
-import { JobType } from "../types/job.types";
+import {
+  JOB_STATUS_CONFIG,
+  JobStatusColor,
+  JobStatusValue,
+} from "@resonance/ui/job-status";
 
 // Tailwind's scanner needs literal class strings, so a color family from the
 // shared config is looked up here rather than interpolated into a class name.
@@ -22,8 +25,30 @@ const TEXT_ICON_CLASS: Record<JobStatusColor, string> = {
   danger: "text-danger-text-icons",
 };
 
-export const JobStatus = ({ status }: { status: JobType }) => {
-  const { label, color, icon: Icon } = JOB_STATUS_CONFIG[status];
+export const JobStatus = ({ status }: { status: string }) => {
+  // API sends Title Case with spaces (e.g. "Under Review"), not the config's
+  // lowercase-hyphenated keys, so normalize before the lookup rather than
+  // crashing on the mismatch.
+  const normalized = status
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "-") as JobStatusValue;
+  const config = JOB_STATUS_CONFIG[normalized];
+
+  if (!config) {
+    return (
+      <Container
+        as="span"
+        className="rounded-lg px-2 py-1 flex items-center gap-1.5 shrink-0 whitespace-nowrap bg-muted"
+      >
+        <Text variant="buttonXS" className="text-secondary">
+          {status}
+        </Text>
+      </Container>
+    );
+  }
+
+  const { label, color, icon: Icon } = config;
 
   return (
     <Container

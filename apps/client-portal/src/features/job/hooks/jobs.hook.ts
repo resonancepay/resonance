@@ -1,17 +1,29 @@
-import { useQuery } from "@tanstack/react-query";
-import { job, jobs } from "../services/job.service";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { job, jobs, reviewJob } from "../services/job.service";
+import { ReviewJobPayload } from "../types/job.types";
 
 export const useGetJobs = () => {
   return useQuery({
     queryKey: ["jobs"],
-    queryFn: jobs,
+    queryFn: () => jobs(),
   });
 };
 
-export const useGetJob = (jobId: string) => {
+export const useGetJob = (jobId: number, enabled = true) => {
   return useQuery({
-    queryKey: ["jobs", jobId],
+    queryKey: ["job", jobId],
     queryFn: () => job(jobId),
-    enabled: !!jobId,
+    enabled,
+  });
+};
+
+export const useReviewJob = (
+  sc?: (val: any) => void,
+  ec?: (err: any) => void,
+) => {
+  return useMutation({
+    mutationFn: (payload: ReviewJobPayload) => reviewJob(payload),
+    onSuccess: sc,
+    onError: ec,
   });
 };

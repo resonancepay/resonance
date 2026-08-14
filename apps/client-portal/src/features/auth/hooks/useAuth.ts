@@ -1,131 +1,52 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
-  useForgotPassword,
   useGetProfile,
   useLogin,
-  useRegister,
   useResendOtp,
-  useResetPassword,
   useVerifyOtp,
+  useVerifyPassword,
 } from "./auth.hooks";
-import { LoginPayload, Profile, RegisterUser } from "../types/auth.type";
-import {
-  emailSchema,
-  loginSchema,
-  registerSchema,
-  resetPasswordSchema,
-} from "../types/auth.schema";
+import { Profile } from "../types/auth.type";
+import { createPasswordSchema, emailSchema } from "../types/auth.schema";
 import { useToast } from "@/shared/toast";
 import { useAuthStore } from "@/shared/store/auth.store";
+
+const RESEND_OTP_SECONDS = 50;
 
 const PASSWORD_REQUIREMENTS = [
   { label: "Uppercase", regex: /[A-Z]/ },
   { label: "Lowercase", regex: /[a-z]/ },
   { label: "Number", regex: /[0-9]/ },
   { label: "Special character", regex: /[!@#$%^&*(),.?":{}|<>]/ },
-  { label: "Min 8 characters", regex: /.{8,}/ },
+  { label: "6 characters", regex: /.{6,}/ },
 ];
-
-type FormErrors = Partial<Record<keyof RegisterUser, string>>;
-
-export const useRegisterScreen = () => {
-  const router = useRouter();
-
-  const [formData, setFormData] = useState<RegisterUser>({
-    first_name: "",
-    last_name: "",
-    email: "",
-    phone: "",
-    dob: "",
-    password: "",
-  });
-
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [agreedToTerms, setAgreedToTerms] = useState(false);
-
-  const { mutate, isPending } = useRegister((data) => {
-    console.log(data);
-    router.push(
-      `/verify-email?email=${encodeURIComponent(formData.email)}&id=${data.user_id}`,
-    );
-  });
-
-  const handleChange =
-    (field: keyof RegisterUser) => (e: ChangeEvent<HTMLInputElement>) => {
-      setFormData((prev) => ({ ...prev, [field]: e.target.value }));
-      // Clear the error for the field as the user types
-      if (errors[field]) {
-        setErrors((prev) => ({ ...prev, [field]: undefined }));
-      }
-    };
-
-  const handlePhoneChange = (value: string) => {
-    setFormData((prev) => ({ ...prev, phone: value }));
-    if (errors.phone) {
-      setErrors((prev) => ({ ...prev, phone: undefined }));
-    }
-  };
-
-  const handleRegister = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const result = registerSchema.safeParse(formData);
-
-    if (!result.success) {
-      const fieldErrors: FormErrors = {};
-      result.error.issues.forEach((err) => {
-        const field = err.path[0] as keyof RegisterUser;
-        if (!fieldErrors[field]) {
-          fieldErrors[field] = err.message;
-        }
-      });
-      setErrors(fieldErrors);
-      return;
-    }
-
-    if (!agreedToTerms) return;
-
-    // Convert dob from YYYY-MM-DD (native date input) to DD/MM/YYYY before sending
-    const [year, month, day] = formData.dob.split("-");
-    const formattedDob = `${day}/${month}/${year}`;
-
-    mutate({ ...formData, dob: formattedDob });
-  };
-
-  const requirements = PASSWORD_REQUIREMENTS.map((req) => ({
-    label: req.label,
-    passed: req.regex.test(formData.password),
-  }));
-
-  const allRequirementsMet = requirements.every((r) => r.passed);
-
-  return {
-    formData,
-    errors,
-    agreedToTerms,
-    setAgreedToTerms,
-    handleChange,
-    handlePhoneChange,
-    handleRegister,
-    isPending,
-    requirements,
-    allRequirementsMet,
-  };
-};
 
 export const useVerifyEmailScreen = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams.get("email") ?? "";
-  const user_id = searchParams.get("id") ?? "";
+  const clientId = searchParams.get("clientId") ?? "";
 
   const [otp, setOtp] = useState("");
   const [otpError, setOtpError] = useState("");
+  const [resendCountdown, setResendCountdown] = useState(RESEND_OTP_SECONDS);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setResendCountdown((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   const { mutate: verifyMutate, isPending: isVerifying } = useVerifyOtp(
     () => {
-      router.push("/success-page");
+      // First-time-login OTP is now verified — send them to set their
+      // password. There's no separate create-password endpoint: the
+      // create-password screen calls the same verify-password endpoint,
+      // which the backend handles as "save this as their password" on a
+      // first-time account and as normal validation otherwise.
+      router.push(`/create-password?email=${encodeURIComponent(email)}`);
     },
     () => {
       setOtpError("Invalid code. Please check and try again.");
@@ -134,6 +55,7 @@ export const useVerifyEmailScreen = () => {
 
   const { mutate: resendMutate, isPending: isResending } = useResendOtp(() => {
     setOtpError("");
+    setResendCountdown(RESEND_OTP_SECONDS);
   });
 
   const handleVerifyEmail = (e: React.FormEvent) => {
@@ -143,11 +65,16 @@ export const useVerifyEmailScreen = () => {
       return;
     }
     setOtpError("");
-    verifyMutate({ otp_code: otp, user_id: Number(user_id) });
+    verifyMutate({ otp_code: otp, client_id: Number(clientId) });
   };
 
   const handleResendOtp = () => {
-    resendMutate(user_id);
+    if (resendCountdown > 0) return;
+    resendMutate({ email });
+  };
+
+  const handleBack = () => {
+    router.push("/login");
   };
 
   return {
@@ -157,23 +84,30 @@ export const useVerifyEmailScreen = () => {
     otpError,
     handleVerifyEmail,
     handleResendOtp,
+    handleBack,
     isVerifying,
     isResending,
+    resendCountdown,
   };
 };
 
-type LoginErrors = Partial<Record<keyof LoginPayload, string>>;
+// Confirmed against Swagger: login is a two-step flow — step 1 checks the
+// email only (and sends an OTP + redirects to verify-email if it's a
+// first-time login); step 2 verifies the password and returns the token.
+type LoginStep = "email" | "password";
+type LoginErrors = { email?: string; password?: string };
 
 export const useLoginScreen = () => {
   const router = useRouter();
   const { setAuth } = useAuthStore();
+  const { addToast } = useToast();
 
-  const [formData, setFormData] = useState<LoginPayload>({
-    email: "",
-    password: "",
-  });
-
+  const [step, setStep] = useState<LoginStep>("email");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<LoginErrors>({});
+  const [serverError, setServerError] = useState("");
+
   const { mutate: getProfile } = useGetProfile(
     (data: Profile) => {
       const currentUser = useAuthStore.getState().user;
@@ -183,47 +117,57 @@ export const useLoginScreen = () => {
         return;
       }
 
-      setAuth({
-        access_token: currentUser.access_token,
-        must_change_password: currentUser.must_change_password,
-        token_type: currentUser.token_type,
-        userInfo: data,
-      });
+      setAuth({ ...currentUser, userInfo: data });
       router.replace("/dashboard");
     },
     () => {},
   );
-  const [serverError, setServerError] = useState("");
-  const { addToast } = useToast();
 
-  const { mutate, isPending } = useLogin(
+  const { mutate: loginMutate, isPending: isCheckingEmail } = useLogin(
     (data) => {
-      setAuth({
-        access_token: data.access_token,
-        token_type: data.token_type,
-        must_change_password: data.must_change_password,
-      });
-      getProfile();
+      if (data.first_time_login) {
+        router.push(
+          `/verify-email?email=${encodeURIComponent(email)}&clientId=${data.client_id}`,
+        );
+        return;
+      }
+      setStep("password");
     },
     (e) => {
       const detail = e?.response?.data?.detail;
       const message =
         typeof detail === "string" && detail
           ? detail
-          : "Invalid email or password. Please try again.";
-
+          : "We couldn't find an account with that email.";
       setServerError(message);
-      addToast({
-        variant: "error",
-        title: "Login failed",
-        description: message,
-      });
     },
   );
 
+  const { mutate: verifyPasswordMutate, isPending: isVerifyingPassword } =
+    useVerifyPassword(
+      (data) => {
+        setAuth({ access_token: data.access_token, token_type: data.token_type });
+        getProfile();
+      },
+      (e) => {
+        const detail = e?.response?.data?.detail;
+        const message =
+          typeof detail === "string" && detail
+            ? detail
+            : "Incorrect password. Please try again.";
+        setServerError(message);
+        addToast({
+          variant: "error",
+          title: "Login failed",
+          description: message,
+        });
+      },
+    );
+
   const handleChange =
-    (field: keyof LoginPayload) => (e: ChangeEvent<HTMLInputElement>) => {
-      setFormData((prev) => ({ ...prev, [field]: e.target.value }));
+    (field: "email" | "password") => (e: ChangeEvent<HTMLInputElement>) => {
+      if (field === "email") setEmail(e.target.value);
+      else setPassword(e.target.value);
       if (errors[field]) {
         setErrors((prev) => ({ ...prev, [field]: undefined }));
       }
@@ -231,149 +175,182 @@ export const useLoginScreen = () => {
     };
 
   const handleLogin = () => {
-    const result = loginSchema.safeParse(formData);
-
-    if (!result.success) {
-      const fieldErrors: LoginErrors = {};
-      result.error.issues.forEach((err) => {
-        const field = err.path[0] as keyof LoginPayload;
-        if (!fieldErrors[field]) {
-          fieldErrors[field] = err.message;
-        }
-      });
-      setErrors(fieldErrors);
+    if (step === "email") {
+      const result = emailSchema.safeParse(email);
+      if (!result.success) {
+        setErrors({ email: result.error.issues[0].message });
+        return;
+      }
+      loginMutate({ email });
       return;
     }
 
-    mutate(formData);
+    if (!password) {
+      setErrors({ password: "Password is required" });
+      return;
+    }
+    verifyPasswordMutate({ email, password });
   };
 
   return {
-    formData,
+    step,
+    formData: { email, password },
     errors,
     serverError,
     handleChange,
     handleLogin,
+    isPending: isCheckingEmail || isVerifyingPassword,
+  };
+};
+
+export const useCreatePasswordScreen = () => {
+  // No separate create-password endpoint — this calls the same
+  // verify-password endpoint used by login. The backend handles it as
+  // "save this as their password" for a first-time account, and returns
+  // the access token either way.
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const email = searchParams.get("email") ?? "";
+  const { setAuth } = useAuthStore();
+  const { addToast } = useToast();
+
+  const [password, setPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
+
+  const { mutate: getProfile } = useGetProfile(
+    (data: Profile) => {
+      const currentUser = useAuthStore.getState().user;
+
+      if (!currentUser?.access_token) {
+        router.replace("/login");
+        return;
+      }
+
+      setAuth({ ...currentUser, userInfo: data });
+      router.replace("/success-confirmation");
+    },
+    () => {},
+  );
+
+  const { mutate: verifyPasswordMutate, isPending } = useVerifyPassword(
+    (data) => {
+      setAuth({ access_token: data.access_token, token_type: data.token_type });
+      getProfile();
+    },
+    (e) => {
+      const detail = e?.response?.data?.detail;
+      const message =
+        typeof detail === "string" && detail
+          ? detail
+          : "Something went wrong. Please try again.";
+      addToast({
+        variant: "error",
+        title: "Couldn't create password",
+        description: message,
+      });
+    },
+  );
+
+  const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+    if (passwordError) setPasswordError("");
+  };
+
+  const requirements = PASSWORD_REQUIREMENTS.map((req) => ({
+    label: req.label,
+    passed: req.regex.test(password),
+  }));
+  const allRequirementsMet = requirements.every((r) => r.passed);
+
+  const handleCreatePassword = (e: React.FormEvent) => {
+    e.preventDefault();
+    const result = createPasswordSchema.safeParse(password);
+    if (!result.success) {
+      setPasswordError(result.error.issues[0].message);
+      return;
+    }
+    verifyPasswordMutate({ email, password });
+  };
+
+  return {
+    email,
+    password,
+    passwordError,
+    agreedToTerms,
+    setAgreedToTerms,
+    requirements,
+    allRequirementsMet,
+    handlePasswordChange,
+    handleCreatePassword,
     isPending,
   };
 };
 
-export const useRecoverAccountScreen = () => {
+// NOTE: unlinked — no forgot-password endpoint exists. UI/validation kept
+// in place for when one is added; submit is a no-op until then.
+export const useForgotPasswordScreen = () => {
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
-  const router = useRouter();
-
-  const { mutate, isPending } = useForgotPassword(
-    () => {
-      router.replace("/login");
-    },
-    () => {},
-  );
 
   const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
     if (emailError) setEmailError("");
   };
 
-  const handleRecoverAccount = () => {
+  const handleForgotPassword = (e: React.FormEvent) => {
+    e.preventDefault();
     const result = emailSchema.safeParse(email);
-
     if (!result.success) {
       setEmailError(result.error.issues[0].message);
       return;
     }
-
-    mutate({
-      email,
-      reset_password_link: `${window.location.origin}/reset-password`,
-    });
+    // No endpoint to call yet.
   };
 
   return {
     email,
     emailError,
     handleEmailChange,
-    handleRecoverAccount,
-    isPending,
+    handleForgotPassword,
+    isPending: false,
   };
 };
 
-type ResetPasswordErrors = { newPassword?: string; confirmPassword?: string };
-
+// NOTE: unlinked — no reset-password endpoint exists. UI/validation kept
+// in place for when one is added; submit is a no-op until then.
 export const useResetPasswordScreen = () => {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const token = searchParams.get("token") ?? "";
-
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [errors, setErrors] = useState<ResetPasswordErrors>({});
-  const { addToast } = useToast();
-
-  const { mutate, isPending } = useResetPassword(
-    () => {
-      addToast({
-        variant: "success",
-        title: "Password reset",
-        description: "Your password has been updated successfully.",
-      });
-      router.replace("/reset-successful");
-    },
-    () => {
-      addToast({
-        variant: "error",
-        title: "Reset failed",
-        description: "Something went wrong. Please try again.",
-      });
-    },
-  );
+  const [password, setPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
   const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setNewPassword(e.target.value);
-    if (errors.newPassword)
-      setErrors((prev) => ({ ...prev, newPassword: undefined }));
-  };
-
-  const handleConfirmPasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setConfirmPassword(e.target.value);
-    if (errors.confirmPassword)
-      setErrors((prev) => ({ ...prev, confirmPassword: undefined }));
-  };
-
-  const handleResetPassword = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const result = resetPasswordSchema.safeParse({
-      newPassword,
-      confirmPassword,
-    });
-
-    if (!result.success) {
-      const fieldErrors: ResetPasswordErrors = {};
-      result.error.issues.forEach((issue) => {
-        const field = issue.path[0] as keyof ResetPasswordErrors;
-        if (!fieldErrors[field]) fieldErrors[field] = issue.message;
-      });
-      setErrors(fieldErrors);
-      return;
-    }
-
-    mutate({ new_password: newPassword, token });
+    setPassword(e.target.value);
+    if (passwordError) setPasswordError("");
   };
 
   const requirements = PASSWORD_REQUIREMENTS.map((req) => ({
     label: req.label,
-    passed: req.regex.test(newPassword),
+    passed: req.regex.test(password),
   }));
+  const allRequirementsMet = requirements.every((r) => r.passed);
+
+  const handleResetPassword = (e: React.FormEvent) => {
+    e.preventDefault();
+    const result = createPasswordSchema.safeParse(password);
+    if (!result.success) {
+      setPasswordError(result.error.issues[0].message);
+      return;
+    }
+    // No endpoint to call yet.
+  };
 
   return {
-    newPassword,
-    confirmPassword,
-    errors,
-    isPending,
+    password,
+    passwordError,
     requirements,
+    allRequirementsMet,
     handlePasswordChange,
-    handleConfirmPasswordChange,
     handleResetPassword,
+    isPending: false,
   };
 };

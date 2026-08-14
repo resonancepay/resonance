@@ -5,7 +5,9 @@ import { persist } from "zustand/middleware";
 interface AuthUser {
   access_token: string;
   token_type: string;
-  must_change_password: boolean;
+  // Not present on verify-password's confirmed response — kept optional
+  // rather than fabricating a value.
+  must_change_password?: boolean;
   userInfo?: Profile;
 }
 
