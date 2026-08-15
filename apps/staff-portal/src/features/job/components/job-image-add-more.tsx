@@ -9,7 +9,10 @@ interface JobImageAddMoreProps {
 
 export const JobImageAddMore = ({ status, onClick }: JobImageAddMoreProps) => {
   const disabled =
-    status === "pending" || status === "scheduled" || status === "approved";
+    status === "pending" ||
+    status === "scheduled" ||
+    status === "under-review" ||
+    status === "approved";
 
   return (
     <Container

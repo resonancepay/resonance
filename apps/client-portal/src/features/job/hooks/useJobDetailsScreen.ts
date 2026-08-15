@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import { useGetJob, useReviewJob } from "./jobs.hook";
+import { useGetJob, useGetJobReview, useReviewJob } from "./jobs.hook";
 import { JobDamage } from "../types/job.types";
 import { useToast } from "@/shared/toast";
 
@@ -71,6 +71,13 @@ export const useJobDetailsScreen = () => {
 
   const { data: job, isLoading, isError } = useGetJob(jobId, !Number.isNaN(jobId));
 
+  // API sends Title Case with spaces (e.g. "Under Review"), so normalize
+  // before comparing rather than checking against the raw value.
+  const normalizedStatus = job
+    ? job.status.trim().toLowerCase().replace(/\s+/g, "-")
+    : "";
+  const isUnderReview = normalizedStatus === "under-review";
+
   // Damages come embedded in the job payload — no separate fetch, just
   // local open/close + selection state for the list/detail modals.
   const [damagesListOpen, setDamagesListOpen] = useState(false);
@@ -88,20 +95,19 @@ export const useJobDetailsScreen = () => {
   };
 
   const [reviewModalOpen, setReviewModalOpen] = useState(false);
-  const openReviewModal = () => setReviewModalOpen(true);
+  // A client can only review a job while it's under review.
+  const openReviewModal = () => {
+    if (!isUnderReview) return;
+    setReviewModalOpen(true);
+  };
   const closeReviewModal = () => setReviewModalOpen(false);
 
   const [viewRatingModalOpen, setViewRatingModalOpen] = useState(false);
   const openViewRatingModal = () => setViewRatingModalOpen(true);
   const closeViewRatingModal = () => setViewRatingModalOpen(false);
 
-  // There's no confirmed endpoint to fetch a past rating back from the
-  // server, so what was just submitted is cached here for "View Rating" to
-  // display — real for the rest of this session, empty after a reload.
-  const [submittedRating, setSubmittedRating] = useState<{
-    star: number;
-    feedback: string;
-  } | null>(null);
+  const { data: review } = useGetJobReview(jobId, !Number.isNaN(jobId));
+  const hasRated = !!review && review.star > 0;
 
   const { mutate: reviewJobMutate, isPending: isReviewingJob } = useReviewJob(
     () => {
@@ -112,6 +118,7 @@ export const useJobDetailsScreen = () => {
       });
       queryClient.invalidateQueries({ queryKey: ["job", jobId] });
       queryClient.invalidateQueries({ queryKey: ["jobs"] });
+      queryClient.invalidateQueries({ queryKey: ["job-review", jobId] });
       setReviewModalOpen(false);
     },
     (e: any) => {
@@ -124,17 +131,10 @@ export const useJobDetailsScreen = () => {
     },
   );
 
-  // Only star is sent — feedback isn't part of the confirmed review-job
-  // payload yet, it's collected purely for the rating UX.
   const handleReviewJob = (data: { star: number; feedback: string }) => {
-    if (Number.isNaN(jobId)) return;
-    setSubmittedRating(data);
-    reviewJobMutate({ job_id: jobId, star: data.star });
+    if (Number.isNaN(jobId) || !isUnderReview) return;
+    reviewJobMutate({ job_id: jobId, star: data.star, feedback: data.feedback });
   };
-
-  const normalizedStatus = job
-    ? job.status.trim().toLowerCase().replace(/\s+/g, "-")
-    : "";
 
   const formatted = job
     ? {
@@ -170,6 +170,7 @@ export const useJobDetailsScreen = () => {
     viewRatingModalOpen,
     openViewRatingModal,
     closeViewRatingModal,
-    submittedRating,
+    review,
+    hasRated,
   };
 };

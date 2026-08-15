@@ -8,9 +8,9 @@ interface JobControlProps {
   onViewRating: () => void;
 }
 
-// Always visible. "Review Job" stays open (enabled) while under review, and
-// stays open even after approval if the job hasn't been rated yet — only
-// once it's actually been rated does the button switch to "View Rating".
+// Always visible. A client can only review a job while it's under review,
+// but as soon as a rating exists — even before the job is later approved —
+// the button switches to "View Rating" instead of staying on "Review Job".
 export const JobControl = ({
   status,
   hasRated,
@@ -18,9 +18,8 @@ export const JobControl = ({
   onViewRating,
 }: JobControlProps) => {
   const isUnderReview = status === "under-review";
-  const isApproved = status === "approved";
-  const canReview = isUnderReview || (isApproved && !hasRated);
-  const canViewRating = isApproved && hasRated;
+  const canReview = isUnderReview && !hasRated;
+  const canViewRating = hasRated;
 
   return (
     <Container className="bg-surface border-[0.5px] border-border p-3.5 rounded-xl">

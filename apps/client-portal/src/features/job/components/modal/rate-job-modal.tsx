@@ -52,9 +52,6 @@ interface RateJobModalProps {
   isPending?: boolean;
 }
 
-// Only job_id + star are confirmed against the review-job endpoint — the
-// feedback field isn't part of that contract, so it's collected here for a
-// better rating UX but isn't sent to the backend yet.
 export const RateJobModal = ({
   isOpen,
   onClose,

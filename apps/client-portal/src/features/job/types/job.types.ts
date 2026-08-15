@@ -74,8 +74,21 @@ export interface JobDetails {
   checklist: JobChecklistEntry[];
 }
 
-// Confirmed against Swagger — job_id + star (1-5), no comment field.
+// Confirmed against Swagger (POST /v1/client/job/review) — job_id, star
+// (1-5), and feedback are all part of the payload.
 export interface ReviewJobPayload {
   job_id: number;
   star: number;
+  feedback: string;
+}
+
+export interface GetJobReviewPayload {
+  job_id: number;
+}
+
+// Confirmed against Swagger (POST /v1/client/job/reviews).
+export interface JobReview {
+  job_id: number;
+  star: number;
+  feedback: string;
 }

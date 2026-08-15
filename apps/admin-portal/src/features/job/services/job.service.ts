@@ -15,7 +15,7 @@ import {
 // confirmed (see job.type.ts). cancelJob's response is still unconfirmed.
 
 export const getJobs = async (): Promise<JobListResponse> => {
-  const result = await apiClient.get("/admin/jobs");
+  const result = await apiClient.get("/admin/jobs?page=1&size=100");
   return result.data;
 };
 

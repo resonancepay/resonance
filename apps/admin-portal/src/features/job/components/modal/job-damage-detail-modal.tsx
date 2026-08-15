@@ -1,6 +1,7 @@
 "use client";
 
-import { Button, Container, Modal, Text } from "@resonance/ui";
+import { Button, Container, ImageViewerModal, Modal, Text } from "@resonance/ui";
+import { useState } from "react";
 import { JobDamage } from "../../types/job.type";
 
 interface JobDamageDetailModalProps {
@@ -16,6 +17,8 @@ export const JobDamageDetailModal = ({
   onClose,
   damage,
 }: JobDamageDetailModalProps) => {
+  const [viewingImage, setViewingImage] = useState<string | null>(null);
+
   if (!damage) return null;
 
   return (
@@ -46,7 +49,8 @@ export const JobDamageDetailModal = ({
               key={index}
               src={url}
               alt={`Damage photo ${index + 1}`}
-              className="h-24 w-full rounded-md object-cover"
+              onClick={() => setViewingImage(url)}
+              className="h-24 w-full rounded-md object-cover cursor-pointer"
             />
           ))}
         </Container>
@@ -57,6 +61,13 @@ export const JobDamageDetailModal = ({
           Cancel
         </Button>
       </Container>
+
+      <ImageViewerModal
+        isOpen={!!viewingImage}
+        onClose={() => setViewingImage(null)}
+        src={viewingImage ?? ""}
+        alt="Damage photo"
+      />
     </Modal>
   );
 };

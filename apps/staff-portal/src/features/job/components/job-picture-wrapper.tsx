@@ -1,6 +1,6 @@
 "use client";
 
-import { Container, Text } from "@resonance/ui";
+import { Container, ImageViewerModal, Text } from "@resonance/ui";
 import { CameraIcon, CloseIcon } from "@resonance/ui/icons";
 import React, { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -28,8 +28,12 @@ export const JobPictureWrapper = ({
 }: JobPictureWrapperProps) => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [viewerOpen, setViewerOpen] = useState(false);
   const disabled =
-    status === "pending" || status === "scheduled" || status === "approved";
+    status === "pending" ||
+    status === "scheduled" ||
+    status === "under-review" ||
+    status === "approved";
   const { addToast } = useToast();
   const queryClient = useQueryClient();
 
@@ -125,12 +129,15 @@ export const JobPictureWrapper = ({
   };
 
   const showExisting = !previewUrl && !!existingImageUrl;
+  // Existing images stay clickable to view full-size even when the job is
+  // locked — only the take/replace-picture affordance is actually disabled.
+  const interactionDisabled = disabled && !showExisting;
 
   return (
     <>
       <Container
-        onClick={showExisting ? undefined : handleClick}
-        className={`${disabled ? "opacity-30 pointer-events-none" : showExisting ? "" : "cursor-pointer"} relative bg-brand-secondary-bg-light gap-2 border border-dashed border-brand-secondary-border h-36.5 rounded-md py-6 flex items-center flex-col justify-center overflow-hidden`}
+        onClick={showExisting ? () => setViewerOpen(true) : handleClick}
+        className={`${interactionDisabled ? "opacity-30 pointer-events-none" : "cursor-pointer"} relative bg-brand-secondary-bg-light gap-2 border border-dashed border-brand-secondary-border h-36.5 rounded-md py-6 flex items-center flex-col justify-center overflow-hidden`}
       >
         {previewUrl ? (
           <>
@@ -193,6 +200,15 @@ export const JobPictureWrapper = ({
         onClose={() => setModalOpen(false)}
         onSave={handleModalSave}
       />
+
+      {existingImageUrl && (
+        <ImageViewerModal
+          isOpen={viewerOpen}
+          onClose={() => setViewerOpen(false)}
+          src={existingImageUrl}
+          alt="Submitted job photo"
+        />
+      )}
     </>
   );
 };

@@ -118,7 +118,7 @@ export const useLoginScreen = () => {
       }
 
       setAuth({ ...currentUser, userInfo: data });
-      router.replace("/dashboard");
+      router.replace("/jobs");
     },
     () => {},
   );

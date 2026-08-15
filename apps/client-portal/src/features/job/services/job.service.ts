@@ -1,7 +1,9 @@
 import { apiClient } from "@/lib/axios";
 import {
+  GetJobReviewPayload,
   Job,
   JobDetails,
+  JobReview,
   PaginationQuery,
   ReviewJobPayload,
 } from "../types/job.types";
@@ -22,6 +24,13 @@ export const job = async (jobId: number): Promise<JobDetails> => {
 };
 
 export const reviewJob = async (payload: ReviewJobPayload) => {
-  const result = await apiClient.post("/client/review-job", payload);
+  const result = await apiClient.post("/client/job/review", payload);
+  return result.data;
+};
+
+export const getJobReview = async (
+  payload: GetJobReviewPayload,
+): Promise<JobReview> => {
+  const result = await apiClient.post("/client/job/reviews", payload);
   return result.data;
 };

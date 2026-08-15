@@ -192,7 +192,7 @@ export const useLoginScreen = () => {
       if (!data.application_approved) {
         router.replace("/onboarding");
       } else {
-        router.replace("/dashboard");
+        router.replace("/jobs");
       }
     },
     () => {},

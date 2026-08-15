@@ -52,7 +52,7 @@ export const SuccessConfirmationScreen = () => {
             rightIcon={<NextIcon />}
             variant="primary"
             className="w-full"
-            onClick={() => router.push("/dashboard")}
+            onClick={() => router.push("/jobs")}
           >
             Get Started
           </Button>

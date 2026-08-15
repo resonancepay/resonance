@@ -34,5 +34,8 @@ export type { RadioProps } from "./components/radio";
 export { Modal } from "./components/modal";
 export type { ModalProps } from "./components/modal";
 
+export { ImageViewerModal } from "./components/image-viewer-modal";
+export type { ImageViewerModalProps } from "./components/image-viewer-modal";
+
 export { SideDrawer } from "./components/side-drawer";
 export type { SideDrawerProps } from "./components/side-drawer";

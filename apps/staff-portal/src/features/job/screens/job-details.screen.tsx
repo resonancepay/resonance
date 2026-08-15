@@ -42,7 +42,7 @@ export const JobDetailsScreen = () => {
     job,
     isLoading,
     status,
-    isApproved,
+    isLocked,
     formatted,
     checklist,
     checklistPercentage,
@@ -90,7 +90,7 @@ export const JobDetailsScreen = () => {
   const beforeSlotCount = Math.max(beforePhotos.length, job.before_images.length);
   const afterSlotCount = Math.max(afterPhotos.length, job.after_images.length);
   const checklistLocked =
-    status === "pending" || status === "scheduled" || isApproved;
+    status === "pending" || status === "scheduled" || isLocked;
 
   return (
     <Container className="pb-4">
@@ -150,9 +150,8 @@ export const JobDetailsScreen = () => {
                       />
                     </Col>
                   ))}
-                  {status !== "under-review" &&
-                    status !== "paid" &&
-                    !isApproved &&
+                  {status !== "paid" &&
+                    !isLocked &&
                     beforePhotos.length < MAX_SLOTS && (
                       <Col xs={8} className="opacity-30">
                         <JobImageAddMore
@@ -192,9 +191,8 @@ export const JobDetailsScreen = () => {
                       />
                     </Col>
                   ))}
-                  {status !== "under-review" &&
-                    status !== "paid" &&
-                    !isApproved &&
+                  {status !== "paid" &&
+                    !isLocked &&
                     afterPhotos.length < MAX_SLOTS && (
                       <Col xs={8} className="opacity-30">
                         <JobImageAddMore
@@ -251,7 +249,7 @@ export const JobDetailsScreen = () => {
               lat={job.cleaning_location.lat}
               lng={job.cleaning_location.lng}
             />
-            {status !== "under-review" && status !== "paid" && !isApproved && (
+            {status !== "paid" && !isLocked && (
               <JobClockAction
                 status={status === "in-progress" ? "clock-out" : "clock-in"}
                 onClockIn={handleClockIn}
@@ -325,7 +323,7 @@ export const JobDetailsScreen = () => {
         onViewDamage={openDamageDetail}
         onDelete={handleDeleteDamage}
         isDeleting={isDeletingDamage}
-        readOnly={isApproved}
+        readOnly={isLocked}
       />
 
       <DamageDetailModal
@@ -334,7 +332,7 @@ export const JobDetailsScreen = () => {
         damage={viewingDamage}
         onDelete={handleDeleteViewingDamage}
         isDeleting={isDeletingDamage}
-        readOnly={isApproved}
+        readOnly={isLocked}
       />
 
       <ReportDamageModal

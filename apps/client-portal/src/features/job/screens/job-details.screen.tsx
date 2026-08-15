@@ -45,7 +45,8 @@ export const JobDetailsScreen = () => {
     viewRatingModalOpen,
     openViewRatingModal,
     closeViewRatingModal,
-    submittedRating,
+    review,
+    hasRated,
   } = useJobDetailsScreen();
 
   if (isLoading || !job || !formatted) {
@@ -208,7 +209,7 @@ export const JobDetailsScreen = () => {
           <Container className="flex flex-col gap-2.5">
             <JobControl
               status={status}
-              hasRated={!!submittedRating}
+              hasRated={hasRated}
               onReview={openReviewModal}
               onViewRating={openViewRatingModal}
             />
@@ -272,8 +273,8 @@ export const JobDetailsScreen = () => {
       <ViewRatingModal
         isOpen={viewRatingModalOpen}
         onClose={closeViewRatingModal}
-        star={submittedRating?.star ?? 0}
-        feedback={submittedRating?.feedback ?? ""}
+        star={review?.star ?? 0}
+        feedback={review?.feedback ?? ""}
       />
     </Container>
   );

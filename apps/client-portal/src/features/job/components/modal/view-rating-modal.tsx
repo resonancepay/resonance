@@ -18,10 +18,7 @@ interface ViewRatingModalProps {
   feedback: string;
 }
 
-// Read-only — shows what was already submitted via RateJobModal. There's no
-// confirmed endpoint to fetch a past rating back from the server, so this
-// only has data to show for a review submitted earlier in this same
-// session; otherwise it renders an empty/unrated state.
+// Read-only — shows the review fetched from POST /client/job/reviews.
 export const ViewRatingModal = ({
   isOpen,
   onClose,

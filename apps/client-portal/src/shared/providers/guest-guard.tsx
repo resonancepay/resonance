@@ -13,7 +13,7 @@ export const GuestGuard = ({ children }: { children: React.ReactNode }) => {
     if (!hasHydrated) return;
 
     if (accessToken) {
-      router.replace("/dashboard");
+      router.replace("/jobs");
     }
   }, [accessToken, hasHydrated, router]);
 

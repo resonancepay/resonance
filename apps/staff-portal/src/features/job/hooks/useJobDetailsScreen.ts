@@ -95,18 +95,20 @@ export const useJobDetailsScreen = () => {
   const { data: job, isLoading, isError } = useGetJob(jobId, !Number.isNaN(jobId));
 
   // API sends Title Case with spaces (e.g. "Approved"), so normalize before
-  // comparing. Once a job is approved, nothing on this screen is actionable
-  // any more — every mutation guards on this, not just the UI that hides it.
+  // comparing. Once a job is under review or approved, nothing on this
+  // screen is actionable any more — every mutation guards on this, not just
+  // the UI that hides it.
   const normalizedStatus = job
     ? job.status.trim().toLowerCase().replace(/\s+/g, "-")
     : "";
-  const isApproved = normalizedStatus === "approved";
+  const isLocked =
+    normalizedStatus === "under-review" || normalizedStatus === "approved";
 
   const [checklist, setChecklist] = useState<JobChecklistEntry[] | null>(null);
   const activeChecklist = checklist ?? job?.checklist ?? [];
 
   const toggleChecklistItem = (index: number, value: boolean) => {
-    if (isApproved) return;
+    if (isLocked) return;
     const base = checklist ?? job?.checklist ?? [];
     setChecklist(
       base.map((entry, i) => (i === index ? { ...entry, checked: value } : entry)),
@@ -130,13 +132,13 @@ export const useJobDetailsScreen = () => {
     index: number,
     file: File | null,
   ) => {
-    if (isApproved) return;
+    if (isLocked) return;
     const setter = slots === "before" ? setBeforePhotos : setAfterPhotos;
     setter((prev) => prev.map((item, i) => (i === index ? file : item)));
   };
 
   const addSlot = (slots: "before" | "after") => {
-    if (isApproved) return;
+    if (isLocked) return;
     const setter = slots === "before" ? setBeforePhotos : setAfterPhotos;
     setter((prev) => (prev.length >= MAX_SLOTS ? prev : [...prev, null]));
   };
@@ -173,7 +175,7 @@ export const useJobDetailsScreen = () => {
   );
 
   const handleClockIn = async () => {
-    if (Number.isNaN(jobId) || isApproved) return;
+    if (Number.isNaN(jobId) || isLocked) return;
     setClockModal("clocking-in");
     try {
       const position = await getCurrentPosition();
@@ -188,14 +190,14 @@ export const useJobDetailsScreen = () => {
   };
 
   const handleClockOutClick = () => {
-    if (isApproved) return;
+    if (isLocked) return;
     const allChecked =
       activeChecklist.length > 0 && activeChecklist.every((entry) => entry.checked);
     setClockModal(allChecked ? "about-to-clock-out" : "cannot-clock-out");
   };
 
   const handleConfirmClockOut = async () => {
-    if (Number.isNaN(jobId) || isApproved) return;
+    if (Number.isNaN(jobId) || isLocked) return;
     setClockModal("clocking-out");
     try {
       const position = await getCurrentPosition();
@@ -278,7 +280,7 @@ export const useJobDetailsScreen = () => {
   );
 
   const handleReportDamage = async (data: { description: string; files: File[] }) => {
-    if (Number.isNaN(jobId) || isApproved) return;
+    if (Number.isNaN(jobId) || isLocked) return;
     try {
       const position = await getCurrentPosition();
       reportDamageMutate({
@@ -298,14 +300,14 @@ export const useJobDetailsScreen = () => {
   };
 
   const handleDeleteDamage = (damageId: number) => {
-    if (isApproved) return;
+    if (isLocked) return;
     deleteDamageMutate({ damage_id: damageId });
   };
 
   const openDamagesList = () => setDamagesListOpen(true);
   const closeDamagesList = () => setDamagesListOpen(false);
   const openReportModal = () => {
-    if (isApproved) return;
+    if (isLocked) return;
     setDamagesListOpen(false);
     setReportModalOpen(true);
   };
@@ -344,7 +346,7 @@ export const useJobDetailsScreen = () => {
     isLoading,
     isError,
     status: normalizedStatus,
-    isApproved,
+    isLocked,
     formatted,
     checklist: activeChecklist,
     checklistPercentage,

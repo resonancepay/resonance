@@ -1,7 +1,8 @@
 "use client";
 
-import { Button, Container, Modal, Text, Textarea } from "@resonance/ui";
+import { Button, Container, ImageViewerModal, Modal, Text, Textarea } from "@resonance/ui";
 import { DeleteIcon } from "@resonance/ui/icons";
+import { useState } from "react";
 import { Damage } from "../../types/job.types";
 
 interface DamageDetailModalProps {
@@ -25,6 +26,8 @@ export const DamageDetailModal = ({
   isDeleting,
   readOnly,
 }: DamageDetailModalProps) => {
+  const [viewingImage, setViewingImage] = useState<string | null>(null);
+
   if (!damage) return null;
 
   return (
@@ -49,7 +52,8 @@ export const DamageDetailModal = ({
               key={index}
               src={url}
               alt={`Damage photo ${index + 1}`}
-              className="h-32 w-full rounded-md object-cover"
+              onClick={() => setViewingImage(url)}
+              className="h-32 w-full rounded-md object-cover cursor-pointer"
             />
           ))}
         </Container>
@@ -72,6 +76,13 @@ export const DamageDetailModal = ({
           </Button>
         )}
       </Container>
+
+      <ImageViewerModal
+        isOpen={!!viewingImage}
+        onClose={() => setViewingImage(null)}
+        src={viewingImage ?? ""}
+        alt="Damage photo"
+      />
     </Modal>
   );
 };
