@@ -2,14 +2,14 @@ import { Container, Text } from "@resonance/ui";
 import { ChevronRightIcon, ScoreIcon } from "@resonance/ui/icons";
 
 interface JobPerformanceScoreProps {
-  percentage: number;
+  score: string;
   onClick: () => void;
 }
 
 // Same decorative treatment as staff-portal's JobQualityScore (scattered
 // ScoreIcon stars) — reused here rather than reinvented.
 export const JobPerformanceScore = ({
-  percentage,
+  score,
   onClick,
 }: JobPerformanceScoreProps) => {
   return (
@@ -24,7 +24,7 @@ export const JobPerformanceScore = ({
       </Text>
       <Container className="flex items-center gap-1">
         <Text tone="primary" variant="h3">
-          {percentage}%
+          {score}
         </Text>
         <ChevronRightIcon size={18} className="text-secondary" />
       </Container>
