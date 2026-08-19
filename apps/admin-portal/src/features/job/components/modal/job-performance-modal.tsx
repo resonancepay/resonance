@@ -2,11 +2,12 @@
 
 import { Button, Container, Modal, Text } from "@resonance/ui";
 import { JobPerformanceRow } from "../job-performance-row";
+import { JobPerformance } from "../../types/job.type";
 
 interface JobPerformanceModalProps {
   isOpen: boolean;
   onClose: () => void;
-  checklistCompletion: number;
+  performance: JobPerformance;
 }
 
 const toneForPercentage = (percentage: number) => {
@@ -15,16 +16,33 @@ const toneForPercentage = (percentage: number) => {
   return "success" as const;
 };
 
-// Checklist Completion is real (derived from the job's own checklist).
-// On-Time Arrival and Client Rating have no confirmed data source yet — the
-// approve flow captures them at submit time, but nothing returns them back
-// on the job afterwards, so they render as "Not yet available" until the
-// backend exposes them.
+// checklist_completion/ontime_arrival come back as percentage strings
+// ("0%"), client_rating as a "x/5" ratio — parsed here just to drive each
+// row's progress bar fill, the raw string is still shown as the value.
+const parsePercentValue = (value: string) => {
+  const parsed = parseFloat(value);
+  return Number.isNaN(parsed) ? 0 : parsed;
+};
+
+const parseRatioAsPercentage = (value: string) => {
+  const match = value.match(/^(\d+(?:\.\d+)?)\s*\/\s*(\d+(?:\.\d+)?)$/);
+  if (!match) return 0;
+  const numerator = Number(match[1]);
+  const denominator = Number(match[2]);
+  return denominator ? Math.round((numerator / denominator) * 100) : 0;
+};
+
 export const JobPerformanceModal = ({
   isOpen,
   onClose,
-  checklistCompletion,
+  performance,
 }: JobPerformanceModalProps) => {
+  const checklistPercentage = parsePercentValue(
+    performance.checklist_completion,
+  );
+  const ontimePercentage = parsePercentValue(performance.ontime_arrival);
+  const ratingPercentage = parseRatioAsPercentage(performance.client_rating);
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} width={420}>
       <Container className="px-2 pt-1 pb-3">
@@ -36,21 +54,21 @@ export const JobPerformanceModal = ({
       <Container className="px-2">
         <JobPerformanceRow
           label="Checklist Completion"
-          value={`${checklistCompletion}%`}
-          percentage={checklistCompletion}
-          tone={toneForPercentage(checklistCompletion)}
+          value={performance.checklist_completion}
+          percentage={checklistPercentage}
+          tone={toneForPercentage(checklistPercentage)}
         />
         <JobPerformanceRow
           label="On-Time Arrival"
-          value="Not yet available"
-          percentage={0}
-          tone="neutral"
+          value={performance.ontime_arrival}
+          percentage={ontimePercentage}
+          tone={toneForPercentage(ontimePercentage)}
         />
         <JobPerformanceRow
           label="Client Rating"
-          value="Not yet available"
-          percentage={0}
-          tone="neutral"
+          value={performance.client_rating}
+          percentage={ratingPercentage}
+          tone={toneForPercentage(ratingPercentage)}
         />
       </Container>
 

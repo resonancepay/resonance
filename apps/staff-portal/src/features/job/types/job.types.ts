@@ -45,6 +45,15 @@ export interface JobChecklistEntry {
   checked: boolean;
 }
 
+export interface JobPerformance {
+  score: string;
+  flagged: boolean;
+  flag_reason: string;
+  client_rating: string;
+  checklist_completion: string;
+  ontime_arrival: string;
+}
+
 // Single-job detail shape — POST /v1/cleaners/job (confirmed against
 // Swagger). scheduled_start/scheduled_end are milliseconds since epoch
 // (per the endpoint's own note), unlike the list response's ISO strings.
@@ -72,4 +81,5 @@ export interface JobDetails {
   items_needed: string;
   items_needed_provided: boolean;
   checklist: JobChecklistEntry[];
+  performance: JobPerformance;
 }
