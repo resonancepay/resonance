@@ -43,6 +43,15 @@ export interface JobChecklistEntry {
   checked: boolean;
 }
 
+export interface JobPerformance {
+  score: string;
+  flagged: boolean;
+  flag_reason: string;
+  client_rating: string;
+  checklist_completion: string;
+  ontime_arrival: string;
+}
+
 export interface JobDetails {
   job_id_label: string;
   cleaner_id: string;
@@ -72,6 +81,7 @@ export interface JobDetails {
   items_needed: string;
   items_needed_provided: boolean;
   checklist: JobChecklistEntry[];
+  performance: JobPerformance;
 }
 
 export interface CreateJobPayload {
