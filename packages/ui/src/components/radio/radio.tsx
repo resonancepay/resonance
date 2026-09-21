@@ -12,6 +12,7 @@ export function Radio({
   onChange,
   disabled = false,
   className,
+  showBackground = true,
   ...props
 }: RadioProps) {
   const [internalChecked, setInternalChecked] = useState(defaultChecked);
@@ -34,7 +35,8 @@ export function Radio({
       disabled={disabled}
       onClick={handleClick}
       className={[
-        "flex-1 flex items-center gap-3 bg-surface rounded-2xl px-4 py-3 transition-colors",
+        "flex-1 flex items-center gap-3 transition-colors",
+        showBackground ? "bg-surface rounded-2xl px-4 py-3" : "",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-border",
         disabled
           ? "opacity-50 cursor-not-allowed pointer-events-none"
@@ -57,7 +59,10 @@ export function Radio({
           <Container className="w-2.5 h-2.5 rounded-full bg-brand-tertiary-bg-bold" />
         )}
       </Container>
-      <Text variant="bodySmall" className="text-primary">
+      <Text
+        variant="bodySmall"
+        className={checked ? "text-primary" : "text-secondary"}
+      >
         {label}
       </Text>
     </button>

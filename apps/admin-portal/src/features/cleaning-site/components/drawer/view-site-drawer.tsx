@@ -6,26 +6,12 @@ import { TableStatus } from "@/components/generics/table/table-status";
 import { JobTypeTag } from "@/features/job/components/job-type-tag";
 import { Site } from "../../types/site.type";
 import { normalizeUniforms } from "../../utils/normalize-uniforms";
+import { InfoBlock } from "./info-block";
 
 interface ViewSiteDrawerProps {
   site: Site | null;
   onClose: () => void;
 }
-
-const InfoBlock = ({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) => (
-  <Container className="bg-muted rounded-xl px-3.5 py-3 flex flex-col gap-1">
-    <Text variant="bodyXSmall" tone="secondary">
-      {label}
-    </Text>
-    {children}
-  </Container>
-);
 
 export const ViewSiteDrawer = ({ site, onClose }: ViewSiteDrawerProps) => {
   const uniforms = normalizeUniforms(site?.uniforms ?? []);

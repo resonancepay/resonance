@@ -1,7 +1,10 @@
 import { apiClient } from "@/lib/axios";
 import {
+  ChangePasswordPayload,
+  DeleteAccountResponse,
   ForgotPasswordPayload,
   LoginPayload,
+  Profile,
   RegisterResponse,
   RegisterUser,
   ResetPasswordPayload,
@@ -44,7 +47,22 @@ export const verifyOtp = async (payload: VerifyOtpPayload) => {
 
 // NOTE: not shown in the confirmed "Authentication" endpoint list — inferred
 // from the /cleaners/ pattern used by every other endpoint in this app.
-export const profile = async () => {
+export const profile = async (): Promise<Profile> => {
   const result = await apiClient.get("/cleaners/profile");
+  return result.data;
+};
+
+// NOTE: not confirmed against Swagger — inferred from the /cleaners/ pattern
+// and client-portal's equivalent /client/change-password (old_password /
+// new_password payload shape).
+export const changePassword = async (payload: ChangePasswordPayload) => {
+  const result = await apiClient.post("/cleaners/change-password", payload);
+  return result.data;
+};
+
+// NOTE: not confirmed against Swagger — inferred from the /cleaners/ pattern
+// and client-portal's equivalent GET /client/delete-profile.
+export const deleteAccount = async (): Promise<DeleteAccountResponse> => {
+  const result = await apiClient.get("/cleaners/delete-account");
   return result.data;
 };

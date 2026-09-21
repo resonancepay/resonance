@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useToast } from "@/shared/toast";
 import {
   useSubmitStepOne,
@@ -21,20 +22,67 @@ import {
   StepTwoErrors,
 } from "../types/onboarding.type";
 import { useAuthStore } from "@/shared/store/auth.store";
+import { useProfileStatusPoll } from "@/features/auth/hooks/auth.hooks";
 
 export const useOnboardingScreen = () => {
+  const router = useRouter();
   const [activeStep, setActiveStep] = useState(1);
-  const { user } = useAuthStore();
-  const [status, setStatus] = useState<
-    "approved" | "declined" | "pending" | "submitted" | null
-  >(
-    user?.userInfo?.application_submitted
-      ? (user?.userInfo?.application_status ?? null)
-      : null,
-  );
+  const { user, setAuth, hasHydrated } = useAuthStore();
+  // Just-submitted (step 4 success, same session) overrides the persisted
+  // status until the server confirms it — not read from the store, since
+  // the store may not reflect it yet.
+  const [justSubmitted, setJustSubmitted] = useState(false);
   const [referenceCode, setReferenceCode] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  // Derived fresh on every render from the store, rather than captured once
+  // via a useState initializer — zustand's persist middleware rehydrates
+  // asynchronously, so on a hard refresh `user` is still null on first
+  // mount. A useState initializer would lock onto that null forever and
+  // never notice hydration finishing afterward.
+  const persistedStatus = user?.userInfo?.application_submitted
+    ? (user?.userInfo?.application_status ?? null)
+    : null;
+  const manualStatus = justSubmitted ? "submitted" : persistedStatus;
+
+  // While the application is sitting pending/submitted, keep re-checking the
+  // profile so an admin's approve/decline decision shows up here on its own
+  // — polling every 30s and on tab focus, no manual refresh or re-login
+  // needed. Stops automatically once status resolves to approved/declined.
+  // Gated on hasHydrated so it doesn't fire against a pre-hydration null user.
+  const normalizedStatus = manualStatus?.toLowerCase();
+  const isAwaitingReview =
+    normalizedStatus === "pending" || normalizedStatus === "submitted";
+  const { data: polledProfile } = useProfileStatusPoll(
+    hasHydrated && isAwaitingReview,
+  );
+
+  // Derived rather than copied into state via an effect — a fresher polled
+  // result simply takes priority over the locally-tracked value once it
+  // arrives, no extra render-triggering setState needed.
+  const status = polledProfile?.application_status ?? manualStatus;
+
+  useEffect(() => {
+    if (!polledProfile || !user?.access_token) return;
+
+    setAuth({
+      access_token: user.access_token,
+      token_type: user.token_type,
+      must_change_password: user.must_change_password,
+      userInfo: polledProfile,
+    });
+
+    if (polledProfile.application_approved) {
+      router.replace("/jobs");
+    }
+  }, [
+    polledProfile,
+    user?.access_token,
+    user?.token_type,
+    user?.must_change_password,
+    setAuth,
+    router,
+  ]);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: 0, behavior: "smooth" });
@@ -46,7 +94,7 @@ export const useOnboardingScreen = () => {
     referenceCode,
     status,
     setReferenceCode,
-    setStatus,
+    setStatus: () => setJustSubmitted(true),
   };
 };
 

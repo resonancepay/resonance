@@ -1,8 +1,9 @@
 "use client";
 
 import { Button, Container, Modal, Text, Textarea } from "@resonance/ui";
-import { CheckIcon, InfoIcon, ScoreIcon } from "@resonance/ui/icons";
+import { CheckIcon, InfoIcon } from "@resonance/ui/icons";
 import { useState } from "react";
+import { StarRow } from "./star-row";
 
 const RATING_TRACK: { label: string; filled: number }[] = [
   { label: "Excellent", filled: 5 },
@@ -11,39 +12,6 @@ const RATING_TRACK: { label: string; filled: number }[] = [
   { label: "Fair", filled: 2 },
   { label: "Bad", filled: 1 },
 ];
-
-const StarRow = ({
-  filled,
-  total = 5,
-  size = 20,
-  onSelect,
-}: {
-  filled: number;
-  total?: number;
-  size?: number;
-  onSelect?: (value: number) => void;
-}) => (
-  <Container className="flex items-center gap-1.5">
-    {Array.from({ length: total }).map((_, index) => {
-      const value = index + 1;
-      return (
-        <Container
-          key={value}
-          as="button"
-          type="button"
-          disabled={!onSelect}
-          onClick={onSelect ? () => onSelect(value) : undefined}
-          className={onSelect ? "cursor-pointer" : "cursor-default"}
-        >
-          <ScoreIcon
-            size={size}
-            className={value <= filled ? "text-success-text-icons" : "text-tertiary"}
-          />
-        </Container>
-      );
-    })}
-  </Container>
-);
 
 interface RateJobModalProps {
   isOpen: boolean;

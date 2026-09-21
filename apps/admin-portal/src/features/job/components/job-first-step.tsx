@@ -3,33 +3,12 @@
 import { Button, Checkbox, Container, Input, Select, Text } from "@resonance/ui";
 import { ChevronDownIcon, NextIcon } from "@resonance/ui/icons";
 import { ChangeEvent, useState } from "react";
-import { JobFirstStepValues } from "../hooks/useCreateJobScreen";
 import { getTodayDateString } from "../types/job.schema";
 import { SelectCleanerModal } from "./modal/select-cleaner-modal";
 import { ApprovedCleaner } from "@/features/cleaners/types/cleaner.type";
+import { JobFirstStepProps } from "../types/job.type";
 
-interface Option {
-  label: string;
-  value: string;
-}
 
-type TextField = "jobPay" | "cleanerPay" | "consumables" | "date";
-type SelectField = "cleaningSite" | "startTime" | "endTime" | "cleaner" | "timezone";
-
-interface JobFirstStepProps {
-  values: JobFirstStepValues;
-  errors: Partial<Record<keyof JobFirstStepValues, string>>;
-  siteOptions: Option[];
-  cleaners: ApprovedCleaner[];
-  timeOptions: Option[];
-  timezoneOptions: Option[];
-  heading?: string;
-  onChange: (field: TextField) => (e: ChangeEvent<HTMLInputElement>) => void;
-  onSelectChange: (field: SelectField) => (value?: string) => void;
-  onConsumablesProvidedChange: (checked: boolean) => void;
-  onCancel: () => void;
-  onContinue: () => void;
-}
 
 export const JobFirstStep = ({
   values,
@@ -54,6 +33,7 @@ export const JobFirstStep = ({
     <Container>
       <Container className="flex items-center gap-1.5 mb-8">
         <Container className="h-1 flex-1 rounded-full bg-brand-secondary-bg-bold" />
+        <Container className="h-1 flex-1 rounded-full bg-muted" />
         <Container className="h-1 flex-1 rounded-full bg-muted" />
       </Container>
 

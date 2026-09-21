@@ -1,27 +1,14 @@
 "use client";
 
 import { Container, Text } from "@resonance/ui";
-import { Col, Row } from "antd";
 import { useState } from "react";
-import { Job } from "../types/job.types";
-import { JobCard } from "../components/job-card";
+import { JobTab } from "../types/job.types";
+import { JobGrid } from "../components/job-grid";
 import { JobHistoryPill } from "../components/job-history-pill";
 import { useJobListScreen } from "../hooks/useJobListScreen";
 
-type JobTab = "all" | "history";
-
-const JobGrid = ({ jobs }: { jobs: Job[] }) => (
-  <Row gutter={20}>
-    {jobs.map((job) => (
-      <Col lg={8} xs={24} key={job.job_id}>
-        <JobCard job={job} />
-      </Col>
-    ))}
-  </Row>
-);
-
 export const JobListScreen = () => {
-  const [activeTab, setActiveTab] = useState<JobTab>("all");
+  const [activeTab, setActiveTab] = useState<JobTab>("open");
   const { isLoading, todayJobs, tomorrowJobs, laterJobs, historyJobs } =
     useJobListScreen();
 
@@ -33,9 +20,9 @@ export const JobListScreen = () => {
         </Text>
         <Container className="border-[0.5px] border-border p-1 rounded-full flex bg-surface">
           <Container
-            onClick={() => setActiveTab("all")}
+            onClick={() => setActiveTab("open")}
             className={`px-4 py-2 rounded-full cursor-pointer text-center lg:w-auto w-full transition-all ${
-              activeTab === "all"
+              activeTab === "open"
                 ? "border border-brand-secondary-border bg-brand-tertiary-bg-light"
                 : ""
             }`}
@@ -43,10 +30,27 @@ export const JobListScreen = () => {
             <Text
               variant="buttonXS"
               className={
-                activeTab === "all" ? "text-primary" : "text-secondary"
+                activeTab === "open" ? "text-primary" : "text-secondary"
               }
             >
-              All Jobs
+              Open Jobs
+            </Text>
+          </Container>
+          <Container
+            onClick={() => setActiveTab("assigned")}
+            className={`px-4 py-2 rounded-full cursor-pointer text-center lg:w-auto w-full transition-all ${
+              activeTab === "assigned"
+                ? "border border-brand-secondary-border bg-brand-tertiary-bg-light"
+                : ""
+            }`}
+          >
+            <Text
+              variant="buttonXS"
+              className={
+                activeTab === "assigned" ? "text-primary" : "text-secondary"
+              }
+            >
+              Assigned Jobs
             </Text>
           </Container>
           <Container
@@ -75,7 +79,7 @@ export const JobListScreen = () => {
         </Text>
       )}
 
-      {!isLoading && activeTab === "all" && (
+      {!isLoading && activeTab === "assigned" && (
         <>
           {todayJobs.length === 0 &&
             tomorrowJobs.length === 0 &&

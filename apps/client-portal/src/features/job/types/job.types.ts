@@ -2,6 +2,8 @@ import { JobStatusValue } from "@resonance/ui/job-status";
 
 export type JobType = JobStatusValue;
 
+export type JobTab = "all" | "history";
+
 export interface PaginationQuery {
   page?: number;
   size?: number;

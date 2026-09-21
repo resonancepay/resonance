@@ -4,7 +4,13 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useCreateJob } from "./job.hooks";
 import { useSites } from "@/features/cleaning-site/hooks/site.hooks";
 import { useApprovedCleaners } from "@/features/cleaners/hooks/cleaner.hooks";
-import { CreateJobPayload } from "../types/job.type";
+import {
+  AssignmentField,
+  AssignmentType,
+  CreateJobPayload,
+  JobAssignmentStepValues,
+  JobFirstStepValues,
+} from "../types/job.type";
 import { jobFirstStepSchema } from "../types/job.schema";
 import { useToast } from "@/shared/toast";
 import {
@@ -13,18 +19,7 @@ import {
   getUserUtcHourOffset,
 } from "../utils/job-form-options";
 
-export interface JobFirstStepValues {
-  cleaningSite: string;
-  jobPay: string;
-  cleanerPay: string;
-  consumables: string;
-  consumablesProvidedByCustomer: boolean;
-  date: string;
-  startTime: string;
-  endTime: string;
-  cleaner: string;
-  timezone: string;
-}
+
 
 export type FirstStepErrors = Partial<Record<keyof JobFirstStepValues, string>>;
 export type TextField = "jobPay" | "cleanerPay" | "consumables" | "date";
@@ -48,6 +43,14 @@ const getInitialFirstStep = (): JobFirstStepValues => ({
   timezone: String(getUserUtcHourOffset()),
 });
 
+export const EMPTY_ASSIGNMENT_STEP: JobAssignmentStepValues = {
+  assignmentType: "publish",
+  deadlineDate: "",
+  deadlineTime: "",
+  eligibleRadius: "",
+  assignedCleaner: "",
+};
+
 export const useCreateJobScreen = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -55,10 +58,15 @@ export const useCreateJobScreen = () => {
   const { data: sites } = useSites();
   const { data: approvedCleaners } = useApprovedCleaners({ page: 1, size: 100 });
 
-  const [step, setStep] = useState<1 | 2>(1);
+  const [step, setStep] = useState<1 | 2 | 3>(2);
   const [firstStepValues, setFirstStepValues] =
     useState<JobFirstStepValues>(getInitialFirstStep);
   const [firstStepErrors, setFirstStepErrors] = useState<FirstStepErrors>({});
+  const [assignmentStepValues, setAssignmentStepValues] =
+    useState<JobAssignmentStepValues>(EMPTY_ASSIGNMENT_STEP);
+  const [assignmentStepErrors, setAssignmentStepErrors] = useState<
+    Partial<Record<AssignmentField, string>>
+  >({});
   const [checklist, setChecklist] = useState<string[]>([]);
   const [checklistError, setChecklistError] = useState<string | undefined>();
 
@@ -140,6 +148,63 @@ export const useCreateJobScreen = () => {
     setStep(2);
   };
 
+  const handleAssignmentTypeChange = (type: AssignmentType) => {
+    setAssignmentStepValues((prev) => ({ ...prev, assignmentType: type }));
+  };
+
+  const handleDeadlineDateChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setAssignmentStepValues((prev) => ({ ...prev, deadlineDate: e.target.value }));
+    if (assignmentStepErrors.deadlineDate) {
+      setAssignmentStepErrors((prev) => ({ ...prev, deadlineDate: undefined }));
+    }
+  };
+
+  const handleDeadlineTimeChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setAssignmentStepValues((prev) => ({ ...prev, deadlineTime: e.target.value }));
+    if (assignmentStepErrors.deadlineTime) {
+      setAssignmentStepErrors((prev) => ({ ...prev, deadlineTime: undefined }));
+    }
+  };
+
+  const handleEligibleRadiusChange = (id: string) => {
+    setAssignmentStepValues((prev) => ({ ...prev, eligibleRadius: id }));
+    if (assignmentStepErrors.eligibleRadius) {
+      setAssignmentStepErrors((prev) => ({ ...prev, eligibleRadius: undefined }));
+    }
+  };
+
+  const handleAssignedCleanerChange = (cleanerId: string) => {
+    setAssignmentStepValues((prev) => ({ ...prev, assignedCleaner: cleanerId }));
+    if (assignmentStepErrors.assignedCleaner) {
+      setAssignmentStepErrors((prev) => ({ ...prev, assignedCleaner: undefined }));
+    }
+  };
+
+  const handleAssignmentContinue = () => {
+    const newErrors: Partial<Record<AssignmentField, string>> = {};
+
+    if (assignmentStepValues.assignmentType === "publish") {
+      if (!assignmentStepValues.deadlineDate) {
+        newErrors.deadlineDate = "Deadline date is required";
+      }
+      if (!assignmentStepValues.deadlineTime) {
+        newErrors.deadlineTime = "Deadline time is required";
+      }
+      if (!assignmentStepValues.eligibleRadius) {
+        newErrors.eligibleRadius = "Select an eligible radius";
+      }
+    } else if (!assignmentStepValues.assignedCleaner) {
+      newErrors.assignedCleaner = "Select a cleaner to assign this job to";
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setAssignmentStepErrors(newErrors);
+      return;
+    }
+
+    setStep(3);
+  };
+
   const toggleChecklistItem = (id: string) => {
     setChecklist((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
@@ -182,6 +247,8 @@ export const useCreateJobScreen = () => {
     cleaners: approvedCleaners ?? [],
     timeOptions: TIME_OPTIONS,
     timezoneOptions: TIMEZONE_OPTIONS,
+    assignmentStepValues,
+    assignmentStepErrors,
     checklist,
     checklistError,
     isPending,
@@ -189,6 +256,12 @@ export const useCreateJobScreen = () => {
     handleSelectChange,
     handleConsumablesProvidedChange,
     handleContinue,
+    handleAssignmentTypeChange,
+    handleDeadlineDateChange,
+    handleDeadlineTimeChange,
+    handleEligibleRadiusChange,
+    handleAssignedCleanerChange,
+    handleAssignmentContinue,
     toggleChecklistItem,
     handleSave,
     handleCancel,

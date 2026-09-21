@@ -6,6 +6,7 @@ import { Col, Row } from "antd";
 import { JobFirstStep } from "../components/job-first-step";
 import { JobSecondStep } from "../components/job-second-step";
 import { useCreateJobScreen } from "../hooks/useCreateJobScreen";
+import { JobThirdStep } from "../components/job-third-step";
 
 export const CreateJobScreen = () => {
   useSetBreadcrumb([
@@ -21,6 +22,8 @@ export const CreateJobScreen = () => {
     cleaners,
     timeOptions,
     timezoneOptions,
+    assignmentStepValues,
+    assignmentStepErrors,
     checklist,
     checklistError,
     isPending,
@@ -28,6 +31,12 @@ export const CreateJobScreen = () => {
     handleSelectChange,
     handleConsumablesProvidedChange,
     handleContinue,
+    handleAssignmentTypeChange,
+    handleDeadlineDateChange,
+    handleDeadlineTimeChange,
+    handleEligibleRadiusChange,
+    handleAssignedCleanerChange,
+    handleAssignmentContinue,
     toggleChecklistItem,
     handleSave,
     handleCancel,
@@ -54,6 +63,21 @@ export const CreateJobScreen = () => {
           )}
           {step === 2 && (
             <JobSecondStep
+              values={assignmentStepValues}
+              errors={assignmentStepErrors}
+              cleaners={cleaners}
+              onAssignmentTypeChange={handleAssignmentTypeChange}
+              onDeadlineDateChange={handleDeadlineDateChange}
+              onDeadlineTimeChange={handleDeadlineTimeChange}
+              onEligibleRadiusChange={handleEligibleRadiusChange}
+              onAssignedCleanerChange={handleAssignedCleanerChange}
+              onCancel={handleCancel}
+              onContinue={handleAssignmentContinue}
+            />
+          )}
+
+          {step === 3 && (
+            <JobThirdStep
               selected={checklist}
               error={checklistError}
               isPending={isPending}

@@ -8,6 +8,9 @@
 // sends Title Case with spaces (e.g. "Under Review"), not the config's
 // lowercase-hyphenated keys, so components normalize before lookup.
 
+import { ApprovedCleaner } from "@/features/cleaners/types/cleaner.type";
+import { ChangeEvent } from "react";
+
 export interface Job {
   job_id: number;
   job_id_label: string;
@@ -118,4 +121,80 @@ export interface ApproveJobPayload {
 export interface ApproveJobResponse {
   success: boolean;
   detail: string;
+}
+
+
+export interface JobSecondStepProps {
+  selected: string[];
+  error?: string;
+  isPending?: boolean;
+  onToggle: (id: string) => void;
+  onCancel: () => void;
+  onSave: () => void;
+}
+
+export type AssignmentType = "publish" | "assign";
+
+export type AssignmentField =
+  | "deadlineDate"
+  | "deadlineTime"
+  | "eligibleRadius"
+  | "assignedCleaner";
+
+export interface JobAssignmentStepValues {
+  assignmentType: AssignmentType;
+  deadlineDate: string;
+  deadlineTime: string;
+  eligibleRadius: string;
+  assignedCleaner: string;
+}
+
+export interface JobAssignmentStepProps {
+  values: JobAssignmentStepValues;
+  errors: Partial<Record<AssignmentField, string>>;
+  cleaners: ApprovedCleaner[];
+  heading?: string;
+  onAssignmentTypeChange: (type: AssignmentType) => void;
+  onDeadlineDateChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  onDeadlineTimeChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  onEligibleRadiusChange: (id: string) => void;
+  onAssignedCleanerChange: (cleanerId: string) => void;
+  onCancel: () => void;
+  onContinue: () => void;
+}
+
+export interface Option {
+  label: string;
+  value: string;
+}
+
+export interface JobFirstStepValues {
+  cleaningSite: string;
+  jobPay: string;
+  cleanerPay: string;
+  consumables: string;
+  consumablesProvidedByCustomer: boolean;
+  date: string;
+  startTime: string;
+  endTime: string;
+  cleaner: string;
+  timezone: string;
+}
+
+export type TextField = "jobPay" | "cleanerPay" | "consumables" | "date";
+export type SelectField = "cleaningSite" | "startTime" | "endTime" | "cleaner" | "timezone";
+
+export interface JobFirstStepProps {
+  values: JobFirstStepValues;
+  errors: Partial<Record<keyof JobFirstStepValues, string>>;
+  siteOptions: Option[];
+  cleaners: ApprovedCleaner[];
+  timeOptions: Option[];
+  timezoneOptions: Option[];
+  heading?: string;
+  onChange: (field: TextField) => (e: ChangeEvent<HTMLInputElement>) => void;
+  onSelectChange: (field: SelectField) => (value?: string) => void;
+  onConsumablesProvidedChange: (checked: boolean) => void;
+  onCancel: () => void;
+  onContinue: () => void;
 }

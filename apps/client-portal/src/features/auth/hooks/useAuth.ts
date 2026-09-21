@@ -14,7 +14,7 @@ import { useAuthStore } from "@/shared/store/auth.store";
 
 const RESEND_OTP_SECONDS = 50;
 
-const PASSWORD_REQUIREMENTS = [
+export const PASSWORD_REQUIREMENTS = [
   { label: "Uppercase", regex: /[A-Z]/ },
   { label: "Lowercase", regex: /[a-z]/ },
   { label: "Number", regex: /[0-9]/ },

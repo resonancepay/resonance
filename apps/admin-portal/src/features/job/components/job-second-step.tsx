@@ -1,91 +1,188 @@
 "use client";
 
-import { Button, Checkbox, Container, Input, Text } from "@resonance/ui";
-import { CheckIcon, SearchIcon } from "@resonance/ui/icons";
-import { useMemo, useState } from "react";
-import { CHECKLIST_OPTIONS } from "../utils/job-form-options";
-
-interface JobSecondStepProps {
-  selected: string[];
-  error?: string;
-  isPending?: boolean;
-  onToggle: (id: string) => void;
-  onCancel: () => void;
-  onSave: () => void;
-}
+import { Button, Container, Input, Radio, Text } from "@resonance/ui";
+import { ChevronDownIcon, ClockIcon, DateIcon, NextIcon } from "@resonance/ui/icons";
+import { useState } from "react";
+import { getTodayDateString } from "../types/job.schema";
+import { ELIGIBLE_RADIUS_OPTIONS } from "../utils/job-form-options";
+import { JobAssignmentStepProps } from "../types/job.type";
+import { JobTypeCard } from "./cards/job-type-card";
+import { SelectCleanerModal } from "./modal/select-cleaner-modal";
 
 export const JobSecondStep = ({
-  selected,
-  error,
-  isPending,
-  onToggle,
+  values,
+  errors,
+  cleaners,
+  heading = "Set up job assignment",
+  onAssignmentTypeChange,
+  onDeadlineDateChange,
+  onDeadlineTimeChange,
+  onEligibleRadiusChange,
+  onAssignedCleanerChange,
   onCancel,
-  onSave,
-}: JobSecondStepProps) => {
-  const [search, setSearch] = useState("");
-
-  const filteredOptions = useMemo(() => {
-    const query = search.trim().toLowerCase();
-    if (!query) return CHECKLIST_OPTIONS;
-    return CHECKLIST_OPTIONS.filter((option) =>
-      option.label.toLowerCase().includes(query),
-    );
-  }, [search]);
+  onContinue,
+}: JobAssignmentStepProps) => {
+  const [cleanerModalOpen, setCleanerModalOpen] = useState(false);
+  const selectedCleaner = cleaners.find(
+    (cleaner) => String(cleaner.cleaner_id) === values.assignedCleaner,
+  );
 
   return (
     <Container>
       <Container className="flex items-center gap-1.5 mb-8">
         <Container className="h-1 flex-1 rounded-full bg-brand-secondary-bg-bold" />
         <Container className="h-1 flex-1 rounded-full bg-brand-secondary-bg-bold" />
+        <Container className="h-1 flex-1 rounded-full bg-muted" />
       </Container>
 
       <Container className="mb-8">
         <Text tone="primary" variant="h4">
-          Choose the required and appropriate checklists for this job
+          {heading}
         </Text>
       </Container>
 
-      <Input
-        placeholder="Search checklist"
-        value={search}
-        variant2
-        onChange={(e) => setSearch(e.target.value)}
-        leftIcon={<SearchIcon className="text-secondary" size={18} />}
-      />
+      <Container className="flex flex-col gap-4">
+        <JobTypeCard
+          active={values.assignmentType === "publish"}
+          mainText="Publish Job"
+          subText="Job will be open to claim by cleaners"
+          setActive={() => onAssignmentTypeChange("publish")}
+        />
+        <JobTypeCard
+          active={values.assignmentType === "assign"}
+          mainText="Assign a cleaner"
+          subText="Give the job directly to a cleaner of choice"
+          setActive={() => onAssignmentTypeChange("assign")}
+        />
+      </Container>
 
-      <Container className="flex flex-col gap-3 mt-6">
-        {filteredOptions.map((option) => (
-          <Container
-            key={option.id}
-            onClick={() => onToggle(option.id)}
-            className="bg-background rounded-xl px-2 py-2.5 flex items-center gap-3 text-left cursor-pointer"
-          >
-            <Checkbox
-              checked={selected.includes(option.id)}
-              onChange={() => onToggle(option.id)}
-            />
-            <Text variant="bodySmall" tone="primary">
-              {option.label}
-            </Text>
+      <Container className="h-px bg-border my-8" />
+
+      <Container className="mb-6">
+        <Text tone="primary" variant="h5">
+          Assignment conditions
+        </Text>
+      </Container>
+
+      <Container className="flex flex-col gap-6">
+        {values.assignmentType === "publish" && (
+          <>
+            <Container>
+              <Container as="label" className="flex items-center gap-0.5 mb-1">
+                <Text variant="bodySmall" className="text-primary">
+                  Deadline
+                </Text>
+                <Text variant="bodySmall" className="text-danger-text-icons">
+                  *
+                </Text>
+              </Container>
+              <Container className="grid grid-cols-2 gap-4">
+                <Input
+                  type="date"
+                  variant2
+                  placeholder="Set date"
+                  min={getTodayDateString()}
+                  value={values.deadlineDate}
+                  onChange={onDeadlineDateChange}
+                  error={errors.deadlineDate}
+                  rightIcon={<DateIcon size={18} className="text-secondary" />}
+                />
+                <Input
+                  type="time"
+                  variant2
+                  placeholder="Set time"
+                  value={values.deadlineTime}
+                  onChange={onDeadlineTimeChange}
+                  error={errors.deadlineTime}
+                  rightIcon={<ClockIcon size={18} className="text-secondary" />}
+                />
+              </Container>
+            </Container>
+
+            <Container>
+              <Container as="label" className="flex items-center gap-0.5 mb-3">
+                <Text variant="bodySmall" className="text-primary">
+                  Eligible Cleaners
+                </Text>
+                <Text variant="bodySmall" className="text-danger-text-icons">
+                  *
+                </Text>
+              </Container>
+              <Container className="flex flex-col gap-3">
+                {ELIGIBLE_RADIUS_OPTIONS.map((option) => (
+                  <Container
+                    key={option.id}
+                    className="bg-muted py-2.5 px-3 rounded-xl"
+                  >
+                    <Radio
+                      label={option.label}
+                      showBackground={false}
+                      checked={values.eligibleRadius === option.id}
+                      onChange={() => onEligibleRadiusChange(option.id)}
+                    />
+                  </Container>
+                ))}
+              </Container>
+              {errors.eligibleRadius && (
+                <Text
+                  variant="bodyXSmall"
+                  className="text-danger-text-icons mt-2"
+                >
+                  {errors.eligibleRadius}
+                </Text>
+              )}
+            </Container>
+          </>
+        )}
+
+        {values.assignmentType === "assign" && (
+          <Container>
+            <Container as="label" className="flex items-center gap-0.5 mb-1">
+              <Text variant="bodySmall" className="text-primary">
+                Assign Cleaner
+              </Text>
+              <Text variant="bodySmall" className="text-danger-text-icons">
+                *
+              </Text>
+            </Container>
+
+            <Container
+              as="button"
+              type="button"
+              onClick={() => setCleanerModalOpen(true)}
+              className={[
+                "w-full h-10 rounded-2xl border outline-none px-4 text-base sm:text-xs font-sans transition-colors",
+                "flex items-center gap-2 cursor-pointer bg-muted text-primary",
+                errors.assignedCleaner ? "border-danger-border" : "border-transparent",
+              ].join(" ")}
+            >
+              <span
+                className={[
+                  "flex-1 text-left truncate",
+                  !selectedCleaner ? "text-secondary" : "",
+                ].join(" ")}
+              >
+                {selectedCleaner ? selectedCleaner.full_name : "Select cleaner"}
+              </span>
+              <ChevronDownIcon size={16} className="shrink-0 text-secondary" />
+            </Container>
+
+            {errors.assignedCleaner && (
+              <Text variant="bodySmall" className="text-danger-text-icons mt-1">
+                {errors.assignedCleaner}
+              </Text>
+            )}
           </Container>
-        ))}
-
-        {filteredOptions.length === 0 && (
-          <Text
-            variant="bodySmall"
-            tone="secondary"
-            className="text-center py-6"
-          >
-            No checklist items match your search
-          </Text>
         )}
       </Container>
 
-      {error && (
-        <Text variant="bodyXSmall" className="text-danger-text-icons mt-3">
-          {error}
-        </Text>
-      )}
+      <SelectCleanerModal
+        isOpen={cleanerModalOpen}
+        onClose={() => setCleanerModalOpen(false)}
+        cleaners={cleaners}
+        selectedCleanerId={values.assignedCleaner}
+        onSelect={onAssignedCleanerChange}
+      />
 
       <Container className="h-px bg-border my-8" />
 
@@ -96,12 +193,10 @@ export const JobSecondStep = ({
         <Button
           variant="primary"
           className="flex-1"
-          rightIcon={<CheckIcon className="text-inverted" size={18} />}
-          onClick={onSave}
-          disabled={isPending}
-          loading={isPending}
+          rightIcon={<NextIcon className="text-inverted" size={18} />}
+          onClick={onContinue}
         >
-          Save
+          Continue
         </Button>
       </Container>
     </Container>

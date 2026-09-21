@@ -18,12 +18,10 @@ export const OnboardingInfo = () => {
       </Container>
       <Container className="flex gap-2 items-center mt-2">
         <Text variant="bodyXSmall" className="text-secondary">
-          Having trouble logging in? Contact your manager or email
-          <Container>
-            <Text className="text-primary" variant="bodyXSmall">
-              support@resonanceclean.co.uk
-            </Text>
-          </Container>
+          Having trouble logging in? Contact your manager or email{" "}
+          <Text as="span" className="text-primary" variant="bodyXSmall">
+            support@resonanceclean.co.uk
+          </Text>
         </Text>
       </Container>
     </Container>

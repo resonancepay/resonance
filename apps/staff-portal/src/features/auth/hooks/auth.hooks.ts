@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   login,
   register,
@@ -7,6 +7,8 @@ import {
   resetPassword,
   verifyOtp,
   profile,
+  changePassword,
+  deleteAccount,
 } from "../services/auth.service";
 import {
   LoginPayload,
@@ -14,6 +16,8 @@ import {
   ResetPasswordPayload,
   RegisterResponse,
   VerifyOtpPayload,
+  ChangePasswordPayload,
+  DeleteAccountResponse,
 } from "../types/auth.type";
 import { useToast } from "@/shared/toast";
 
@@ -103,5 +107,56 @@ export const useGetProfile = (
     mutationFn: () => profile(),
     onSuccess: sc,
     onError: ec,
+  });
+};
+
+// Query-based fetch for screens that just need to load and display the
+// current profile (e.g. the profile screen), as opposed to useGetProfile's
+// mutation form used for one-off fetches gated behind another action.
+export const PROFILE_QUERY_KEY = ["cleaner-profile"];
+
+export const useProfile = () => {
+  return useQuery({
+    queryKey: PROFILE_QUERY_KEY,
+    queryFn: () => profile(),
+  });
+};
+
+export const useChangePassword = (
+  sc: (val: any) => void,
+  ec?: (err: any) => void,
+) => {
+  return useMutation({
+    mutationFn: (payload: ChangePasswordPayload) => changePassword(payload),
+    onSuccess: sc,
+    onError: ec,
+  });
+};
+
+export const useDeleteAccount = (
+  sc: (val: DeleteAccountResponse) => void,
+  ec?: (err: any) => void,
+) => {
+  return useMutation({
+    mutationFn: () => deleteAccount(),
+    onSuccess: sc,
+    onError: ec,
+  });
+};
+
+const PROFILE_POLL_INTERVAL_MS = 30000;
+
+// Used while an application is pending/submitted, so the onboarding screen
+// notices an admin's approve/decline decision on its own — refetches every
+// 30s and immediately on tab focus, without needing a manual refresh or
+// re-login. `enabled` should be false once the application is resolved
+// (approved/declined) so this doesn't keep polling forever.
+export const useProfileStatusPoll = (enabled: boolean) => {
+  return useQuery({
+    queryKey: ["cleaner-profile-status"],
+    queryFn: () => profile(),
+    enabled,
+    refetchInterval: enabled ? PROFILE_POLL_INTERVAL_MS : false,
+    refetchOnWindowFocus: enabled,
   });
 };
