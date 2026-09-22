@@ -1,6 +1,6 @@
 // NOTE: Job (the list item shape), JobDetails (single-job response),
-// CreateJobPayload, and EditJobPayload are all confirmed against the real
-// API. job_date is YYYY-MM-DD, start_time/end_time are 24hr HH:MM, timezone
+// CreateJobPayload, EditJobPayload, and PublishJobPayload are all confirmed
+// against the real API. job_date is YYYY-MM-DD, start_time/end_time are 24hr HH:MM, timezone
 // is a plain UTC-hour offset (-12 to +12). Cancel payload is still
 // provisional.
 //
@@ -101,6 +101,38 @@ export interface CreateJobPayload {
   checklist: string[];
 }
 
+// Confirmed against Swagger — POST /v1/admin/job/publish. Used when the job
+// is published for cleaners to claim rather than assigned to one, so there's
+// no assigned_cleaner_id; instead there's a claim deadline and the radius
+// (miles from the site) within which cleaners are eligible. deadline_date is
+// YYYY-MM-DD and deadline_time is 24hr HH:MM, like the job date/times.
+export interface PublishJobPayload {
+  site_id: number;
+  job_pay: number;
+  cleaners_pay: number;
+  consumables: string;
+  consumables_provided: boolean;
+  job_date: string;
+  start_time: string;
+  end_time: string;
+  deadline_date: string;
+  deadline_time: string;
+  timezone: number;
+  radius: number;
+  checklist: string[];
+}
+
+// Confirmed against Swagger — POST /v1/admin/job/edit-publish: the publish
+// payload plus the id of the published job being edited.
+export interface EditPublishJobPayload extends PublishJobPayload {
+  job_id: number;
+}
+
+export interface PublishJobResponse {
+  success: boolean;
+  job_id: number;
+}
+
 export interface EditJobPayload extends CreateJobPayload {
   job_id: number;
 }
@@ -124,7 +156,7 @@ export interface ApproveJobResponse {
 }
 
 
-export interface JobSecondStepProps {
+export interface JobThirdStepProps {
   selected: string[];
   error?: string;
   isPending?: boolean;
@@ -150,6 +182,9 @@ export interface JobAssignmentStepValues {
 }
 
 export interface JobAssignmentStepProps {
+  // Hides the publish/assign choice and shows only that type's conditions —
+  // used when editing a job, which keeps whichever type it already is.
+  lockedType?: AssignmentType;
   values: JobAssignmentStepValues;
   errors: Partial<Record<AssignmentField, string>>;
   cleaners: ApprovedCleaner[];
@@ -177,18 +212,18 @@ export interface JobFirstStepValues {
   date: string;
   startTime: string;
   endTime: string;
-  cleaner: string;
   timezone: string;
 }
 
 export type TextField = "jobPay" | "cleanerPay" | "consumables" | "date";
-export type SelectField = "cleaningSite" | "startTime" | "endTime" | "cleaner" | "timezone";
+export type SelectField = "cleaningSite" | "startTime" | "endTime" | "timezone";
+
+export type FirstStepErrors = Partial<Record<keyof JobFirstStepValues, string>>;
 
 export interface JobFirstStepProps {
   values: JobFirstStepValues;
   errors: Partial<Record<keyof JobFirstStepValues, string>>;
   siteOptions: Option[];
-  cleaners: ApprovedCleaner[];
   timeOptions: Option[];
   timezoneOptions: Option[];
   heading?: string;

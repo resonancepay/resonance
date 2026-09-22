@@ -10,6 +10,7 @@ import { JobTypeCard } from "./cards/job-type-card";
 import { SelectCleanerModal } from "./modal/select-cleaner-modal";
 
 export const JobSecondStep = ({
+  lockedType,
   values,
   errors,
   cleaners,
@@ -41,22 +42,26 @@ export const JobSecondStep = ({
         </Text>
       </Container>
 
-      <Container className="flex flex-col gap-4">
-        <JobTypeCard
-          active={values.assignmentType === "publish"}
-          mainText="Publish Job"
-          subText="Job will be open to claim by cleaners"
-          setActive={() => onAssignmentTypeChange("publish")}
-        />
-        <JobTypeCard
-          active={values.assignmentType === "assign"}
-          mainText="Assign a cleaner"
-          subText="Give the job directly to a cleaner of choice"
-          setActive={() => onAssignmentTypeChange("assign")}
-        />
-      </Container>
+      {!lockedType && (
+        <>
+          <Container className="flex flex-col gap-4">
+            <JobTypeCard
+              active={values.assignmentType === "publish"}
+              mainText="Publish Job"
+              subText="Job will be open to claim by cleaners"
+              setActive={() => onAssignmentTypeChange("publish")}
+            />
+            <JobTypeCard
+              active={values.assignmentType === "assign"}
+              mainText="Assign a cleaner"
+              subText="Give the job directly to a cleaner of choice"
+              setActive={() => onAssignmentTypeChange("assign")}
+            />
+          </Container>
 
-      <Container className="h-px bg-border my-8" />
+          <Container className="h-px bg-border my-8" />
+        </>
+      )}
 
       <Container className="mb-6">
         <Text tone="primary" variant="h5">
@@ -65,7 +70,7 @@ export const JobSecondStep = ({
       </Container>
 
       <Container className="flex flex-col gap-6">
-        {values.assignmentType === "publish" && (
+        {(lockedType ?? values.assignmentType) === "publish" && (
           <>
             <Container>
               <Container as="label" className="flex items-center gap-0.5 mb-1">
@@ -135,7 +140,7 @@ export const JobSecondStep = ({
           </>
         )}
 
-        {values.assignmentType === "assign" && (
+        {(lockedType ?? values.assignmentType) === "assign" && (
           <Container>
             <Container as="label" className="flex items-center gap-0.5 mb-1">
               <Text variant="bodySmall" className="text-primary">

@@ -8,6 +8,9 @@ interface AccountInformationProps {
   email: string;
   phone: string;
   dateOfBirth: string;
+  cleanerId: string;
+  dateRegistered: string;
+  dateApproved: string;
   statusTag: StatusTag;
 }
 
@@ -17,6 +20,9 @@ export const AccountInformation = ({
   email,
   phone,
   dateOfBirth,
+  cleanerId,
+  dateRegistered,
+  dateApproved,
   statusTag,
 }: AccountInformationProps) => {
   return (
@@ -63,7 +69,7 @@ export const AccountInformation = ({
               Cleaner ID
             </Text>
             <Text variant="bodySmall" tone="primary">
-              —
+              {cleanerId}
             </Text>
           </Container>
         </Col>
@@ -93,7 +99,7 @@ export const AccountInformation = ({
               Date Registered
             </Text>
             <Text variant="bodySmall" tone="primary">
-              —
+              {dateRegistered}
             </Text>
           </Container>
         </Col>
@@ -103,7 +109,7 @@ export const AccountInformation = ({
               Date Approved
             </Text>
             <Text variant="bodySmall" tone="primary">
-              —
+              {dateApproved}
             </Text>
           </Container>
         </Col>

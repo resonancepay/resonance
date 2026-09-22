@@ -2,7 +2,7 @@
 
 import { Button, Container, Text } from "@resonance/ui";
 import { DateIcon, EditIcon } from "@resonance/ui/icons";
-import { AvailabilityEntry } from "@/features/auth/types/auth.type";
+import { AvailabilityEntry } from "../types/profile.type";
 import { EmptyState } from "./empty-state";
 import { DAY_OPTIONS } from "./modal/setup-availability-modal";
 
@@ -47,9 +47,9 @@ export const AvailabilityBanner = ({
           />
         ) : (
           <Container className="grid grid-cols-2 gap-2 lg:flex lg:flex-wrap">
-            {availability.map((entry, index) => (
+            {availability.map((entry) => (
               <Container
-                key={`${entry.day}-${index}`}
+                key={entry.id}
                 className="bg-brand-tertiary-bg-light border rounded-xl py-1 px-2.5 border-brand-tertiary-border"
               >
                 <Text variant="bodySmall" tone="primary">

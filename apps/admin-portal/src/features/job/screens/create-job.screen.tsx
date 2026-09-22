@@ -51,7 +51,6 @@ export const CreateJobScreen = () => {
               values={firstStepValues}
               errors={firstStepErrors}
               siteOptions={siteOptions}
-              cleaners={cleaners}
               timeOptions={timeOptions}
               timezoneOptions={timezoneOptions}
               onChange={handleChange}

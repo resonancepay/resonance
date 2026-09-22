@@ -4,6 +4,7 @@ import {
   Job,
   JobChecklistEntry,
   JobDetails,
+  OpenJob,
   PaginationQuery,
 } from "../types/job.types";
 
@@ -11,6 +12,16 @@ import {
 
 export const jobs = async (query: PaginationQuery = {}): Promise<Job[]> => {
   const result = await apiClient.get("/cleaners/jobs", {
+    params: { page: query.page ?? 1, size: query.size ?? 10 },
+  });
+  return result.data;
+};
+
+// Confirmed against Swagger — GET /v1/cleaners/jobs/open. Paginated with
+// page (min 1) and size (1-100); returns a plain list with no total, and an
+// empty list when there's nothing open.
+export const openJobs = async (query: PaginationQuery = {}): Promise<OpenJob[]> => {
+  const result = await apiClient.get("/cleaners/jobs/open", {
     params: { page: query.page ?? 1, size: query.size ?? 10 },
   });
   return result.data;

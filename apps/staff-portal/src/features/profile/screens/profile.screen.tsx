@@ -11,6 +11,7 @@ import { AccountSetting } from "../components/account-setting";
 import { ChangePasswordModal } from "../components/modal/change-password-modal";
 import { DeleteAccountModal } from "../components/modal/delete-account-modal";
 import { SetupAvailabilityModal } from "../components/modal/setup-availability-modal";
+import { SetServiceLocationModal } from "../components/modal/set-service-location-modal";
 
 export const ProfileScreen = () => {
   const {
@@ -20,6 +21,9 @@ export const ProfileScreen = () => {
     email,
     phone,
     dateOfBirth,
+    cleanerId,
+    dateRegistered,
+    dateApproved,
     statusTag,
     availability,
     serviceLocation,
@@ -41,6 +45,11 @@ export const ProfileScreen = () => {
     handleRemoveAvailability,
     isRemovingAvailability,
     availabilityDraft,
+    serviceLocationOpen,
+    openServiceLocation,
+    closeServiceLocation,
+    handleSaveServiceLocation,
+    isSavingServiceLocation,
   } = useProfileScreen();
 
   return (
@@ -59,13 +68,19 @@ export const ProfileScreen = () => {
               email={email}
               phone={phone}
               dateOfBirth={dateOfBirth}
+              cleanerId={cleanerId}
+              dateRegistered={dateRegistered}
+              dateApproved={dateApproved}
               statusTag={statusTag}
             />
             <AvailabilityBanner
               availability={availability}
               onEditClick={openAvailability}
             />
-            <LocationBanner serviceLocation={serviceLocation} />
+            <LocationBanner
+              serviceLocation={serviceLocation}
+              onEditClick={openServiceLocation}
+            />
           </Container>
         </Col>
         <Col xs={24} lg={8}>
@@ -101,6 +116,14 @@ export const ProfileScreen = () => {
         initialEntries={availabilityDraft}
         isPending={isSavingAvailability}
         isRemoving={isRemovingAvailability}
+      />
+
+      <SetServiceLocationModal
+        isOpen={serviceLocationOpen}
+        onClose={closeServiceLocation}
+        onSubmit={handleSaveServiceLocation}
+        initialValue={serviceLocation}
+        isPending={isSavingServiceLocation}
       />
     </Container>
   );

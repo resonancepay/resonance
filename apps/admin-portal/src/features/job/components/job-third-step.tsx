@@ -2,7 +2,7 @@ import { Button, Checkbox, Container, Input, Text } from "@resonance/ui";
 import { CheckIcon, SearchIcon } from "@resonance/ui/icons";
 import { useMemo, useState } from "react";
 import { CHECKLIST_OPTIONS } from "../utils/job-form-options";
-import { JobSecondStepProps } from "../types/job.type";
+import { JobThirdStepProps } from "../types/job.type";
 
 export const JobThirdStep = ({
   selected,
@@ -11,7 +11,7 @@ export const JobThirdStep = ({
   onToggle,
   onCancel,
   onSave,
-}: JobSecondStepProps) => {
+}: JobThirdStepProps) => {
   const [search, setSearch] = useState("");
 
   const filteredOptions = useMemo(() => {

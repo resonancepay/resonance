@@ -4,9 +4,11 @@ import {
   cancelJob,
   createJob,
   editJob,
+  editPublishJob,
   exportJobs,
   getJob,
   getJobs,
+  publishJob,
 } from "../services/job.service";
 import {
   ApproveJobPayload,
@@ -14,7 +16,10 @@ import {
   CancelJobPayload,
   CreateJobPayload,
   EditJobPayload,
+  EditPublishJobPayload,
   Job,
+  PublishJobPayload,
+  PublishJobResponse,
 } from "../types/job.type";
 
 export const useJobs = () => {
@@ -43,12 +48,34 @@ export const useCreateJob = (
   });
 };
 
+export const usePublishJob = (
+  sc: (val: PublishJobResponse) => void,
+  ec?: (err: any) => void,
+) => {
+  return useMutation({
+    mutationFn: (payload: PublishJobPayload) => publishJob(payload),
+    onSuccess: sc,
+    onError: ec,
+  });
+};
+
 export const useEditJob = (
   sc: (val: Job) => void,
   ec?: (err: any) => void,
 ) => {
   return useMutation({
     mutationFn: (payload: EditJobPayload) => editJob(payload),
+    onSuccess: sc,
+    onError: ec,
+  });
+};
+
+export const useEditPublishJob = (
+  sc: (val: unknown) => void,
+  ec?: (err: any) => void,
+) => {
+  return useMutation({
+    mutationFn: (payload: EditPublishJobPayload) => editPublishJob(payload),
     onSuccess: sc,
     onError: ec,
   });

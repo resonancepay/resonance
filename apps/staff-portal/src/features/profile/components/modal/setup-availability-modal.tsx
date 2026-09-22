@@ -3,10 +3,7 @@
 import { useEffect, useState } from "react";
 import { Button, Container, Input, Modal, Select, Text } from "@resonance/ui";
 import { AddIcon, CloseIcon, TickIcon } from "@resonance/ui/icons";
-import {
-  AvailabilityEntry,
-  NewAvailabilityEntry,
-} from "@/features/auth/types/auth.type";
+import { AvailabilityEntry, NewAvailabilityEntry } from "../../types/profile.type";
 
 export const DAY_OPTIONS = [
   { value: "mondays", label: "Mondays" },
@@ -52,13 +49,13 @@ interface SetupAvailabilityModalProps {
 }
 
 // Wire shape (day/start_time/end_time) -> local editing shape (adds a
-// friendly dayLabel for display and carries the availability_id through).
+// friendly dayLabel for display and carries the id through).
 export const toAvailabilityDraftEntries = (
   entries: AvailabilityEntry[],
 ): AvailabilityDraftEntry[] =>
   entries.map((entry) => ({
-    id: String(entry.availability_id),
-    availabilityId: entry.availability_id,
+    id: String(entry.id),
+    availabilityId: entry.id,
     day: entry.day,
     dayLabel: DAY_OPTIONS.find((option) => option.value === entry.day)?.label ?? entry.day,
     startTime: entry.start_time,

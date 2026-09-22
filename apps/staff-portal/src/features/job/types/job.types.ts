@@ -23,6 +23,12 @@ export interface Job {
   uniform_guidelines: string;
 }
 
+// Confirmed against Swagger — GET /v1/cleaners/jobs/open. Same as Job plus
+// how far the job is from the cleaner's set service location.
+export interface OpenJob extends Job {
+  distance: string;
+}
+
 export interface JobImage {
   image: string;
   gps_lat: string;

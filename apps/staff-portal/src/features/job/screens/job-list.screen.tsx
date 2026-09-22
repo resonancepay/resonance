@@ -1,16 +1,27 @@
 "use client";
 
-import { Container, Text } from "@resonance/ui";
+import { Button, Container, Text } from "@resonance/ui";
 import { useState } from "react";
 import { JobTab } from "../types/job.types";
 import { JobGrid } from "../components/job-grid";
+import { JobEmptyState } from "../components/job-empty-state";
 import { JobHistoryPill } from "../components/job-history-pill";
 import { useJobListScreen } from "../hooks/useJobListScreen";
 
 export const JobListScreen = () => {
   const [activeTab, setActiveTab] = useState<JobTab>("open");
-  const { isLoading, todayJobs, tomorrowJobs, laterJobs, historyJobs } =
-    useJobListScreen();
+  const {
+    isLoading,
+    openJobs,
+    isLoadingOpenJobs,
+    hasMoreOpenJobs,
+    loadMoreOpenJobs,
+    isLoadingMoreOpenJobs,
+    todayJobs,
+    tomorrowJobs,
+    laterJobs,
+    historyJobs,
+  } = useJobListScreen();
 
   return (
     <Container>
@@ -73,10 +84,44 @@ export const JobListScreen = () => {
         </Container>
       </Container>
 
-      {isLoading && (
+      {isLoading && activeTab !== "open" && (
         <Text variant="bodySmall" tone="secondary" className="mt-7">
           Loading jobs…
         </Text>
+      )}
+
+      {activeTab === "open" && (
+        <>
+          {isLoadingOpenJobs && (
+            <Text variant="bodySmall" tone="secondary" className="mt-7">
+              Loading jobs…
+            </Text>
+          )}
+
+          {!isLoadingOpenJobs && openJobs.length === 0 && (
+            <JobEmptyState
+              title="No open jobs yet"
+              description="When jobs are open for you to take, they'll show up here."
+            />
+          )}
+
+          {openJobs.length > 0 && (
+            <Container className="mt-7">
+              <JobGrid jobs={openJobs} />
+              {hasMoreOpenJobs && (
+                <Container className="flex justify-center mt-2">
+                  <Button
+                    variant="neutral"
+                    loading={isLoadingMoreOpenJobs}
+                    onClick={() => loadMoreOpenJobs()}
+                  >
+                    Load more
+                  </Button>
+                </Container>
+              )}
+            </Container>
+          )}
+        </>
       )}
 
       {!isLoading && activeTab === "assigned" && (
@@ -84,9 +129,10 @@ export const JobListScreen = () => {
           {todayJobs.length === 0 &&
             tomorrowJobs.length === 0 &&
             laterJobs.length === 0 && (
-              <Text variant="bodySmall" tone="secondary" className="mt-7">
-                No jobs scheduled.
-              </Text>
+              <JobEmptyState
+                title="No assigned jobs"
+                description="Jobs assigned to you will show up here."
+              />
             )}
 
           {todayJobs.length > 0 && (
@@ -133,9 +179,10 @@ export const JobListScreen = () => {
           </Container>
 
           {historyJobs.length === 0 ? (
-            <Text variant="bodySmall" tone="secondary" className="mt-7">
-              No past jobs.
-            </Text>
+            <JobEmptyState
+              title="No past jobs"
+              description="Jobs you've completed will show up here."
+            />
           ) : (
             <Container className="mt-7">
               <JobGrid jobs={historyJobs} />

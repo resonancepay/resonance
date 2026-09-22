@@ -3,10 +3,7 @@
 import { useEffect, useState } from "react";
 import { Button, Container, Input, Modal, Select, Text } from "@resonance/ui";
 import { TickIcon } from "@resonance/ui/icons";
-import {
-  ServiceArea,
-  ServiceLocation,
-} from "@/features/auth/types/auth.type";
+import { ServiceArea, ServiceLocation } from "../../types/profile.type";
 
 export const STATE_OPTIONS = [
   { value: "london", label: "London" },
@@ -50,18 +47,21 @@ export const SetServiceLocationModal = ({
 
   useEffect(() => {
     if (isOpen) {
-      setState(initialValue?.state ?? "");
+      setState(initialValue?.state?.toLowerCase() ?? "");
       setArea1(initialValue?.area1 ?? EMPTY_AREA);
       setArea2(initialValue?.area2 ?? EMPTY_AREA);
     }
   }, [isOpen, initialValue]);
 
+  // Area 2 is optional, but if the user has started it, both fields are needed.
+  const area2Started = !!area2.postcode.trim() || !!area2.radius;
+  const area2Complete = !!area2.postcode.trim() && !!area2.radius;
+
   const canSave =
     !!state &&
     !!area1.postcode.trim() &&
     !!area1.radius &&
-    !!area2.postcode.trim() &&
-    !!area2.radius;
+    (!area2Started || area2Complete);
 
   const handleSave = () => {
     if (!canSave) return;
@@ -112,7 +112,7 @@ export const SetServiceLocationModal = ({
 
       <Container className="px-2 mt-4">
         <Text variant="bodySmall" className="text-primary mb-1">
-          Area 2 <Container as="span" className="text-danger-bg-bold">*</Container>
+          Area 2
         </Text>
         <Container className="flex items-center gap-2">
           <Input

@@ -47,7 +47,7 @@ export const PortalProfileMenu = () => {
             {fullName}
           </Text>
           <Text variant="bodyXSmall" tone="secondary" className="truncate">
-            {userInfo?.email ?? ""}
+            {userInfo?.cleaner_id ?? ""}
           </Text>
         </Container>
       </Container>

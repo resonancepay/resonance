@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 import {
   checkIn,
   CheckInPayload,
@@ -12,6 +12,7 @@ import {
   getDamages,
   job,
   jobs,
+  openJobs,
   reportDamage,
   ReportDamagePayload,
   uploadJobPicture,
@@ -22,6 +23,21 @@ export const useGetJobs = () => {
   return useQuery({
     queryKey: ["jobs"],
     queryFn: () => jobs(),
+  });
+};
+
+export const OPEN_JOBS_PAGE_SIZE = 10;
+
+// The open-jobs response has no total count, so a page that comes back
+// shorter than the page size is taken to be the last one.
+export const useOpenJobs = () => {
+  return useInfiniteQuery({
+    queryKey: ["jobs", "open"],
+    queryFn: ({ pageParam }) =>
+      openJobs({ page: pageParam, size: OPEN_JOBS_PAGE_SIZE }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) =>
+      lastPage.length < OPEN_JOBS_PAGE_SIZE ? undefined : allPages.length + 1,
   });
 };
 

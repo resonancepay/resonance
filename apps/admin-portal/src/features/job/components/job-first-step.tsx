@@ -1,11 +1,8 @@
 "use client";
 
 import { Button, Checkbox, Container, Input, Select, Text } from "@resonance/ui";
-import { ChevronDownIcon, NextIcon } from "@resonance/ui/icons";
-import { ChangeEvent, useState } from "react";
+import { NextIcon } from "@resonance/ui/icons";
 import { getTodayDateString } from "../types/job.schema";
-import { SelectCleanerModal } from "./modal/select-cleaner-modal";
-import { ApprovedCleaner } from "@/features/cleaners/types/cleaner.type";
 import { JobFirstStepProps } from "../types/job.type";
 
 
@@ -14,21 +11,15 @@ export const JobFirstStep = ({
   values,
   errors,
   siteOptions,
-  cleaners,
   timeOptions,
   timezoneOptions,
-  heading = "Create a job and assign a cleaner to the job",
+  heading = "Create a job details",
   onChange,
   onSelectChange,
   onConsumablesProvidedChange,
   onCancel,
   onContinue,
 }: JobFirstStepProps) => {
-  const [cleanerModalOpen, setCleanerModalOpen] = useState(false);
-  const selectedCleaner = cleaners.find(
-    (cleaner) => String(cleaner.cleaner_id) === values.cleaner,
-  );
-
   return (
     <Container>
       <Container className="flex items-center gap-1.5 mb-8">
@@ -142,44 +133,6 @@ export const JobFirstStep = ({
           variant2
           error={errors.timezone}
         />
-
-        <Container className="flex flex-col gap-1">
-          <Container as="label" className="flex items-center gap-0.5 mb-1">
-            <Text variant="bodySmall" className="text-primary">
-              Assign Cleaner
-            </Text>
-            <Text variant="bodySmall" className="text-danger-text-icons">
-              *
-            </Text>
-          </Container>
-
-          <Container
-            as="button"
-            type="button"
-            onClick={() => setCleanerModalOpen(true)}
-            className={[
-              "w-full h-10 rounded-2xl border outline-none px-4 text-base sm:text-xs font-sans transition-colors",
-              "flex items-center gap-2 cursor-pointer bg-muted text-primary",
-              errors.cleaner ? "border-danger-border" : "border-transparent",
-            ].join(" ")}
-          >
-            <span
-              className={[
-                "flex-1 text-left truncate",
-                !selectedCleaner ? "text-secondary" : "",
-              ].join(" ")}
-            >
-              {selectedCleaner ? selectedCleaner.full_name : "Select cleaner"}
-            </span>
-            <ChevronDownIcon size={16} className="shrink-0 text-secondary" />
-          </Container>
-
-          {errors.cleaner && (
-            <Text variant="bodySmall" className="text-danger-text-icons">
-              {errors.cleaner}
-            </Text>
-          )}
-        </Container>
       </Container>
 
       <Container className="h-px bg-border my-8" />
@@ -197,14 +150,6 @@ export const JobFirstStep = ({
           Continue
         </Button>
       </Container>
-
-      <SelectCleanerModal
-        isOpen={cleanerModalOpen}
-        onClose={() => setCleanerModalOpen(false)}
-        cleaners={cleaners}
-        selectedCleanerId={values.cleaner}
-        onSelect={(cleanerId) => onSelectChange("cleaner")(cleanerId)}
-      />
     </Container>
   );
 };

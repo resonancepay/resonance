@@ -1,39 +1,30 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Button, Container, Text } from "@resonance/ui";
 import { EditIcon, LocationIcon } from "@resonance/ui/icons";
 import { Col, Row } from "antd";
-import { ServiceLocation } from "@/features/auth/types/auth.type";
+import { ServiceLocation } from "../types/profile.type";
 import { EmptyState } from "./empty-state";
-import {
-  SetServiceLocationModal,
-  STATE_OPTIONS,
-} from "./modal/set-service-location-modal";
+import { STATE_OPTIONS } from "./modal/set-service-location-modal";
 
 interface LocationBannerProps {
   serviceLocation: ServiceLocation;
+  onEditClick: () => void;
 }
 
-export const LocationBanner = ({ serviceLocation }: LocationBannerProps) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [location, setLocation] = useState(serviceLocation);
-
-  useEffect(() => {
-    setLocation(serviceLocation);
-  }, [serviceLocation]);
-
-  const handleSave = (value: ServiceLocation) => {
-    setLocation(value);
-    setIsModalOpen(false);
-  };
-
+export const LocationBanner = ({
+  serviceLocation,
+  onEditClick,
+}: LocationBannerProps) => {
   const isEmpty =
-    !location.state && !location.area1.postcode && !location.area2.postcode;
+    !serviceLocation.state &&
+    !serviceLocation.area1.postcode &&
+    !serviceLocation.area2.postcode;
 
-  const stateLabel = STATE_OPTIONS.find(
-    (option) => option.value === location.state,
-  )?.label;
+  const stateLabel =
+    STATE_OPTIONS.find(
+      (option) => option.value === serviceLocation.state.toLowerCase(),
+    )?.label ?? serviceLocation.state;
 
   return (
     <Container className="bg-surface border-[0.5px] border-border p-3.5 rounded-xl">
@@ -45,7 +36,7 @@ export const LocationBanner = ({ serviceLocation }: LocationBannerProps) => {
           leftIcon={<EditIcon className="text-primary" size={16} />}
           size="small"
           variant="neutral"
-          onClick={() => setIsModalOpen(true)}
+          onClick={onEditClick}
         >
           Edit
         </Button>
@@ -71,28 +62,23 @@ export const LocationBanner = ({ serviceLocation }: LocationBannerProps) => {
                 Area
               </Text>
               <Container className="flex flex-wrap gap-2">
-                {[location.area1, location.area2].map((area, index) => (
-                  <Container
-                    key={index}
-                    className="border border-brand-tertiary-border bg-brand-tertiary-bg-light rounded-4xl px-2.5 py-1"
-                  >
-                    <Text tone="primary" variant="bodyXSmall">
-                      {area.postcode} • {area.radius} miles
-                    </Text>
-                  </Container>
-                ))}
+                {[serviceLocation.area1, serviceLocation.area2]
+                  .filter((area) => area.postcode)
+                  .map((area, index) => (
+                    <Container
+                      key={index}
+                      className="border border-brand-tertiary-border bg-brand-tertiary-bg-light rounded-4xl px-2.5 py-1"
+                    >
+                      <Text tone="primary" variant="bodyXSmall">
+                        {area.postcode} • {area.radius} miles
+                      </Text>
+                    </Container>
+                  ))}
               </Container>
             </Col>
           </Row>
         )}
       </Container>
-
-      <SetServiceLocationModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSubmit={handleSave}
-        initialValue={location}
-      />
     </Container>
   );
 };
