@@ -77,6 +77,8 @@ export interface JobDetails {
   checkout_at: string;
   uniform_guidelines: string;
   job_type: string;
+  is_claimed_job_type: boolean;
+  job_claimed: boolean;
   payout_amount: number;
   payout_currency: string;
   cleaning_location: {

@@ -151,3 +151,23 @@ export const deleteDamage = async (payload: DeleteDamagePayload) => {
   const result = await apiClient.post("/cleaners/damage/delete", payload);
   return result.data;
 };
+
+export interface ClaimJobPayload {
+  job_id: number;
+}
+
+// Confirmed against Swagger — POST /v1/cleaners/job/claim.
+export const claimJob = async (payload: ClaimJobPayload) => {
+  const result = await apiClient.post("/cleaners/job/claim", payload);
+  return result.data;
+};
+
+export interface ReleaseJobPayload {
+  job_id: number;
+}
+
+// Confirmed against Swagger — POST /v1/cleaners/job/release.
+export const releaseJob = async (payload: ReleaseJobPayload) => {
+  const result = await apiClient.post("/cleaners/job/release", payload);
+  return result.data;
+};

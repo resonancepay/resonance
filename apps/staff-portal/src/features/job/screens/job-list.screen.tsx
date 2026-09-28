@@ -4,6 +4,7 @@ import { Button, Container, Text } from "@resonance/ui";
 import { useState } from "react";
 import { JobTab } from "../types/job.types";
 import { JobGrid } from "../components/job-grid";
+import { OpenJobGrid } from "../components/open-job-grid";
 import { JobEmptyState } from "../components/job-empty-state";
 import { JobHistoryPill } from "../components/job-history-pill";
 import { useJobListScreen } from "../hooks/useJobListScreen";
@@ -107,7 +108,7 @@ export const JobListScreen = () => {
 
           {openJobs.length > 0 && (
             <Container className="mt-7">
-              <JobGrid jobs={openJobs} />
+              <OpenJobGrid jobs={openJobs} />
               {hasMoreOpenJobs && (
                 <Container className="flex justify-center mt-2">
                   <Button

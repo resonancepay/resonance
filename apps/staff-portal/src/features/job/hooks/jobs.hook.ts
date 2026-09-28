@@ -4,8 +4,12 @@ import {
   CheckInPayload,
   checkOut,
   CheckOutPayload,
+  claimJob,
+  ClaimJobPayload,
   deleteDamage,
   DeleteDamagePayload,
+  releaseJob,
+  ReleaseJobPayload,
   deleteJobPicture,
   DeleteJobPicturePayload,
   DeleteJobPictureResponse,
@@ -88,6 +92,28 @@ export const useCheckOut = (
 ) => {
   return useMutation({
     mutationFn: (payload: CheckOutPayload) => checkOut(payload),
+    onSuccess: sc,
+    onError: ec,
+  });
+};
+
+export const useClaimJob = (
+  sc?: (val: any) => void,
+  ec?: (err: any) => void,
+) => {
+  return useMutation({
+    mutationFn: (payload: ClaimJobPayload) => claimJob(payload),
+    onSuccess: sc,
+    onError: ec,
+  });
+};
+
+export const useReleaseJob = (
+  sc?: (val: any) => void,
+  ec?: (err: any) => void,
+) => {
+  return useMutation({
+    mutationFn: (payload: ReleaseJobPayload) => releaseJob(payload),
     onSuccess: sc,
     onError: ec,
   });

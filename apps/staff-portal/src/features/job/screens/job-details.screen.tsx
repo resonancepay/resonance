@@ -5,6 +5,8 @@ import { Col, Row } from "antd";
 import { InfoIcon } from "@resonance/ui/icons";
 import { JobId } from "../components/job-id";
 import { JobStatus } from "../components/job-status";
+import { OpenJobStatus } from "../components/open-job-status";
+import { ClaimedStatus } from "../components/claimed-status";
 import { JobLocation } from "../components/job-location";
 import { JobUniform } from "../components/job-uniform";
 import { JobTimer } from "../components/job-timer";
@@ -13,6 +15,8 @@ import { JobImageAddMore } from "../components/job-image-add-more";
 import { JobRequirement } from "../components/job-requirement";
 import { JobMapLocation } from "../components/job-map-location";
 import { JobClockAction } from "../components/job-clock-action";
+import { JobClaimAction } from "../components/job-claim-action";
+import { JobReleaseAction } from "../components/job-release-action";
 import { JobDamages } from "../components/job-damages";
 import { JobMoreInformation } from "../components/job-more-information";
 import { JobConsumable } from "../components/job-consumable";
@@ -28,6 +32,9 @@ import { CouldNotClockInModal } from "../components/modal/could-not-clockin";
 import { AboutToClockOut } from "../components/modal/about-to-clockout";
 import { ClockingOut } from "../components/modal/clocking-out";
 import { ClockedOut } from "../components/modal/clocked-out";
+import { AboutToClaim } from "../components/modal/about-to-claim";
+import { JobClaimed } from "../components/modal/job-claimed";
+import { JobAlreadyClaimed } from "../components/modal/job-already-claimed";
 import { ReportDamageModal } from "../components/modal/report-damage-modal";
 import { DamagesListModal } from "../components/modal/damages-list-modal";
 import { DamageDetailModal } from "../components/modal/damage-detail-modal";
@@ -51,6 +58,13 @@ export const JobDetailsScreen = () => {
     afterPhotos,
     updatePhoto,
     addSlot,
+    claimModal,
+    openClaimConfirm,
+    closeClaimModal,
+    handleConfirmClaim,
+    isClaimingJob,
+    handleReleaseJob,
+    isReleasingJob,
     clockModal,
     isCheckingIn,
     isCheckingOut,
@@ -94,6 +108,14 @@ export const JobDetailsScreen = () => {
   const afterSlotCount = Math.max(afterPhotos.length, job.after_images.length);
   const checklistLocked =
     status === "pending" || status === "scheduled" || isLocked;
+  const isClaimable = job.is_claimed_job_type && !job.job_claimed;
+  // Once clocked in (or beyond), the job can no longer be released.
+  const canReleaseJob =
+    job.is_claimed_job_type &&
+    job.job_claimed &&
+    status !== "in-progress" &&
+    status !== "paid" &&
+    !isLocked;
 
   return (
     <Container className="pb-4">
@@ -125,6 +147,8 @@ export const JobDetailsScreen = () => {
             <JobTimer timeRange={formatted.timeRange} />
             <Container className="flex items-center gap-2">
               <JobId jobId={job.job_id_label} />
+              {job.is_claimed_job_type &&
+                (job.job_claimed ? <ClaimedStatus /> : <OpenJobStatus />)}
               <JobStatus status={job.status} />
             </Container>
           </Container>
@@ -137,12 +161,23 @@ export const JobDetailsScreen = () => {
             lat={job.cleaning_location.lat}
             lng={job.cleaning_location.lng}
           />
-          {status !== "paid" && !isLocked && (
-            <JobClockAction
-              status={status === "in-progress" ? "clock-out" : "clock-in"}
-              onClockIn={handleClockIn}
-              onClockOut={handleClockOutClick}
-              isPending={isCheckingIn || isCheckingOut}
+          {isClaimable ? (
+            <JobClaimAction onClaim={openClaimConfirm} />
+          ) : (
+            status !== "paid" &&
+            !isLocked && (
+              <JobClockAction
+                status={status === "in-progress" ? "clock-out" : "clock-in"}
+                onClockIn={handleClockIn}
+                onClockOut={handleClockOutClick}
+                isPending={isCheckingIn || isCheckingOut}
+              />
+            )
+          )}
+          {canReleaseJob && (
+            <JobReleaseAction
+              onRelease={handleReleaseJob}
+              isPending={isReleasingJob}
             />
           )}
           <JobDamages count={job.damages.length} onClick={openDamagesList} />
@@ -336,6 +371,22 @@ export const JobDetailsScreen = () => {
         isOpen={clockModal === "clocked-out"}
         onClose={closeClockModal}
         onSeeOtherJobs={seeOtherJobs}
+      />
+
+      <AboutToClaim
+        isOpen={claimModal === "confirm"}
+        onClose={closeClaimModal}
+        onConfirm={handleConfirmClaim}
+        address={job.address}
+        isPending={isClaimingJob}
+      />
+      <JobClaimed
+        isOpen={claimModal === "claimed"}
+        onClose={closeClaimModal}
+      />
+      <JobAlreadyClaimed
+        isOpen={claimModal === "already-claimed"}
+        onClose={closeClaimModal}
       />
 
       <DamagesListModal
