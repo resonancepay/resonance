@@ -4,6 +4,7 @@ import {
   Job,
   JobChecklistEntry,
   JobDetails,
+  OpenJob,
   PaginationQuery,
 } from "../types/job.types";
 
@@ -11,6 +12,16 @@ import {
 
 export const jobs = async (query: PaginationQuery = {}): Promise<Job[]> => {
   const result = await apiClient.get("/cleaners/jobs", {
+    params: { page: query.page ?? 1, size: query.size ?? 10 },
+  });
+  return result.data;
+};
+
+// Confirmed against Swagger — GET /v1/cleaners/jobs/open. Paginated with
+// page (min 1) and size (1-100); returns a plain list with no total, and an
+// empty list when there's nothing open.
+export const openJobs = async (query: PaginationQuery = {}): Promise<OpenJob[]> => {
+  const result = await apiClient.get("/cleaners/jobs/open", {
     params: { page: query.page ?? 1, size: query.size ?? 10 },
   });
   return result.data;
@@ -138,5 +149,25 @@ export interface DeleteDamagePayload {
 
 export const deleteDamage = async (payload: DeleteDamagePayload) => {
   const result = await apiClient.post("/cleaners/damage/delete", payload);
+  return result.data;
+};
+
+export interface ClaimJobPayload {
+  job_id: number;
+}
+
+// Confirmed against Swagger — POST /v1/cleaners/job/claim.
+export const claimJob = async (payload: ClaimJobPayload) => {
+  const result = await apiClient.post("/cleaners/job/claim", payload);
+  return result.data;
+};
+
+export interface ReleaseJobPayload {
+  job_id: number;
+}
+
+// Confirmed against Swagger — POST /v1/cleaners/job/release.
+export const releaseJob = async (payload: ReleaseJobPayload) => {
+  const result = await apiClient.post("/cleaners/job/release", payload);
   return result.data;
 };

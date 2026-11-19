@@ -33,6 +33,16 @@ export interface VerifyOtpPayload {
   user_id: number;
 }
 
+export interface ChangePasswordPayload {
+  old_password: string;
+  new_password: string;
+}
+
+export interface DeleteAccountResponse {
+  success: boolean;
+  detail: string;
+}
+
 export type ApplicationStatus =
   | "approved"
   | "declined"
@@ -41,11 +51,14 @@ export type ApplicationStatus =
   | null;
 
 export interface Profile {
+  cleaner_id: string;
   first_name: string;
   last_name: string;
   email: string;
   phone: string;
   date_of_birth: string;
+  date_registered: string;
+  date_approved: string;
   application_submitted: boolean;
   application_approved: boolean;
   application_status: ApplicationStatus;

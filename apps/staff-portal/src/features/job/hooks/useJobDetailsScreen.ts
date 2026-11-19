@@ -4,9 +4,11 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   useCheckIn,
   useCheckOut,
+  useClaimJob,
   useDeleteDamage,
   useGetDamages,
   useGetJob,
+  useReleaseJob,
   useReportDamage,
 } from "./jobs.hook";
 import { Damage, JobChecklistEntry } from "../types/job.types";
@@ -70,6 +72,8 @@ const formatCurrency = (amount: number, currency: string) => {
     return `${currency} ${amount.toFixed(2)}`;
   }
 };
+
+type ClaimModal = "none" | "confirm" | "claimed" | "already-claimed";
 
 type ClockModal =
   | "none"
@@ -148,6 +152,65 @@ export const useJobDetailsScreen = () => {
   const invalidateJob = () => {
     queryClient.invalidateQueries({ queryKey: ["job", jobId] });
     queryClient.invalidateQueries({ queryKey: ["jobs"] });
+  };
+
+  const [claimModal, setClaimModal] = useState<ClaimModal>("none");
+
+  const { mutate: claimJobMutate, isPending: isClaimingJob } = useClaimJob(
+    () => {
+      invalidateJob();
+      setClaimModal("claimed");
+    },
+    (e: any) => {
+      const detail = e?.response?.data?.detail;
+      const message = typeof detail === "string" ? detail : "";
+      // No confirmed error shape from the API yet for this endpoint — a race
+      // where another cleaner claimed it first is treated as the "already
+      // claimed" modal when the detail message says so; anything else falls
+      // back to a plain toast.
+      if (message.toLowerCase().includes("claim")) {
+        setClaimModal("already-claimed");
+      } else {
+        addToast({
+          variant: "error",
+          title: "Claim failed",
+          description: message || "Could not claim this job. Please try again.",
+        });
+        setClaimModal("none");
+      }
+    },
+  );
+
+  const openClaimConfirm = () => setClaimModal("confirm");
+  const closeClaimModal = () => setClaimModal("none");
+  const handleConfirmClaim = () => {
+    if (Number.isNaN(jobId)) return;
+    claimJobMutate({ job_id: jobId });
+  };
+
+  const { mutate: releaseJobMutate, isPending: isReleasingJob } = useReleaseJob(
+    () => {
+      queryClient.invalidateQueries({ queryKey: ["jobs"] });
+      addToast({
+        variant: "success",
+        title: "Job released",
+        description: "This job is no longer on your schedule.",
+      });
+      router.push("/jobs");
+    },
+    (e: any) => {
+      const detail = e?.response?.data?.detail;
+      const message =
+        typeof detail === "string" && detail
+          ? detail
+          : "Could not release this job. Please try again.";
+      addToast({ variant: "error", title: "Release failed", description: message });
+    },
+  );
+
+  const handleReleaseJob = () => {
+    if (Number.isNaN(jobId)) return;
+    releaseJobMutate({ job_id: jobId });
   };
 
   const { mutate: checkInMutate, isPending: isCheckingIn } = useCheckIn(
@@ -355,6 +418,13 @@ export const useJobDetailsScreen = () => {
     afterPhotos,
     updatePhoto,
     addSlot,
+    claimModal,
+    openClaimConfirm,
+    closeClaimModal,
+    handleConfirmClaim,
+    isClaimingJob,
+    handleReleaseJob,
+    isReleasingJob,
     clockModal,
     isCheckingIn,
     isCheckingOut,

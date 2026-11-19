@@ -1,9 +1,13 @@
+"use client";
+
 import React from "react";
 import { AuthWrapper } from "../components/wrappers/auth-wrapper";
 import { Button, Container, Text } from "@resonance/ui";
 import { NextIcon, SuccessIcon } from "@resonance/ui/icons";
+import { useRouter } from "next/navigation";
 
 export const RegistrationSuccessScreen = () => {
+  const router = useRouter();
   return (
     <AuthWrapper authLabel="" subAuthLabel="">
       <Container className="flex items-center justify-center flex-col">
@@ -22,6 +26,7 @@ export const RegistrationSuccessScreen = () => {
         </Container>
         <Container className="w-full mt-6">
           <Button
+            onClick={() => router.push("/jobs")}
             rightIcon={<NextIcon />}
             type="submit"
             variant="primary"

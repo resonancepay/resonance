@@ -23,6 +23,13 @@ export const getUserUtcHourOffset = (): number => {
   return Math.min(12, Math.max(-12, Math.round(rawHours)));
 };
 
+export const ELIGIBLE_RADIUS_OPTIONS = [
+  { id: "5", label: "5 miles to cleaning site" },
+  { id: "10", label: "10 miles to cleaning site" },
+  { id: "20", label: "20 miles to cleaning site" },
+  { id: "50", label: "50 miles to cleaning site" },
+];
+
 export const CHECKLIST_OPTIONS = [
   { id: "clean-lobby-glass", label: "Clean lobby glass" },
   { id: "vacuum-hallway-carpet", label: "Vacuum hallway carpet" },

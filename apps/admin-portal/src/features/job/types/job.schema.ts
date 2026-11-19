@@ -20,7 +20,6 @@ const jobFirstStepBaseSchema = z.object({
   date: z.string().min(1, "Date is required"),
   startTime: z.string().min(1, "Start time is required"),
   endTime: z.string().min(1, "End time is required"),
-  cleaner: z.string().min(1, "Cleaner is required"),
   timezone: z.string().min(1, "Timezone is required"),
 });
 

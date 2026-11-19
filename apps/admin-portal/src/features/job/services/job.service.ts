@@ -5,10 +5,13 @@ import {
   CancelJobPayload,
   CreateJobPayload,
   EditJobPayload,
+  EditPublishJobPayload,
   Job,
   JobDetails,
   JobDetailsPayload,
   JobListResponse,
+  PublishJobPayload,
+  PublishJobResponse,
 } from "../types/job.type";
 
 // NOTE: getJobs, getJob, createJob, and editJob request/response shapes are
@@ -28,6 +31,23 @@ export const getJob = async (
 
 export const createJob = async (payload: CreateJobPayload): Promise<Job> => {
   const result = await apiClient.post("/admin/job/create", payload);
+  return result.data;
+};
+
+// Confirmed against Swagger — responds with { success, job_id }.
+export const publishJob = async (
+  payload: PublishJobPayload,
+): Promise<PublishJobResponse> => {
+  const result = await apiClient.post("/admin/job/publish", payload);
+  return result.data;
+};
+
+// Confirmed against Swagger — the response isn't shown, so it's left untyped
+// rather than assumed to match publishJob's.
+export const editPublishJob = async (
+  payload: EditPublishJobPayload,
+): Promise<unknown> => {
+  const result = await apiClient.post("/admin/job/edit-publish", payload);
   return result.data;
 };
 

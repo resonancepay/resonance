@@ -1,29 +1,28 @@
 "use client";
 
-import { Container, Text } from "@resonance/ui";
-import { Col, Row } from "antd";
+import { Button, Container, Text } from "@resonance/ui";
 import { useState } from "react";
-import { Job } from "../types/job.types";
-import { JobCard } from "../components/job-card";
+import { JobTab } from "../types/job.types";
+import { JobGrid } from "../components/job-grid";
+import { OpenJobGrid } from "../components/open-job-grid";
+import { JobEmptyState } from "../components/job-empty-state";
 import { JobHistoryPill } from "../components/job-history-pill";
 import { useJobListScreen } from "../hooks/useJobListScreen";
 
-type JobTab = "all" | "history";
-
-const JobGrid = ({ jobs }: { jobs: Job[] }) => (
-  <Row gutter={20}>
-    {jobs.map((job) => (
-      <Col lg={8} xs={24} key={job.job_id}>
-        <JobCard job={job} />
-      </Col>
-    ))}
-  </Row>
-);
-
 export const JobListScreen = () => {
-  const [activeTab, setActiveTab] = useState<JobTab>("all");
-  const { isLoading, todayJobs, tomorrowJobs, laterJobs, historyJobs } =
-    useJobListScreen();
+  const [activeTab, setActiveTab] = useState<JobTab>("open");
+  const {
+    isLoading,
+    openJobs,
+    isLoadingOpenJobs,
+    hasMoreOpenJobs,
+    loadMoreOpenJobs,
+    isLoadingMoreOpenJobs,
+    todayJobs,
+    tomorrowJobs,
+    laterJobs,
+    historyJobs,
+  } = useJobListScreen();
 
   return (
     <Container>
@@ -33,9 +32,9 @@ export const JobListScreen = () => {
         </Text>
         <Container className="border-[0.5px] border-border p-1 rounded-full flex bg-surface">
           <Container
-            onClick={() => setActiveTab("all")}
+            onClick={() => setActiveTab("open")}
             className={`px-4 py-2 rounded-full cursor-pointer text-center lg:w-auto w-full transition-all ${
-              activeTab === "all"
+              activeTab === "open"
                 ? "border border-brand-secondary-border bg-brand-tertiary-bg-light"
                 : ""
             }`}
@@ -43,10 +42,27 @@ export const JobListScreen = () => {
             <Text
               variant="buttonXS"
               className={
-                activeTab === "all" ? "text-primary" : "text-secondary"
+                activeTab === "open" ? "text-primary" : "text-secondary"
               }
             >
-              All Jobs
+              Open Jobs
+            </Text>
+          </Container>
+          <Container
+            onClick={() => setActiveTab("assigned")}
+            className={`px-4 py-2 rounded-full cursor-pointer text-center lg:w-auto w-full transition-all ${
+              activeTab === "assigned"
+                ? "border border-brand-secondary-border bg-brand-tertiary-bg-light"
+                : ""
+            }`}
+          >
+            <Text
+              variant="buttonXS"
+              className={
+                activeTab === "assigned" ? "text-primary" : "text-secondary"
+              }
+            >
+              Assigned Jobs
             </Text>
           </Container>
           <Container
@@ -69,20 +85,55 @@ export const JobListScreen = () => {
         </Container>
       </Container>
 
-      {isLoading && (
+      {isLoading && activeTab !== "open" && (
         <Text variant="bodySmall" tone="secondary" className="mt-7">
           Loading jobs…
         </Text>
       )}
 
-      {!isLoading && activeTab === "all" && (
+      {activeTab === "open" && (
+        <>
+          {isLoadingOpenJobs && (
+            <Text variant="bodySmall" tone="secondary" className="mt-7">
+              Loading jobs…
+            </Text>
+          )}
+
+          {!isLoadingOpenJobs && openJobs.length === 0 && (
+            <JobEmptyState
+              title="No open jobs yet"
+              description="When jobs are open for you to take, they'll show up here."
+            />
+          )}
+
+          {openJobs.length > 0 && (
+            <Container className="mt-7">
+              <OpenJobGrid jobs={openJobs} />
+              {hasMoreOpenJobs && (
+                <Container className="flex justify-center mt-2">
+                  <Button
+                    variant="neutral"
+                    loading={isLoadingMoreOpenJobs}
+                    onClick={() => loadMoreOpenJobs()}
+                  >
+                    Load more
+                  </Button>
+                </Container>
+              )}
+            </Container>
+          )}
+        </>
+      )}
+
+      {!isLoading && activeTab === "assigned" && (
         <>
           {todayJobs.length === 0 &&
             tomorrowJobs.length === 0 &&
             laterJobs.length === 0 && (
-              <Text variant="bodySmall" tone="secondary" className="mt-7">
-                No jobs scheduled.
-              </Text>
+              <JobEmptyState
+                title="No assigned jobs"
+                description="Jobs assigned to you will show up here."
+              />
             )}
 
           {todayJobs.length > 0 && (
@@ -129,9 +180,10 @@ export const JobListScreen = () => {
           </Container>
 
           {historyJobs.length === 0 ? (
-            <Text variant="bodySmall" tone="secondary" className="mt-7">
-              No past jobs.
-            </Text>
+            <JobEmptyState
+              title="No past jobs"
+              description="Jobs you've completed will show up here."
+            />
           ) : (
             <Container className="mt-7">
               <JobGrid jobs={historyJobs} />

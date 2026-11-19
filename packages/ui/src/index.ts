@@ -39,3 +39,6 @@ export type { ImageViewerModalProps } from "./components/image-viewer-modal";
 
 export { SideDrawer } from "./components/side-drawer";
 export type { SideDrawerProps } from "./components/side-drawer";
+
+export { Tag } from "./components/tag";
+export type { TagProps, TagVariant } from "./components/tag";

@@ -1,18 +1,22 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAuthStore } from "@/shared/store/auth.store";
+import { Spinner } from "./spinner";
 
-const Spinner = () => (
-  <div className="min-h-screen flex items-center justify-center bg-surface">
-    <div className="w-10 h-10 rounded-full border-4 border-brand-secondary-text-icons border-t-transparent animate-spin" />
-  </div>
-);
+const ONBOARDING_PATH = "/onboarding";
 
 export const AuthGuard = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
+  const pathname = usePathname();
   const accessToken = useAuthStore((state) => state.user?.access_token);
+  // Defaults to false (not just undefined) so a missing/not-yet-fetched
+  // profile fails closed — blocked from the rest of the app rather than
+  // silently let through — same as a confirmed unapproved application.
+  const isApproved = useAuthStore(
+    (state) => state.user?.userInfo?.application_approved ?? false,
+  );
   const hasHydrated = useAuthStore((state) => state.hasHydrated);
 
   useEffect(() => {
@@ -20,10 +24,19 @@ export const AuthGuard = ({ children }: { children: React.ReactNode }) => {
 
     if (!accessToken) {
       router.replace("/login");
+      return;
     }
-  }, [accessToken, hasHydrated, router]);
+
+    // Unapproved applications are confined to /onboarding — every other
+    // (portal) route bounces back there, regardless of how it was reached
+    // (nav click, direct URL, browser back/forward).
+    if (!isApproved && pathname !== ONBOARDING_PATH) {
+      router.replace(ONBOARDING_PATH);
+    }
+  }, [accessToken, isApproved, pathname, hasHydrated, router]);
 
   if (!hasHydrated || !accessToken) return <Spinner />;
+  if (!isApproved && pathname !== ONBOARDING_PATH) return <Spinner />;
 
   return <>{children}</>;
 };

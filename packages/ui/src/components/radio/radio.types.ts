@@ -8,4 +8,5 @@ export interface RadioProps
   onChange?: (checked: boolean) => void;
   disabled?: boolean;
   className?: string;
+  showBackground?: boolean;
 }

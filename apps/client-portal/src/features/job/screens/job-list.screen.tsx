@@ -1,24 +1,11 @@
 "use client";
 
 import { Container, Text } from "@resonance/ui";
-import { Col, Row } from "antd";
 import { useState } from "react";
-import { Job } from "../types/job.types";
-import { JobCard } from "../components/job-card";
+import { JobTab } from "../types/job.types";
+import { JobGrid } from "../components/job-grid";
 import { JobHistoryPill } from "../components/job-history-pill";
 import { useJobListScreen } from "../hooks/useJobListScreen";
-
-type JobTab = "all" | "history";
-
-const JobGrid = ({ jobs }: { jobs: Job[] }) => (
-  <Row gutter={20}>
-    {jobs.map((job) => (
-      <Col lg={8} xs={24} key={job.job_id}>
-        <JobCard job={job} />
-      </Col>
-    ))}
-  </Row>
-);
 
 export const JobListScreen = () => {
   const [activeTab, setActiveTab] = useState<JobTab>("all");

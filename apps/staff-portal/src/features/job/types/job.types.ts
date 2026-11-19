@@ -2,6 +2,8 @@ import { JobStatusValue } from "@resonance/ui/job-status";
 
 export type JobType = JobStatusValue;
 
+export type JobTab = "open" | "assigned" | "history";
+
 export interface PaginationQuery {
   page?: number;
   size?: number;
@@ -19,6 +21,12 @@ export interface Job {
   scheduled_start: string;
   scheduled_end: string;
   uniform_guidelines: string;
+}
+
+// Confirmed against Swagger — GET /v1/cleaners/jobs/open. Same as Job plus
+// how far the job is from the cleaner's set service location.
+export interface OpenJob extends Job {
+  distance: string;
 }
 
 export interface JobImage {
@@ -45,6 +53,15 @@ export interface JobChecklistEntry {
   checked: boolean;
 }
 
+export interface JobPerformance {
+  score: string;
+  flagged: boolean;
+  flag_reason: string;
+  client_rating: string;
+  checklist_completion: string;
+  ontime_arrival: string;
+}
+
 // Single-job detail shape — POST /v1/cleaners/job (confirmed against
 // Swagger). scheduled_start/scheduled_end are milliseconds since epoch
 // (per the endpoint's own note), unlike the list response's ISO strings.
@@ -60,6 +77,8 @@ export interface JobDetails {
   checkout_at: string;
   uniform_guidelines: string;
   job_type: string;
+  is_claimed_job_type: boolean;
+  job_claimed: boolean;
   payout_amount: number;
   payout_currency: string;
   cleaning_location: {
@@ -72,4 +91,5 @@ export interface JobDetails {
   items_needed: string;
   items_needed_provided: boolean;
   checklist: JobChecklistEntry[];
+  performance: JobPerformance;
 }

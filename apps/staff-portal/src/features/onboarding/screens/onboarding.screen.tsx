@@ -26,6 +26,7 @@ export const OnboardingScreen = () => {
     setStatus,
   } = useOnboardingScreen();
 
+  console.log(status, "Status value here");
   return (
     <Row className="pt-18">
       <Col
@@ -40,14 +41,14 @@ export const OnboardingScreen = () => {
           <Col xs={24} lg={12}>
             {status ? (
               <>
-                {status === "approved" && <OnboardingApproved />}
-                {status === "declined" && (
+                {status.toLowerCase() === "approved" && <OnboardingApproved />}
+                {status.toLowerCase() === "declined" && (
                   <OnboardingDeclined referenceCode={referenceCode} />
                 )}
-                {status === "pending" && (
+                {status.toLowerCase() === "pending" && (
                   <OnboardingSubmitted referenceCode={referenceCode} />
                 )}
-                {status === "submitted" && (
+                {status.toLowerCase() === "submitted" && (
                   <OnboardingSubmitted referenceCode={referenceCode} />
                 )}
               </>
@@ -68,7 +69,7 @@ export const OnboardingScreen = () => {
                     <StepFour
                       onSuccess={(code) => {
                         setReferenceCode(code);
-                        setStatus("submitted");
+                        setStatus();
                       }}
                     />
                   )}

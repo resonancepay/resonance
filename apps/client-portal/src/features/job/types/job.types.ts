@@ -2,6 +2,8 @@ import { JobStatusValue } from "@resonance/ui/job-status";
 
 export type JobType = JobStatusValue;
 
+export type JobTab = "all" | "history";
+
 export interface PaginationQuery {
   page?: number;
   size?: number;
@@ -42,6 +44,15 @@ export interface JobChecklistEntry {
   checked: boolean;
 }
 
+export interface JobPerformance {
+  score: string;
+  flagged: boolean;
+  flag_reason: string;
+  client_rating: string;
+  checklist_completion: string;
+  ontime_arrival: string;
+}
+
 // Single-job detail shape — POST /client/job (confirmed against Swagger).
 // Nearly identical to admin-portal's JobDetails, minus client_name/
 // client_email (the client already knows who they are) and job_amount.
@@ -72,6 +83,7 @@ export interface JobDetails {
   items_needed: string;
   items_needed_provided: boolean;
   checklist: JobChecklistEntry[];
+  performance: JobPerformance;
 }
 
 // Confirmed against Swagger (POST /v1/client/job/review) — job_id, star

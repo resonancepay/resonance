@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   login,
   resendOtp,
@@ -67,6 +67,18 @@ export const useGetProfile = (
     mutationFn: () => profile(),
     onSuccess: sc,
     onError: ec,
+  });
+};
+
+// Query-based fetch for screens that just load and display the current
+// profile (e.g. the profile screen), as opposed to useGetProfile's mutation
+// form used for the one-off fetch right after login.
+export const PROFILE_QUERY_KEY = ["client-profile"];
+
+export const useProfile = () => {
+  return useQuery({
+    queryKey: PROFILE_QUERY_KEY,
+    queryFn: () => profile(),
   });
 };
 

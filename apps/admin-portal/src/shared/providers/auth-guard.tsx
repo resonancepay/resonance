@@ -4,12 +4,7 @@ import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuthStore } from "@/shared/store/auth.store";
 import { ensureFreshToken } from "@/features/auth/services/token-refresh.service";
-
-const Spinner = () => (
-  <div className="min-h-screen flex items-center justify-center bg-surface">
-    <div className="w-10 h-10 rounded-full border-4 border-brand-secondary-text-icons border-t-transparent animate-spin" />
-  </div>
-);
+import { Spinner } from "./spinner";
 
 export const AuthGuard = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();

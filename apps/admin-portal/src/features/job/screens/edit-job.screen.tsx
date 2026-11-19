@@ -5,6 +5,7 @@ import { Container, Text } from "@resonance/ui";
 import { Col, Row } from "antd";
 import { JobFirstStep } from "../components/job-first-step";
 import { JobSecondStep } from "../components/job-second-step";
+import { JobThirdStep } from "../components/job-third-step";
 import { useEditJobScreen } from "../hooks/useEditJobScreen";
 
 export const EditJobScreen = () => {
@@ -12,6 +13,7 @@ export const EditJobScreen = () => {
     isLoading,
     jobIdLabel,
     step,
+    isPublished,
     firstStepValues,
     firstStepErrors,
     siteOptions,
@@ -25,6 +27,13 @@ export const EditJobScreen = () => {
     handleSelectChange,
     handleConsumablesProvidedChange,
     handleContinue,
+    assignmentStepValues,
+    assignmentStepErrors,
+    handleDeadlineDateChange,
+    handleDeadlineTimeChange,
+    handleEligibleRadiusChange,
+    handleAssignedCleanerChange,
+    handleConditionsContinue,
     toggleChecklistItem,
     handleSave,
     handleCancel,
@@ -50,12 +59,11 @@ export const EditJobScreen = () => {
     <Container>
       <Row justify={"center"}>
         <Col xs={10}>
-          {step === 1 && (
+          {step === "details" && (
             <JobFirstStep
               values={firstStepValues}
               errors={firstStepErrors}
               siteOptions={siteOptions}
-              cleaners={cleaners}
               timeOptions={timeOptions}
               timezoneOptions={timezoneOptions}
               heading="Edit job details"
@@ -66,8 +74,26 @@ export const EditJobScreen = () => {
               onContinue={handleContinue}
             />
           )}
-          {step === 2 && (
+          {step === "conditions" && (
             <JobSecondStep
+              lockedType={isPublished ? "publish" : "assign"}
+              heading={
+                isPublished ? "Edit publish conditions" : "Edit job assignment"
+              }
+              values={assignmentStepValues}
+              errors={assignmentStepErrors}
+              cleaners={cleaners}
+              onAssignmentTypeChange={() => {}}
+              onDeadlineDateChange={handleDeadlineDateChange}
+              onDeadlineTimeChange={handleDeadlineTimeChange}
+              onEligibleRadiusChange={handleEligibleRadiusChange}
+              onAssignedCleanerChange={handleAssignedCleanerChange}
+              onCancel={handleCancel}
+              onContinue={handleConditionsContinue}
+            />
+          )}
+          {step === "checklist" && (
+            <JobThirdStep
               selected={checklist}
               error={checklistError}
               isPending={isPending}

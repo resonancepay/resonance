@@ -19,7 +19,7 @@ import {
 import { useToast } from "@/shared/toast";
 import { useAuthStore } from "@/shared/store/auth.store";
 
-const PASSWORD_REQUIREMENTS = [
+export const PASSWORD_REQUIREMENTS = [
   { label: "Uppercase", regex: /[A-Z]/ },
   { label: "Lowercase", regex: /[a-z]/ },
   { label: "Number", regex: /[0-9]/ },

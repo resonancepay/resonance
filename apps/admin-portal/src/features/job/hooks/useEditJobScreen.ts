@@ -1,19 +1,25 @@
 import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import { useJob, useEditJob } from "./job.hooks";
+import { useJob, useEditJob, useEditPublishJob } from "./job.hooks";
 import { useSites } from "@/features/cleaning-site/hooks/site.hooks";
 import { useApprovedCleaners } from "@/features/cleaners/hooks/cleaner.hooks";
-import { EditJobPayload } from "../types/job.type";
-import { jobEditFirstStepSchema } from "../types/job.schema";
-import { useToast } from "@/shared/toast";
 import {
-  EMPTY_FIRST_STEP,
+  EditJobPayload,
+  EditPublishJobPayload,
   FirstStepErrors,
+  JobDetails,
   JobFirstStepValues,
   SelectField,
   TextField,
-} from "./useCreateJobScreen";
+} from "../types/job.type";
+import { jobEditFirstStepSchema } from "../types/job.schema";
+import {
+  EMPTY_ASSIGNMENT_STEP,
+  useAssignmentStep,
+} from "./useAssignmentStep";
+import { useToast } from "@/shared/toast";
+import { EMPTY_FIRST_STEP } from "./useCreateJobScreen";
 import {
   CHECKLIST_OPTIONS,
   TIME_OPTIONS,
@@ -36,6 +42,12 @@ const msToTimeString = (ms: number) => {
   return `${hours}:${minutes}`;
 };
 
+export type EditStep = "details" | "conditions" | "checklist";
+
+// There's no "published" status to go by, so a job with no cleaner on it is
+// treated as published — open for cleaners to claim rather than assigned.
+const isPublishedJob = (job: JobDetails) => !job.cleaner_id?.trim();
+
 export const useEditJobScreen = () => {
   const params = useParams<{ id: string }>();
   const jobId = Number(params.id);
@@ -47,13 +59,16 @@ export const useEditJobScreen = () => {
   const { data: sites } = useSites();
   const { data: approvedCleaners } = useApprovedCleaners({ page: 1, size: 100 });
 
-  const [step, setStep] = useState<1 | 2>(1);
+  const [step, setStep] = useState<EditStep>("details");
+  const assignment = useAssignmentStep();
   const [firstStepValues, setFirstStepValues] = useState<JobFirstStepValues>(EMPTY_FIRST_STEP);
   const [firstStepErrors, setFirstStepErrors] = useState<FirstStepErrors>({});
   const [checklist, setChecklist] = useState<string[]>([]);
   const [checklistError, setChecklistError] = useState<string | undefined>();
   const [isSeeded, setIsSeeded] = useState(false);
   const hasSeeded = useRef(false);
+
+  const isPublished = job ? isPublishedJob(job) : false;
 
   const siteOptions = useMemo(
     () =>
@@ -86,8 +101,16 @@ export const useEditJobScreen = () => {
       date: msToDateString(job.scheduled_start),
       startTime: msToTimeString(job.scheduled_start),
       endTime: msToTimeString(job.scheduled_end),
-      cleaner: job.cleaner_id,
       timezone: String(getUserUtcHourOffset()),
+    });
+
+    // A job keeps whichever type it already is: published (no cleaner yet,
+    // so only its claim deadline and radius, which the details response
+    // doesn't include, are re-entered) or assigned (its current cleaner).
+    assignment.setValues({
+      ...EMPTY_ASSIGNMENT_STEP,
+      assignmentType: isPublishedJob(job) ? "publish" : "assign",
+      assignedCleaner: job.cleaner_id,
     });
 
     // checklist entries come back keyed by the same slug IDs used in
@@ -104,33 +127,43 @@ export const useEditJobScreen = () => {
 
     hasSeeded.current = true;
     setIsSeeded(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [job, sites]);
 
-  const { mutate, isPending } = useEditJob(
-    () => {
-      addToast({
-        variant: "success",
-        title: "Job updated",
-        description: "The job was updated successfully.",
-      });
-      queryClient.invalidateQueries({ queryKey: ["jobs"] });
-      queryClient.invalidateQueries({ queryKey: ["job", jobId] });
-      router.push(`/jobs/${jobId}`);
-    },
-    (e: any) => {
-      const detail = e?.response?.data?.detail;
-      const message =
-        typeof detail === "string" && detail
-          ? detail
-          : "Something went wrong. Please try again.";
+  const onJobUpdated = () => {
+    addToast({
+      variant: "success",
+      title: "Job updated",
+      description: "The job was updated successfully.",
+    });
+    queryClient.invalidateQueries({ queryKey: ["jobs"] });
+    queryClient.invalidateQueries({ queryKey: ["job", jobId] });
+    router.push(`/jobs/${jobId}`);
+  };
 
-      addToast({
-        variant: "error",
-        title: "Could not update job",
-        description: message,
-      });
-    },
+  const onJobUpdateFailed = (e: any) => {
+    const detail = e?.response?.data?.detail;
+    const message =
+      typeof detail === "string" && detail
+        ? detail
+        : "Something went wrong. Please try again.";
+
+    addToast({
+      variant: "error",
+      title: "Could not update job",
+      description: message,
+    });
+  };
+
+  // An assigned job and a published one are edited through different
+  // endpoints with different payloads.
+  const { mutate: editMutate, isPending: isEditing } = useEditJob(
+    onJobUpdated,
+    onJobUpdateFailed,
   );
+  const { mutate: editPublishMutate, isPending: isEditingPublished } =
+    useEditPublishJob(onJobUpdated, onJobUpdateFailed);
+  const isPending = isEditing || isEditingPublished;
 
   const handleChange =
     (field: TextField) => (e: ChangeEvent<HTMLInputElement>) => {
@@ -173,7 +206,11 @@ export const useEditJobScreen = () => {
       return;
     }
 
-    setStep(2);
+    setStep("conditions");
+  };
+
+  const handleConditionsContinue = () => {
+    if (assignment.validate()) setStep("checklist");
   };
 
   const toggleChecklistItem = (id: string) => {
@@ -189,24 +226,47 @@ export const useEditJobScreen = () => {
       return;
     }
 
+    const consumables = firstStepValues.consumablesProvidedByCustomer
+      ? ""
+      : firstStepValues.consumables;
+
+    if (isPublished) {
+      const payload: EditPublishJobPayload = {
+        job_id: jobId,
+        site_id: Number(firstStepValues.cleaningSite),
+        job_pay: Number(firstStepValues.jobPay),
+        cleaners_pay: Number(firstStepValues.cleanerPay),
+        consumables,
+        consumables_provided: firstStepValues.consumablesProvidedByCustomer,
+        job_date: firstStepValues.date,
+        start_time: firstStepValues.startTime,
+        end_time: firstStepValues.endTime,
+        deadline_date: assignment.values.deadlineDate,
+        deadline_time: assignment.values.deadlineTime,
+        timezone: Number(firstStepValues.timezone),
+        radius: Number(assignment.values.eligibleRadius),
+        checklist,
+      };
+      editPublishMutate(payload);
+      return;
+    }
+
     const payload: EditJobPayload = {
       job_id: jobId,
       site_id: Number(firstStepValues.cleaningSite),
       job_pay: Number(firstStepValues.jobPay),
       cleaners_pay: Number(firstStepValues.cleanerPay),
-      consumables: firstStepValues.consumablesProvidedByCustomer
-        ? ""
-        : firstStepValues.consumables,
+      consumables,
       consumables_provided: firstStepValues.consumablesProvidedByCustomer,
       job_date: firstStepValues.date,
       start_time: firstStepValues.startTime,
       end_time: firstStepValues.endTime,
       timezone: Number(firstStepValues.timezone),
-      assigned_cleaner_id: Number(firstStepValues.cleaner),
+      assigned_cleaner_id: Number(assignment.values.assignedCleaner),
       checklist,
     };
 
-    mutate(payload);
+    editMutate(payload);
   };
 
   const handleCancel = () => router.push(`/jobs/${jobId}`);
@@ -215,6 +275,7 @@ export const useEditJobScreen = () => {
     isLoading: isJobLoading || !isSeeded,
     jobIdLabel: job?.job_id_label,
     step,
+    isPublished,
     firstStepValues,
     firstStepErrors,
     siteOptions,
@@ -228,6 +289,13 @@ export const useEditJobScreen = () => {
     handleSelectChange,
     handleConsumablesProvidedChange,
     handleContinue,
+    assignmentStepValues: assignment.values,
+    assignmentStepErrors: assignment.errors,
+    handleDeadlineDateChange: assignment.handleDeadlineDateChange,
+    handleDeadlineTimeChange: assignment.handleDeadlineTimeChange,
+    handleEligibleRadiusChange: assignment.handleEligibleRadiusChange,
+    handleAssignedCleanerChange: assignment.handleAssignedCleanerChange,
+    handleConditionsContinue,
     toggleChecklistItem,
     handleSave,
     handleCancel,

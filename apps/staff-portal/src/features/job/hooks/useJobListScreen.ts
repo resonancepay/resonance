@@ -1,4 +1,4 @@
-import { useGetJobs } from "./jobs.hook";
+import { useGetJobs, useOpenJobs } from "./jobs.hook";
 import { Job } from "../types/job.types";
 
 const startOfDay = (date: Date) => {
@@ -16,6 +16,15 @@ export const useJobListScreen = () => {
   const { data, isLoading, isError } = useGetJobs();
   const jobs = data ?? [];
 
+  const {
+    data: openJobsData,
+    isLoading: isLoadingOpenJobs,
+    hasNextPage: hasMoreOpenJobs,
+    fetchNextPage: loadMoreOpenJobs,
+    isFetchingNextPage: isLoadingMoreOpenJobs,
+  } = useOpenJobs();
+  const openJobs = openJobsData?.pages.flat() ?? [];
+
   const today = startOfDay(new Date());
   const tomorrow = startOfDay(new Date(today.getTime() + 24 * 60 * 60 * 1000));
 
@@ -31,6 +40,11 @@ export const useJobListScreen = () => {
   return {
     isLoading,
     isError,
+    openJobs,
+    isLoadingOpenJobs,
+    hasMoreOpenJobs,
+    loadMoreOpenJobs,
+    isLoadingMoreOpenJobs,
     todayJobs,
     tomorrowJobs,
     laterJobs,
